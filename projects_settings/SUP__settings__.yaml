@@ -1,0 +1,31 @@
+### specific SUP settings (path, files)
+KEYWORDS:
+    assets_types:
+        props: Props
+        characters: Characters
+    rig: Rig
+    mod: Model
+    text: Textures
+    anim: Animation
+    asset_rig_template: genericMale_Rig_Starter
+    asset_name_template: genericMale
+    bindPose_pattern: _Bindpose
+    item_thumbn_sufix: '_thumbnail.jpg'
+    real_depot_fol_root: core-content-art-source
+    maped_depot_fol_root: source
+    local_fol_root: ContentSource
+Paths:
+    Rig_Ass_Path:        /Assets/{assType}/{ass_na}/Maya/{ass_na}_Rig.ma
+    Mod_Ass_Path:        /Assets/{assType}/{ass_na}/Maya/{ass_na}_Model.ma
+    Ass_Thumb_Path:      /Assets/{assType}/{ass_na}/{ass_na}_thumbnail.jpg
+    
+    RigTemplateMalePath:  /Assets/{characters}/genericMale/Maya/genericMale_Rig_Starter.ma
+    AnimRigPath:          /Assets/{characters}/{anim_char}/Maya/{anim_char}_Bindpose.ma
+    AnimRigPath_template: /Assets/{characters}/genericMale/Maya/genericMale_Bindpose.ma
+    ModTemplateMalePath:  /Assets/{characters}/genericMale/Maya/genericMale_Model_Starter.ma
+    Anim_Path:            /Assets/Animation/{subpath}{anim_na}_v000.ma
+    Anim_Root:            /Assets/Animation/
+    #Unreal_Anim_Root:     /Assets/Content/Sim/Characters/Generic/Art/Anim/
+List:
+    area_assets_ls: [ 'Rig', 'Model' , 'Textures']
+    area_anim_ls: [ 'Animation']

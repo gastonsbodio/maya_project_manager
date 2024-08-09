@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TaskCreationPanel</class>
+ <widget class="QMainWindow" name="TaskCreationPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>490</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Animation Checker</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="push_butt_execute">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>600</y>
+      <width>451</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="toolTipDuration">
+     <number>8</number>
+    </property>
+    <property name="text">
+     <string>execute</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtSelectAll">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>10</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>select All</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushInverseSelection">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>10</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>inverse Seletion</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButSelectNone">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>10</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>select None</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>490</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuinstructions">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>_____________________________________________________________</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuinstruction">
+    <property name="title">
+     <string>Instructions</string>
+    </property>
+   </widget>
+   <addaction name="menuinstructions"/>
+   <addaction name="menuinstruction"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionfirst_steps_">
+   <property name="text">
+    <string>first steps</string>
+   </property>
+  </action>
+  <action name="actionfirst_steps">
+   <property name="text">
+    <string>first steps</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
