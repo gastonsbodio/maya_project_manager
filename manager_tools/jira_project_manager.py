@@ -1,3 +1,4 @@
+
 """ use the bellow code with hashtag for running manager
 """
 
@@ -93,8 +94,10 @@ class MyMainWindow(QMainWindow):
         self.ui.lineEd_perforce_pass.setText( self.PERF_PASS  )
         self.t_fea = table_features( self.ui.table_assetsTasks , self.ui.table_animTasks , main_widg = self )
         if self.PROJ_SETTINGS != None:
-            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, self.PROJ_SETTINGS['List']['area_assets_ls']  , de.HEADER_ASS_LS)
-            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, self.PROJ_SETTINGS['List']['area_anim_ls']  , de.HEADER_ANI_LS )
+            assetsAreaLs = hlp.get_ls_from_dicc = (self.PROJ_SETTINGS['KEYWORDS']['areaAssets'] )
+            animAreaLs = hlp.get_ls_from_dicc = (self.PROJ_SETTINGS['KEYWORDS']['areaAnim'] )
+            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, assetsAreaLs  , de.HEADER_ASS_LS)
+            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, animAreaLs  , de.HEADER_ANI_LS )
         else:
             self.id_rows_ass = {}
             self.id_rows_ani = {}
@@ -278,7 +281,7 @@ class table_features( ):#QWidget ):
         table.clear()
         try:
             tasks_ls_diccs = hlp.get_self_tasks( self, QMessageBox , area_ls )
-            if self.PROJ_SETTINGS['KEYWORDS']['anim'] in area_ls:
+            if self.PROJ_SETTINGS['KEYWORDS']['areaAnim']['anim'] in area_ls:
                 self.tasks_ls_ani_diccs = tasks_ls_diccs
         except Exception as err:
             tasks_ls_diccs = []
@@ -458,9 +461,9 @@ class table_features( ):#QWidget ):
         """
         if type == de.asset_na:
             dicc = { 'ass_na': item_na }
-            local_full_path = hlp.solve_path( 'local' , area+'_Char_Path', self.LOCAL_ROOT,
+            local_full_path = hlp.solve_path( 'local' , area+'_Ass_Path', self.LOCAL_ROOT,
                                                 self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc )
-            depot_full_path = hlp.solve_path( 'depot', area+'_Char_Path', self.LOCAL_ROOT,
+            depot_full_path = hlp.solve_path( 'depot', area+'_Ass_Path', self.LOCAL_ROOT,
                                                 self.DEPOT_ROOT, '' , self.PROJ_SETTINGS , dicc_ = dicc)
         if type == de.ani_na:
             local_full_path, depot_full_path = self.get_anim_path( item_na, self.tasks_ls_ani_diccs )

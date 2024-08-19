@@ -58,7 +58,7 @@ class JiraQueries():
             for issue in issues_ls:
                 main_args_issue_dicc = {}
                 reporter = issue.fields.reporter.displayName
-                main_args_issue_dicc[de.reporter] = reporter.encode('utf-8')
+                main_args_issue_dicc[de.reporter] = reporter#.encode('utf-8')
                 status = str(issue.fields.status)
                 main_args_issue_dicc[de.status] = status
                 title = issue.fields.summary
@@ -67,9 +67,9 @@ class JiraQueries():
                 if labels_ls != []:
                     main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
                     main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
-                    if main_args_issue_dicc[ de.area ] != PROJ_SETTINGS ['KEYWORDS']['anim']:
+                    if main_args_issue_dicc[ de.area ] != PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
                         main_args_issue_dicc[ de.asset_na ] = self.dicc_label_value( labels_ls, de.asset_na )
-                    elif main_args_issue_dicc[ de.area ] == PROJ_SETTINGS ['KEYWORDS']['anim']:
+                    elif main_args_issue_dicc[ de.area ] == PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
                         main_args_issue_dicc[ de.ani_na ] = self.dicc_label_value( labels_ls, de.ani_na )
                     main_args_issue_dicc[ de.item_path ] = self.dicc_label_value( labels_ls, de.item_path )
                 else:
@@ -79,7 +79,7 @@ class JiraQueries():
                     main_args_issue_dicc[ de.item_path ] = ''
                 assignee = issue.fields.assignee
                 if assignee != None:
-                    main_args_issue_dicc[de.assignee] = assignee.displayName.encode('utf-8')
+                    main_args_issue_dicc[de.assignee] = assignee.displayName#.encode('utf-8')
                 else:
                     main_args_issue_dicc[de.assignee] = str(assignee)
                 main_args_issue_dicc[de.spec] = server +'/browse/'+str(issue.key)

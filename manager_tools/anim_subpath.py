@@ -67,7 +67,8 @@ class AnimSubPath( QMainWindow ):
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE = hlp.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        self.anim_root = hlp.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS )
+        dicc_ = { 'keywordAnim': self.PROJ_SETTINGS['KEYWORDS']['areaAnim']  }
+        self.anim_root = hlp.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         self.ui.lineEdit_anim_root.setText( self.anim_root )
         self.load_qwlist(  self.ui.listWid_lavel1, 0 )
         self.ui.listWid_lavel1.currentItemChanged.connect( lambda: self.    load_qwlist( self.ui.listWid_lavel2 , 1 ))
@@ -123,8 +124,11 @@ class AnimSubPath( QMainWindow ):
         return subpaths
 
     def get_final_path (self, subpaths , anim_na):
-        dicc = { 'subpath': subpaths ,'anim_na': anim_na }
-        anim_full_path_fileroot = hlp.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
+        dicc = { 'subpath': subpaths ,'anim_na': anim_na ,
+                'keywordAnim': self.PROJ_SETTINGS['KEYWORDS']['areaAnim'] }
+        
+        anim_full_path_fileroot = hlp.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,
+                                                self.PROJ_SETTINGS , dicc_ = dicc)
         self.ui.lab_final_anim_path.setText( anim_full_path_fileroot )
         self.ui.lab_final_anim_path.setStyleSheet("color: rgb( 0, 175 ,0 )")
 
@@ -169,7 +173,7 @@ class AnimSubPath( QMainWindow ):
         item_area_full_path = hlp.transform_given_path( item_area_full_path, 'local' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
         type = de.issue_type_anim
         dicc = { 'ass_na' : self.anim_asset }
-        anim_asset_fullpath = hlp.solve_path( 'local', 'Rig_Char_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
+        anim_asset_fullpath = hlp.solve_path( 'local', 'Rig_Ass_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         template_full_path = hlp.solve_path( 'local', 'AnimRigPath_template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS )
         perf = pr.PerforceRequests()
         key = self.signal_action(  self.area, item_area_full_path_depot, self.anim_na )

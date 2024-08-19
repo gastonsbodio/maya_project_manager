@@ -24,13 +24,15 @@ elif sys.version_info.major == 3:
 PY3CACHE_FOL = '__pycache__'
 TEMP_FOL = tempfile.gettempdir().replace("\\","/") + "/"
 
+# witch python standalone we will use
+PY_PATH = 'C:/Users/gasco/AppData/Local/Programs/Python/Python312/' #'C:/Python27/' 
+         #'C:/Users/gasco/AppData/Local/Programs/Python/Python37/'   
 
 JI_SERVER = "https://gastonsbodio.atlassian.net/" #"https://straykitestudios.atlassian.net"
 #"https://genvidtech.atlassian.net"  #
 JIRA_API_TOKEN_HELP = 'https://docs.searchunify.com/Content/Content-Sources/Atlassian-Jira-Confluence-Authentication-Create-API-Token.htm'
 TRACK_SHEET_ITEMS = 'https://docs.google.com/spreadsheets/d/1sy7NgFtjADYhvmU45rqlgfl4qznpW2adECWv892Ua-Q/edit?usp=sharing'
 INSTRUCTION_CHECK_ANIM_TOOL = 'https://docs.google.com/document/d/1gAxtH1fhukNAWPnWSfflYai9NQe0qsh6OVcnn7FzlKU/edit?usp=sharing'
-
 
 LINK_ICON_PATH =  PY2_PACKAGES.replace('\\','/')  + "/icon/link.png" 
 COMMENT_ICON_PATH =  PY2_PACKAGES.replace('\\','/')  + "/icon/comment.png" 
@@ -39,7 +41,6 @@ ANIM_PATH_TASK_CREAT = 'anim_path_creation_tool.json'
 LOGIN_METADATA_FI_NA ='login_metadata.json'
 PERF_LOG_METADATA_FI_NA ='perf_log_metadata.json'
 ROOTS_METAD_FI_NA = 'roots_metadata.json'
-PY_PATH = 'C:/Python27/'
 JIRA_MANAGE_FOL = 'jira_manager'
 SETTINGS_SUFIX = '__settings__.yaml'
 MANAGE_PROD_UI = 'management_tool.ui'

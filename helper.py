@@ -19,6 +19,8 @@ sys.path.append( de.PY_PACKAGES)
 import yaml as yaml
 import shutil
 
+ADDITIONAL_LINE_PY3 = 'from importlib import reload\n'  #'\n'#
+
 def make_read_writeable(filename):
     """set file as read-only false
     Args:
@@ -204,6 +206,8 @@ def solve_path( root_state, key_path, local_root,
     Returns:
         [str]: [dep path or local path depending is_local value]
     """
+    print( dicc_ )
+    print ( proj_settings['Paths'][ key_path ] )
     if proj_settings['Paths'][ key_path ].format( **dicc_) != '': 
         if root_state == 'local':
             return local_root + proj_settings['Paths'][key_path].format(**dicc_)
@@ -296,11 +300,12 @@ def write_perforce_command_file ( line, if_result, result_fi_na, perf_server, pe
         [str]: [python script command content formated]
     """
     file_content =                'import sys \n'
-    file_content = file_content + 'sys.path.append( "{path}" )\n'.format( path = de.SCRIPT_FOL )
-    file_content = file_content + 'sys.path.append( "%s" )\n' %de.PY2_PACKAGES
+    file_content = file_content + 'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content + 'sys.path.append( r"%s" )\n' %de.PY3_PACKAGES  #de.PY2_PACKAGES
     file_content = file_content + 'from P4 import P4,P4Exception \n' 
     file_content = file_content + 'import json\n'  
     file_content = file_content + 'import perforce_conn.perforce_requests as pr\n' 
+    file_content = file_content +  ADDITIONAL_LINE_PY3      
     file_content = file_content + 'reload (pr)\n'
     file_content = file_content + 'p4 = P4() \n'
     file_content = file_content + 'p4.port = "%s"   \np4.user = "%s"   \np4.client = "%s"   \n'%(perf_server, perf_user, workspace)
@@ -341,12 +346,13 @@ def write_jira_command_file( line, if_result, result_fi_na , user , server, apik
         [str]: [python script command content formated]
     """
     file_content =                   'import sys\n'
-    file_content = file_content +    'sys.path.append( "{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
     file_content = file_content +    'import definitions as de\n'
     file_content = file_content +    'import jira_conn.jira_queries as jq\n'
+    file_content = file_content +    ADDITIONAL_LINE_PY3   
     file_content = file_content +    'reload(de)\n'
     file_content = file_content +    'reload(jq)\n'
-    file_content = file_content +    'sys.path.append( de.PY2_PACKAGES )\n'
+    file_content = file_content +    'sys.path.append( de.PY3_PACKAGES )\n'
     file_content = file_content +    'from jira import JIRA\n'
     file_content = file_content +    'import requests\n'
     file_content = file_content +    'from requests.auth import HTTPBasicAuth\n'
@@ -386,10 +392,11 @@ def write_request_jira_file( line, if_result, result_fi_na ):#
         [str]: [python script command content formated]
     """
     file_content =                   'import sys\n'
-    file_content = file_content +    'sys.path.append( "{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
     file_content = file_content +    'import definitions as de\n'
+    file_content = file_content +    ADDITIONAL_LINE_PY3
     file_content = file_content +    'reload(de)\n'
-    file_content = file_content +    'sys.path.append( de.PY2_PACKAGES )\n'
+    file_content = file_content +    'sys.path.append( de.PY3_PACKAGES )\n'
     file_content = file_content +    'import requests\n'
     file_content = file_content +    'from requests.auth import HTTPBasicAuth\n'
     file_content = file_content +    'import json\n'
@@ -418,19 +425,23 @@ def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHET_DATA_NA
     """
     file_content =                'import sys\n'
     file_content = file_content + 'import json\n'
-    file_content = file_content + 'sys.path.append( "%s")\n' %de.SCRIPT_FOL
+    file_content = file_content + 'sys.path.append( r"%s")\n' %de.SCRIPT_FOL
     file_content = file_content +'for path in sys.path:\n'
     file_content = file_content +'    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:\n'
     file_content = file_content +'        sys.path.remove(path)\n'
     file_content = file_content + 'import definitions as de\n'
+    file_content = file_content + ADDITIONAL_LINE_PY3
     file_content = file_content + 'reload( de )\n'
     file_content = file_content + 'sys.path.append( de.PY_PACK_MOD )\n'
-    file_content = file_content + 'sys.path.append( de.PY2_PACKAGES )\n'
-    file_content = file_content + 'import py2.oauth2client.service_account as ServiceAcc\n'
+    file_content = file_content + 'sys.path.append( de.PY3_PACKAGES )\n'
+    if '\n' == ADDITIONAL_LINE_PY3:
+        file_content = file_content + 'import py2.oauth2client.service_account as ServiceAcc\n'
+    else:
+        file_content = file_content + 'import py3.oauth2client.service_account as ServiceAcc\n'
     file_content = file_content + 'import gspread\n'
     file_content = file_content + 'scope = [ "https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets" ,\n'
     file_content = file_content + '    "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"  ]\n'
-    file_content = file_content + 'creds = ServiceAcc.ServiceAccountCredentials.from_json_keyfile_name( de.PY2_PACKAGES.replace("\\\\","/") + "/creds/creds.json" , scope)\n'
+    file_content = file_content + 'creds = ServiceAcc.ServiceAccountCredentials.from_json_keyfile_name( de.PY3_PACKAGES.replace("\\\\","/") + "/creds/creds.json" , scope)\n'
     file_content = file_content + 'error_ls = []\n'
     file_content = file_content + '%s = []\n' %de.ls_result
     file_content = file_content + 'try:\n'
@@ -462,7 +473,7 @@ def write_googld_func( func_na, result_fi_na, if_result):
         [str]: [python script command content formated]
     """
     file_content =                'import sys\n'
-    file_content = file_content + 'sys.path.append( "%s")\n' %de.SCRIPT_FOL
+    file_content = file_content + 'sys.path.append( r"%s")\n' %de.SCRIPT_FOL
     file_content = file_content + 'import json\n'
     file_content = file_content + 'for path in sys.path:\n'
     file_content = file_content + '    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:\n'
@@ -472,6 +483,7 @@ def write_googld_func( func_na, result_fi_na, if_result):
     file_content = file_content + '%s = []\n' %de.ls_result
     file_content = file_content + 'try:\n'
     file_content = file_content + '    import google_conn.google_sheet_request as gs\n'
+    file_content = file_content + '    ' + ADDITIONAL_LINE_PY3
     file_content = file_content + '    reload( gs )\n'
     file_content = file_content + '    goo_dri = gs.GoogleDriveQuery()\n'
     file_content = file_content + '    %s = goo_dri.%s\n' %( de.ls_result , func_na ) #update_tools
@@ -525,7 +537,7 @@ def copy_local_asset_template(  target_path, source_path, target_name , source_n
 def change_reference( PROJ_SETTINGS, full_file_path_2_replace , new_asset_file_rig_name):
     generic_asset_fileRig_pattern_na = str( PROJ_SETTINGS ['KEYWORDS']['asset_rig_template'] )
     generic_asset_name = str( PROJ_SETTINGS ['KEYWORDS']['asset_name_template'] )
-    new_asset_name = new_asset_file_rig_name.split(   '_'+str( PROJ_SETTINGS ['KEYWORDS']['rig'] )  )[0]
+    new_asset_name = new_asset_file_rig_name.split(   '_'+str( PROJ_SETTINGS ['KEYWORDS']['areaAssets']['rig'] )  )[0]
     make_read_writeable( full_file_path_2_replace  )
     with open( full_file_path_2_replace , 'r') as fi:
         fiLinesLsStrings = fi.readlines()
@@ -576,13 +588,13 @@ def copy_and_submit( app, PROJ_SETTINGS, QMessageBox , perf ,template_full_path 
             make_read_writeable( target_path + target_name  )
         check_template_exists(  app , QMessageBox , source_path , source_name , perf )
         copy_local_asset_template(  target_path, source_path, target_name , source_name )
-        if str( PROJ_SETTINGS ['KEYWORDS']['anim'] ) == str( area ):
+        if str( PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim'] ) == str( area ):
             change_reference(  PROJ_SETTINGS, item_area_full_path , anim_asset_na )
         perf_task_submit( app, QMessageBox, perf, item_na, area, target_path+target_name , app.PERF_SERVER,
                          app.PERF_USER, app.PERF_WORKSPACE , app.PERF_PASS )
 
 def set_new_values_on_sheet( app, gs , QMessageBox , area , column_ls , value_ls , row_idx ):
-    if area == app.PROJ_SETTINGS ['KEYWORDS']['anim']:
+    if area == app.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_anim
     else:
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_asset
@@ -599,7 +611,7 @@ def check_forbiden_char( app, full_word_2_analize, QMessageBox):
     return key_permission
         
 def check_created_task( app , QMessageBox , gs, area, item_na ):
-    if area == app.PROJ_SETTINGS ['KEYWORDS']['anim']:
+    if area == app.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
         item_na_colum  = de.GOOGLE_SH_ANI_NA_COL 
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_anim
     else:
@@ -634,20 +646,25 @@ def item_path_builder( app, item_na , area , anim_asset  , assetType , *arg ):
     localr = app.LOCAL_ROOT
     dicc = { 'ass_na' : item_na , 'assType' : assetType }
     anim_asset_fullpath = ''
-    if str( projsett ['KEYWORDS']['rig'] ) == str( area ):
+    if str( projsett ['KEYWORDS']['areaAssets']['rig'] ) == str( area ):
         type = de.issue_type_asset
-        if assetType == projsett ['KEYWORDS']['characters']:
+        if assetType == projsett ['KEYWORDS']['assets_types']['characters']:
+            dicc['areaAssRig'] = projsett ['KEYWORDS']['areaAssets']['rig']
             template_full_path = solve_path( 'local', 'RigTemplateMalePath' , localr,  '', '' ,  projsett, dicc_ = dicc )
         item_area_full_path = solve_path( 'local' , 'Rig_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc)
         item_depot_path = solve_path( 'depot' , 'Rig_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc)
-    elif str( projsett ['KEYWORDS']['mod'] ) == str( area ):
+
+    elif str( projsett ['KEYWORDS']['areaAssets']['mod'] ) == str( area ):
         type = de.issue_type_asset
-        template_full_path = solve_path( 'local', 'ModTemplateMalePath' , localr,  '', '' ,  projsett)
-        item_area_full_path = solve_path( 'local' , 'Mod_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc)
-        item_depot_path = solve_path( 'depot' , 'Mod_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc)
-    elif str( projsett ['KEYWORDS']['anim'] ) == str( area ):
+        dicc['areaAssMod'] = projsett ['KEYWORDS']['areaAssets']['mod']
+        template_full_path = solve_path( 'local', 'ModTemplateMalePath' , localr,  '', '' ,  projsett , dicc_ = dicc )
+        item_area_full_path = solve_path( 'local' , 'Mod_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc )
+        item_depot_path = solve_path( 'depot' , 'Mod_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc )
+
+    elif str( projsett ['KEYWORDS']['areaAnim']['anim'] ) == str( area ):
         type = de.issue_type_anim
-        dicc = { 'anim_char' : anim_asset }
+        character = projsett ['KEYWORDS']['assets_types']['characters']
+        dicc = { 'anim_char' : anim_asset , 'characters' : character }
         anim_asset_fullpath = solve_path( 'local', 'AnimRigPath' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         template_full_path = solve_path( 'local', 'AnimRigPath_template' , localr ,  '', '' ,  projsett )
         item_area_full_path = solve_path( 'local' , 'Anim_Root' , localr ,  '', '' ,  projsett )
@@ -665,9 +682,9 @@ def get_area_path_from_path_ls (path_ls, area):
         path = ''
     return path
 
-def define_main_item_vars( app, area , anim_asset, item_na , area_done_dicc  , path_ls ):
-    type, anim_ass_fullpath, templ_full_path, item_area_full_path , item_depot_path = item_path_builder( app, item_na , area , ''  ) #
-    if area == app.PROJ_SETTINGS ['KEYWORDS']['anim']:
+def define_main_item_vars( app, area , anim_asset, item_na , area_done_dicc  , path_ls , assetType):
+    type, anim_ass_fullpath, templ_full_path, item_area_full_path , item_depot_path = item_path_builder( app, item_na , area , ''  , assetType ) #
+    if area == app.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
         item_na_prefix = de.ani_na
         item_depot_path = get_area_path_from_path_ls ( path_ls, area )
         if item_depot_path != '':
@@ -693,7 +710,8 @@ def set_issue_label( app, QMessageBox , label_ls, issue_key, jira_m):
             return False
     return True
 
-def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , item_na , area , area_done_dicc , path_ls , anim_asset ):
+def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , item_na , area , area_done_dicc , 
+                             path_ls , anim_asset , assetType):
     description = 'Jira Manager Tool'
     summary = area + '  task  for: '+ item_na
     dicc = app.jira_m.create_issue( app.USER, de.JI_SERVER, app.APIKEY, app.PROJECT_KEY , summary ,
@@ -707,19 +725,19 @@ def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , ite
     if dicc[ de.key_errors ] != []:
         QMessageBox.information( app, u'Jira  assigning user Error.', str( dicc[de.key_errors] )  )
     else:
-        label_ls , goo_colum , value_ls = define_main_item_vars( app, area , anim_asset , item_na , area_done_dicc , path_ls )
+        label_ls , goo_colum , value_ls = define_main_item_vars( app, area , anim_asset , item_na , area_done_dicc , path_ls , assetType)
         key = set_issue_label( app,  QMessageBox ,label_ls, issue_key  , app.jira_m)
         if key:
             return  goo_colum , value_ls
 
-def get_asset_type_ls( proj_sett ):
-    assets_types_ls = []
-    for key in proj_sett['KEYWORDS']['assets_types']:
-        assets_types_ls.append( proj_sett['KEYWORDS']['assets_types'][key] )
-    return assets_types_ls
+def get_ls_from_dicc( dicc ):
+    list = []
+    for key in dicc:
+        list.append( dicc[key] )
+    return list
 
 def asset_type_extract( path , proj_sett ):
-    assets_types_ls = get_asset_type_ls( proj_sett )
+    assets_types_ls = get_ls_from_dicc( proj_sett )
     for type in assets_types_ls:
         if '/' + type + '/' in path:
             return type
@@ -732,7 +750,8 @@ def get_self_tasks( app , QMessageBox , area_ls ):
     """
     if app.PROJECT_KEY != '' and app.PROJECT_KEY != 'None':
         if app.APIKEY != 'None' and app.USER != 'None':
-            dicc = app.jira_m.get_custom_user_issues(app.USER, de.JI_SERVER, app.APIKEY, 'assignee', app.PROJECT_KEY , 'jira'  )
+            dicc = app.jira_m.get_custom_user_issues(app.USER, de.JI_SERVER, app.APIKEY,
+                                                     'assignee', app.PROJECT_KEY , 'jira'  )
             if dicc[ de.key_errors ] != '[]':
                 QMessageBox.information(app.main_widg, u'getting user task errors', str( dicc[de.key_errors] )  )
         filtered_tasks_ls = []
