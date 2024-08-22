@@ -36,14 +36,14 @@
    <widget class="QTabWidget" name="tabWid_mainboard">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>90</y>
-      <width>991</width>
+      <width>1071</width>
       <height>491</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="login_tab">
      <attribute name="title">
@@ -52,7 +52,7 @@
      <widget class="QComboBox" name="comboB_projects">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>100</x>
         <y>380</y>
         <width>181</width>
         <height>22</height>
@@ -62,7 +62,7 @@
      <widget class="QLabel" name="lab_comb_proj">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>120</x>
         <y>360</y>
         <width>141</width>
         <height>21</height>
@@ -75,7 +75,7 @@
      <widget class="QLabel" name="lab_comb_user">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>120</x>
         <y>150</y>
         <width>141</width>
         <height>21</height>
@@ -88,7 +88,7 @@
      <widget class="QLineEdit" name="lineEd_apiKey">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>100</x>
         <y>260</y>
         <width>401</width>
         <height>21</height>
@@ -98,7 +98,7 @@
      <widget class="QLabel" name="lab_lineEd_apiKey">
       <property name="geometry">
        <rect>
-        <x>90</x>
+        <x>130</x>
         <y>240</y>
         <width>141</width>
         <height>21</height>
@@ -111,7 +111,7 @@
      <widget class="QPushButton" name="pushBut_set_jira_login">
       <property name="geometry">
        <rect>
-        <x>334</x>
+        <x>374</x>
         <y>300</y>
         <width>101</width>
         <height>23</height>
@@ -124,7 +124,7 @@
      <widget class="QLabel" name="lab_jira_log">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>240</x>
         <y>20</y>
         <width>91</width>
         <height>31</height>
@@ -145,7 +145,7 @@
      <widget class="QLabel" name="lab_perforce_log">
       <property name="geometry">
        <rect>
-        <x>730</x>
+        <x>790</x>
         <y>20</y>
         <width>121</width>
         <height>31</height>
@@ -166,7 +166,7 @@
      <widget class="QLineEdit" name="lineEd_perforce_user">
       <property name="geometry">
        <rect>
-        <x>620</x>
+        <x>700</x>
         <y>209</y>
         <width>101</width>
         <height>21</height>
@@ -176,7 +176,7 @@
      <widget class="QLabel" name="lab_lineEd_perforce_user">
       <property name="geometry">
        <rect>
-        <x>640</x>
+        <x>720</x>
         <y>190</y>
         <width>81</width>
         <height>21</height>
@@ -189,7 +189,7 @@
      <widget class="QLabel" name="lab_comb_perforce_server">
       <property name="geometry">
        <rect>
-        <x>640</x>
+        <x>720</x>
         <y>80</y>
         <width>141</width>
         <height>21</height>
@@ -202,7 +202,7 @@
      <widget class="QLabel" name="lab_comb_workspace">
       <property name="geometry">
        <rect>
-        <x>640</x>
+        <x>720</x>
         <y>320</y>
         <width>141</width>
         <height>21</height>
@@ -215,7 +215,7 @@
      <widget class="QLineEdit" name="lineEd_perforce_server">
       <property name="geometry">
        <rect>
-        <x>620</x>
+        <x>700</x>
         <y>100</y>
         <width>201</width>
         <height>21</height>
@@ -228,7 +228,7 @@
      <widget class="QPushButton" name="pushBut_login_perf">
       <property name="geometry">
        <rect>
-        <x>790</x>
+        <x>870</x>
         <y>380</y>
         <width>101</width>
         <height>23</height>
@@ -241,7 +241,7 @@
      <widget class="QLineEdit" name="lineEd_jira_user">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>100</x>
         <y>170</y>
         <width>231</width>
         <height>21</height>
@@ -251,7 +251,7 @@
      <widget class="QLineEdit" name="lineEd_perf_worksp">
       <property name="geometry">
        <rect>
-        <x>620</x>
+        <x>700</x>
         <y>340</y>
         <width>271</width>
         <height>21</height>
@@ -274,7 +274,7 @@
      <widget class="QLabel" name="lab_serverLabelJira">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>120</x>
         <y>80</y>
         <width>51</width>
         <height>21</height>
@@ -287,7 +287,7 @@
      <widget class="QLineEdit" name="lineEd_perforce_pass">
       <property name="geometry">
        <rect>
-        <x>740</x>
+        <x>820</x>
         <y>209</y>
         <width>151</width>
         <height>21</height>
@@ -297,7 +297,7 @@
      <widget class="QLabel" name="lab_lineEd_perforce_pass">
       <property name="geometry">
        <rect>
-        <x>770</x>
+        <x>850</x>
         <y>190</y>
         <width>81</width>
         <height>21</height>
@@ -313,7 +313,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>90</x>
+        <x>130</x>
         <y>100</y>
         <width>331</width>
         <height>21</height>
@@ -333,7 +333,7 @@
        <rect>
         <x>20</x>
         <y>40</y>
-        <width>921</width>
+        <width>1031</width>
         <height>411</height>
        </rect>
       </property>
@@ -352,7 +352,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>721</width>
+             <width>831</width>
              <height>381</height>
             </rect>
            </property>
@@ -395,7 +395,7 @@ background-color: #ff5733;
             <number>15</number>
            </property>
            <property name="columnCount">
-            <number>7</number>
+            <number>8</number>
            </property>
            <attribute name="verticalHeaderVisible">
             <bool>false</bool>
@@ -421,6 +421,7 @@ background-color: #ff5733;
            <row/>
            <row/>
            <row/>
+           <column/>
            <column/>
            <column/>
            <column/>
@@ -439,7 +440,7 @@ background-color: #ff5733;
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>721</width>
+             <width>831</width>
              <height>381</height>
             </rect>
            </property>
@@ -482,7 +483,7 @@ background-color: #ff5733;
             <number>15</number>
            </property>
            <property name="columnCount">
-            <number>7</number>
+            <number>8</number>
            </property>
            <attribute name="verticalHeaderVisible">
             <bool>false</bool>
@@ -508,6 +509,7 @@ background-color: #ff5733;
            <row/>
            <row/>
            <row/>
+           <column/>
            <column/>
            <column/>
            <column/>
@@ -537,10 +539,11 @@ background-color: #ff5733;
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="open_sc_pBut">
+           <item row="2" column="1">
+            <widget class="QPushButton" name="pushBut_incremental_sav">
              <property name="text">
-              <string>Open Sc</string>
+              <string>Incremental 
+Save</string>
              </property>
             </widget>
            </item>
@@ -551,11 +554,10 @@ background-color: #ff5733;
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QPushButton" name="pushBut_incremental_sav">
+           <item row="1" column="0">
+            <widget class="QPushButton" name="open_sc_pBut">
              <property name="text">
-              <string>Incremental 
-Save</string>
+              <string>Open Sc</string>
              </property>
             </widget>
            </item>

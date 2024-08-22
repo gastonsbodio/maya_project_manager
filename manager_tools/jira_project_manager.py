@@ -93,9 +93,12 @@ class MyMainWindow(QMainWindow):
         self.ui.lineEd_perforce_pass.setEchoMode( QLineEdit.Password )
         self.ui.lineEd_perforce_pass.setText( self.PERF_PASS  )
         self.t_fea = table_features( self.ui.table_assetsTasks , self.ui.table_animTasks , main_widg = self )
+        diccAni =  self.PROJ_SETTINGS['KEYWORDS']['areaAnim'] 
+        diccAss =   self.PROJ_SETTINGS['KEYWORDS']['areaAssets'] 
+
         if self.PROJ_SETTINGS != None:
-            assetsAreaLs = hlp.get_ls_from_dicc = (self.PROJ_SETTINGS['KEYWORDS']['areaAssets'] )
-            animAreaLs = hlp.get_ls_from_dicc = (self.PROJ_SETTINGS['KEYWORDS']['areaAnim'] )
+            assetsAreaLs = list(diccAss.values())
+            animAreaLs = list(diccAni.values())
             self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, assetsAreaLs  , de.HEADER_ASS_LS)
             self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, animAreaLs  , de.HEADER_ANI_LS )
         else:
@@ -105,8 +108,12 @@ class MyMainWindow(QMainWindow):
         self.t_fea.initialized_features_table(self.ui.table_animTasks)
         self.ui.pushBut_reload_tables.clicked.connect( lambda: self.t_fea.refresh_tables( )  )
         self.ui.actionGet_Jira_Api_Key.triggered.connect( lambda:  self.get_api_token_help( )  )
-        self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , self.PROJ_SETTINGS['List']['area_anim_ls'] )       )
-        self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , self.PROJ_SETTINGS['List']['area_assets_ls']  )  )
+
+        area_ani_ls = list(diccAni.values())
+
+        area_ass_ls = list(diccAss.values())
+        self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , area_ani_ls  )    )
+        self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , area_ass_ls  )  )
 
     def tableOnClicItemAction( self ,table, id_rows ,area_ls):
         column_idx = table.currentColumn()
@@ -202,10 +209,11 @@ class MyMainWindow(QMainWindow):
             self.APIKEY = str( dicc['apikey'] )
             self.ui.lineEd_apiKey.setText('')
         hlp.metadata_dicc2json( de.TEMP_FOL+de.LOGIN_METADATA_FI_NA , dicc )
-        #area_ls_ls = [ self.PROJ_SETTINGS['List']['area_assets_ls'] , self.PROJ_SETTINGS['List']['area_anim_ls'] ]
+        area_ani_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAnim'].values() )
+        area_ass_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAssets'].values() )
         if self.PROJ_SETTINGS != None:
-            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, self.PROJ_SETTINGS['List']['area_assets_ls'] , de.HEADER_ASS_LS)
-            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, self.PROJ_SETTINGS['List']['area_anim_ls']  , de.HEADER_ANI_LS)
+            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, area_ass_ls , de.HEADER_ASS_LS)
+            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, area_ani_ls  , de.HEADER_ANI_LS)
         else:
             QMessageBox.warning(self, u'', "Project Settings Value is None"  )
     def perf_combo_change_ac( self, signal ):
@@ -279,12 +287,14 @@ class table_features( ):#QWidget ):
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         table.clear()
-        try:
+        if True :#try:
             tasks_ls_diccs = hlp.get_self_tasks( self, QMessageBox , area_ls )
             if self.PROJ_SETTINGS['KEYWORDS']['areaAnim']['anim'] in area_ls:
                 self.tasks_ls_ani_diccs = tasks_ls_diccs
-        except Exception as err:
-            tasks_ls_diccs = []
+        #except Exception as err:
+        #    print ( err )
+        #    print ( 'try warning error getting tasks')
+        #    tasks_ls_diccs = []
         for i, header in enumerate ( HEADER_LS ):
             locals()["item"+ str(i)] = QTableWidgetItem(header)
             locals()["item"+ str(i)].setBackground(QColor(180, 75, 65))
@@ -397,7 +407,9 @@ class table_features( ):#QWidget ):
         """Refresh given tables
         """
         id_rows_dicc_ls = [    self.id_rows_ass ,   self.id_rows_ani    ]
-        area_ls_ls = [ self.PROJ_SETTINGS['List']['area_assets_ls'] , self.PROJ_SETTINGS['List']['area_anim_ls'] ]
+        area_ass_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAssets'].values() )
+        area_ani_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAnim'].values() )
+        area_ls_ls = [ area_ass_ls , area_ani_ls ]
         HEADER_LS_ls = [ de.HEADER_ASS_LS, de.HEADER_ANI_LS]
         for idx, table in enumerate([ self.table_assetsTasks, self.table_animTasks ]):
             id_rows_dicc_ls[ idx ] =  self.populate_table( table , area_ls_ls[ idx ] , HEADER_LS_ls[idx] )
@@ -495,10 +507,10 @@ class table_features( ):#QWidget ):
             position ([qposition]): [don t need to be instanced]
         """
         item_na = self.get_text_item_colum( table, de.ITEM_NA_IDX)
-        #asset_type = hlp.asset_type_extract ( task [ de.item_path ] , self.PROJ_SETTINGS )
+        asset_type = hlp.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
         item_path = self.get_text_item_colum( table, de.ITEM_NA_IDX)
         if 'asset' in table.objectName():
-            dicc = {'ass_na':item_na, 'assType': ooo}
+            dicc = {'ass_na':item_na, 'assType': asset_type}
             thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na(    hlp.solve_path( 'local', 'Ass_Thumb_Path', self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS , dicc_ = dicc ))
             thumbDepotPath, thumb_fi_na = hlp.separate_path_and_na(    hlp.solve_path( 'depot', 'Ass_Thumb_Path' , self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc ))
         elif 'anim' in table.objectName():

@@ -150,7 +150,7 @@ class TaskCreationPanel(QMainWindow):
     def load_asset_type_combo(self):
         """populate area combob.
         """
-        assets_types_ls = hlp.get_ls_from_dicc( self.PROJ_SETTINGS['KEYWORDS']['assets_types'] )
+        assets_types_ls = list( self.PROJ_SETTINGS['KEYWORDS']['assets_types'].values() )
         self.ui.comboB_asset_type.clear()
         self.ui.comboB_asset_type_tag.clear()
         for item in assets_types_ls:

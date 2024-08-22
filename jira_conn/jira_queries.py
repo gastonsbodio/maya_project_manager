@@ -51,6 +51,7 @@ class JiraQueries():
         Returns:
             [ls]: [list of jira issues obj]
         """
+        project_key = hlp.byte_string2string( str(project_key) ) 
         if pyStAl == False:
             PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + project_key + de.SETTINGS_SUFIX )
             issues_ls = jira.search_issues(jql_str="project = %s AND %s = '%s'" %( project_key, user_type, user ) )#status = 'User Acceptance'")
@@ -173,14 +174,28 @@ class JiraQueries():
             except Exception:
                 return 'None'
         else:
-            line =         'issue = jira.issue( "%s" )\n' %issue_key
+            line =         'issue = jira.issue( "%s" )\n' %hlp.byte_string2string( str(issue_key) ) 
             line = line + '    jira.transition_issue(issue, transition= "{status}")\n'.format( status = new_status ) 
             line = line + '    {var} = "{status}"\n'.format( status = new_status , var = de.ls_ji_result )  
             file_content = hlp.write_jira_command_file ( line , True, 'jira_request.json', user, server, apikey)
             hlp.create_python_file ('change_status', file_content)
             hlp.run_py_stand_alone( 'change_status' )
             return hlp.json2dicc_load( de.PY_PATH  + 'jira_request.json')#[de.ls_ji_result]
+
+
+    def change_issue_status_request(self, issue_key, user, server, apikey, new_status, pyStAl= True):
         
+        id_status = "3"
+        headers = {"Content-type": "application/json",'Accept' : 'application/json'}
+        body = {"update": {"comment": [{"add": {"body": "The ticket is resolved"}}]},"transition": {"id":id_status }}
+        url = f"https://gastonsbodio.atlassian.net:8080/rest/api/2/issue/SUP-40/transitions"
+        passw = """ATATT3xFfGF0wU0TE0YHPP8sbKtyGc2a8sBQvR3fKaX6oqTsyY85X716H1Glpi35LmB2z-
+                QFJ8OPT3WvaUVGyDr8bAxIeYVK1hkh4rRRBiyeZLU2Q5e5cs0lukH1jSkV5Gnwa
+                YoVqryVfm_g6hcJnwckxrhonayGBBQg8C2RoZQ9wy50pfhCYw8=36F1EFEB"""
+        r = requests.post( url, json=body,auth = HTTPBasicAuth( 'gastonsbodio@gmail.com', passw ), headers = headers )
+
+
+  
     def get_request_jira_templ( self, server, proj_key , user, api_key,
                                 url_line , py_fi_na, pyStAl= True ):
         """Make a Get Request on Jira Api.
@@ -197,7 +212,7 @@ class JiraQueries():
             url = "%s%s" %( server, url_line )
             auth = HTTPBasicAuth( user, api_key )
             headers = {"Accept": "application/json"}
-            query = {'jql': 'project = %s' %proj_key }
+            query = {'jql': 'project = %s' %hlp.byte_string2string( str(proj_key) )  }
             response = requests.request("GET", url, headers=headers , params=query , auth=auth )
             data = json.loads( response.text )
             return data
@@ -205,7 +220,7 @@ class JiraQueries():
             line =        'url = "%s%s"\n' %( server, url_line )
             line = line + 'auth = HTTPBasicAuth("%s", "%s")\n' %( user, api_key )
             line = line + 'headers = {"Accept": "application/json"}\n'
-            line = line + 'query = {"jql": "project = %s" }\n' %proj_key
+            line = line + 'query = {"jql": "project = %s" }\n' %hlp.byte_string2string( str(proj_key) ) 
             line = line + 'response = requests.request("GET", url, headers=headers , params=query , auth=auth )\n'
             line = line + '%s = json.loads( response.text )' %de.ls_ji_result
             file_content = hlp.write_request_jira_file ( line , True, py_fi_na + '.json')
@@ -215,7 +230,7 @@ class JiraQueries():
             return dicc
         
     def get_assignable_users( self, server, proj_key , MASTER_USER, MASTER_API_KEY ):
-        url_line = "/rest/api/2/user/assignable/search?project=%s" %( proj_key )
+        url_line = "/rest/api/2/user/assignable/search?project=%s" %( hlp.byte_string2string( str(proj_key) ) )
         result = self.get_request_jira_templ( server, proj_key , MASTER_USER, MASTER_API_KEY, 
                                             url_line, 'get_assig_users' , pyStAl = True )
         return result
@@ -249,6 +264,8 @@ class JiraQueries():
         return dicc
 
     def assign_2_user (self, issue_key, assign_user_id, user ,server , apikey):
+        issue_key = str( issue_key )
+        issue_key = hlp.byte_string2string( issue_key )
         url_line = "/rest/api/3/issue/%s/assignee" %issue_key
         payload = 'payload = json.dumps( { "accountId": "%s" } )\n' %assign_user_id
         dicc = self.put_request_jira_templ( server , user, apikey, url_line , 'assign_user' , payload )
@@ -285,7 +302,7 @@ class JiraQueries():
             comment_to_edit = jira.add_comment( issue_key , comment_body )
             #comment_to_edit.update(body='New Content.')
         else:
-            line = 'jira.add_comment( "%s" , "%s" )' %( issue_key , comment_body )
+            line = 'jira.add_comment( "%s" , "%s" )' %( hlp.byte_string2string( str(issue_key) ) , comment_body )
             file_content = hlp.write_jira_command_file ( line , True, 'add_comment.json', MASTER_USER, server, MASTER_API_KEY )
             hlp.create_python_file ('add_comment', file_content)
             hlp.run_py_stand_alone( 'add_commentin' )
@@ -305,11 +322,11 @@ class JiraQueries():
         """
         if pyStAl == False:
             jira = self.jira_connection(user, server, apikey)
-            issue = jira.issue(issue_key)
+            issue = jira.issue(  hlp.byte_string2string( str(issue_key) )  )
             issue.fields.labels.append( text )
             issue.update(fields={"labels": issue.fields.labels})
         else:
-            line =         'issue = jira.issue("%s")\n' %issue_key
+            line =         'issue = jira.issue("%s")\n' %hlp.byte_string2string( str(issue_key) ) 
             line = line +  '    issue.fields.labels.append( "{text}" )\n'.format( text = text )
             line = line +  '    issue.update(fields={"labels": issue.fields.labels})\n'
             file_content = hlp.write_jira_command_file ( line , True, 'set_label.json', user, server, apikey, with_jira_q = False)

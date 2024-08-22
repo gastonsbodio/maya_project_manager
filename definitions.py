@@ -83,8 +83,10 @@ ani_na = 'AnimName'
 anim_char = 'CharIn'
 item_path = 'Path'
 thumbnail = 'Thumbnail'
-HEADER_ASS_LS = [ thumbnail , asset_na , area , title , spec, comments , status ]
-HEADER_ANI_LS = [ thumbnail , ani_na , area , title , spec, comments , status ]
+assType = 'Asset Type'
+aniType = 'Shot Type'
+HEADER_ASS_LS = [ thumbnail , asset_na , assType,  area , title , spec, comments , status ]
+HEADER_ANI_LS = [ thumbnail , ani_na , aniType , area , title , spec, comments , status ]
 
 ##### jira comments 
 comment_body = 'comm_body'
@@ -101,11 +103,11 @@ CHECK_ANIM_LS = [ anim , maya , fbx , unreal ]
 
 THUMB_IDX = 0
 ITEM_NA_IDX = 1
-AREA_IDX = 2
-TITLE_IDX = 3
-STATUS_IDX = 6
-ISSUE_LINK_IDX = 4
-COMMENT_IDX = 5
+AREA_IDX = 3
+TITLE_IDX = 4
+STATUS_IDX = 7
+ISSUE_LINK_IDX = 5
+COMMENT_IDX = 6
 
 width_as_thum = 100
 height_as_thum = 65

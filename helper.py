@@ -84,6 +84,12 @@ def load_perf_vars():
         PERF_PASS = 'None'
     return  PERF_USER ,PERF_SERVER ,PERF_WORKSPACE, PERF_PASS 
 
+def byte_string2string( string ):
+    if string.startswith("b'"):
+        string=string.replace("b'","")
+        string=string.replace("'","")
+    return string
+
 def load_anim_check_vars( QMessageBox, app ):
     """instancing anim check tool vars.
     """
@@ -236,9 +242,9 @@ def only_name_out_extention( file_path , with_prefix = True, prefix = '' ):
     return file
 
 def get_item_na_label(  area , PROJ_SETTINGS ):
-    if area in PROJ_SETTINGS['List']['area_assets_ls']:
+    if area in list(    PROJ_SETTINGS['KEYWORDS']['areaAssets'].values()    ):
         item_na = de.asset_na
-    elif area  in PROJ_SETTINGS['List']['area_anim_ls']:  
+    elif area  in list(    PROJ_SETTINGS['KEYWORDS']['areaAnim'].values()    ):  
         item_na = de.ani_na
     return item_na
 
@@ -502,9 +508,6 @@ def write_googld_func( func_na, result_fi_na, if_result):
         file_content = file_content +'    fileFa.close()\n'
     return file_content
     
-    
-    
-    return file_content
 
 def create_python_file( python_file_na, python_file_content ):
     """Jus create python file with a given content
@@ -730,14 +733,9 @@ def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , ite
         if key:
             return  goo_colum , value_ls
 
-def get_ls_from_dicc( dicc ):
-    list = []
-    for key in dicc:
-        list.append( dicc[key] )
-    return list
 
-def asset_type_extract( path , proj_sett ):
-    assets_types_ls = get_ls_from_dicc( proj_sett )
+def asset_type_extraction( path , proj_sett ):
+    assets_types_ls = list( proj_sett['KEYWORDS']['assets_types'].values() )
     for type in assets_types_ls:
         if '/' + type + '/' in path:
             return type
@@ -750,8 +748,7 @@ def get_self_tasks( app , QMessageBox , area_ls ):
     """
     if app.PROJECT_KEY != '' and app.PROJECT_KEY != 'None':
         if app.APIKEY != 'None' and app.USER != 'None':
-            dicc = app.jira_m.get_custom_user_issues(app.USER, de.JI_SERVER, app.APIKEY,
-                                                     'assignee', app.PROJECT_KEY , 'jira'  )
+            dicc = app.jira_m.get_custom_user_issues( app.USER, de.JI_SERVER, app.APIKEY, 'assignee', app.PROJECT_KEY , 'jira'  )
             if dicc[ de.key_errors ] != '[]':
                 QMessageBox.information(app.main_widg, u'getting user task errors', str( dicc[de.key_errors] )  )
         filtered_tasks_ls = []
