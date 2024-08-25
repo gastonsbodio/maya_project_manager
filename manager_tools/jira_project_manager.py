@@ -586,25 +586,34 @@ class table_features( ):#QWidget ):
             table ([qtablewidget]): [needed table]
             position ([qposition]): [not instantiable var]
         """
-        dicc = self.jira_m.get_all_statuses_types(self.USER, de.JI_SERVER, self.APIKEY)
-        if dicc[ de.key_errors ] != '[]':
-            QMessageBox.information(self.main_widg, u'Getting status types error.', str( dicc[de.key_errors] )  )
-        menu_status = QMenu()
-        for status in dicc[de.ls_ji_result]:
-            statusAction = menu_status.addAction(str(status))
-        actionStatus = menu_status.exec_(table.mapToGlobal(position))
         row = table.currentRow()
         if 'asset' in table.objectName( ):
             id_rows = self.id_rows_ass
         elif 'anim' in table.objectName( ):
             id_rows = self.id_rows_ani
         issue_key = id_rows[str(row)][ 0 ]
+        dicc = self.jira_m.get_all_statuses_types( self.USER , de.JI_SERVER , self.APIKEY , issue_key )
+        if dicc[ de.key_errors ] != '[]':
+            QMessageBox.information(self.main_widg, u'Getting status types error.', str( dicc[de.key_errors] )  )
+        menu_status = QMenu()
+        self.dicc_status_trans_ls = dicc[de.ls_ji_result]["transitions"]
+        # {    "id" : "int_str"   ,   "name" : "str"    }
+        for status in self.dicc_status_trans_ls:
+            statusAction = menu_status.addAction( str ( status["name"] ) )
+        actionStatus = menu_status.exec_(table.mapToGlobal(position))
         if actionStatus != None:
-            dicc = self.jira_m.change_issue_status( issue_key, self.USER, de.JI_SERVER, self.APIKEY, actionStatus.text())
+            status_na = actionStatus.text()
+            for dicc in self.dicc_status_trans_ls:
+                print ( dicc[ "name" ] )
+
+            for dicc in self.dicc_status_trans_ls:
+                if status_na == dicc[ "name" ]:
+                    status_transit_id = dicc[ "id" ]
+            dicc = self.jira_m.change_issue_status( issue_key, self.USER, de.JI_SERVER, self.APIKEY, status_transit_id )
             if dicc[ de.key_errors ] != '[]':
                 QMessageBox.information(self.main_widg, u'Changing status error.', str( dicc[de.key_errors] )  )
             if dicc [de.ls_ji_result ] != []:
-                item = QTableWidgetItem( actionStatus.text() )
+                item = QTableWidgetItem( status_na )
                 item.setTextAlignment(QtCore.Qt.AlignCenter)
                 table.setItem( row ,de.STATUS_IDX, item )
     

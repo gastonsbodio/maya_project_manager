@@ -133,7 +133,7 @@ class JiraQueries():
             hlp.run_py_stand_alone( 'get_issue_by_status' )
             return hlp.json2dicc_load( de.PY_PATH  + 'get_issue_by_status.json')#[de.ls_ji_result]
 
-    def get_all_statuses_types( self ,user, server, apikey ,pyStAl = True ):
+    def get_all_statuses_types( self , user, server, apikey , issue_key , pyStAl = True ):
         """get all possibles jira status types
         Args:
             user ([str]): [user email jira login]
@@ -143,17 +143,25 @@ class JiraQueries():
         Returns:
             [ls]: [status list]
         """
-        if pyStAl == False:
-            jira = self.jira_connection( user, server, apikey )
-            status_type = jira.statuses()
-            return status_type
-        else:
-            line = 'result = jira.statuses()\n'
-            line = line + '    %s = [str(st) for st in result]\n' %de.ls_ji_result 
-            file_content = hlp.write_jira_command_file ( line , True, 'status_request.json', user, server, apikey)
-            hlp.create_python_file ('get_status_types', file_content)
-            hlp.run_py_stand_alone( 'get_status_types' )
-            return hlp.json2dicc_load( de.PY_PATH  + 'status_request.json')#[de.ls_ji_result]
+
+        issue_key = hlp.byte_string2string( str(issue_key) )
+        url_line = "rest/api/3/issue/%s/transitions" %( issue_key )
+        proj_key = issue_key.split('-')[0]
+        result = self.get_request_jira_templ( server, proj_key , user, apikey,  
+                                                url_line, 'get_status_ls' , pyStAl = True )
+        return result
+        
+        #if pyStAl == False:
+        #    jira = self.jira_connection( user, server, apikey )
+        #    status_type = jira.statuses()
+        #    return status_type
+        #else:
+        #    line = 'result = jira.statuses()\n'
+        #    line = line + '    %s = [str(st) for st in result]\n' %de.ls_ji_result 
+        #    file_content = hlp.write_jira_command_file ( line , True, 'status_request.json', user, server, apikey)
+        #    hlp.create_python_file ('get_status_types', file_content)
+        #    hlp.run_py_stand_alone( 'get_status_types' )
+        #    return hlp.json2dicc_load( de.PY_PATH  + 'status_request.json')#[de.ls_ji_result]
     
     def change_issue_status(self, issue_key, user, server, apikey, new_status, pyStAl= True):
         """
@@ -226,19 +234,19 @@ class JiraQueries():
             file_content = hlp.write_request_jira_file ( line , True, py_fi_na + '.json')
             hlp.create_python_file ( py_fi_na, file_content)
             hlp.run_py_stand_alone( py_fi_na )
-            dicc = hlp.json2dicc_load( de.PY_PATH  + py_fi_na +'.json')[de.ls_ji_result]
+            dicc = hlp.json2dicc_load( de.PY_PATH  + py_fi_na +'.json')#[de.ls_ji_result]
             return dicc
         
     def get_assignable_users( self, server, proj_key , MASTER_USER, MASTER_API_KEY ):
         url_line = "/rest/api/2/user/assignable/search?project=%s" %( hlp.byte_string2string( str(proj_key) ) )
         result = self.get_request_jira_templ( server, proj_key , MASTER_USER, MASTER_API_KEY, 
-                                            url_line, 'get_assig_users' , pyStAl = True )
+                                            url_line, 'get_assig_users' , pyStAl = True ) [de.ls_ji_result]
         return result
     
     def get_issue_types( self, server, proj_key , MASTER_USER, MASTER_API_KEY ):
         url_line = "/rest/api/3/issuetype"
         result = self.get_request_jira_templ( server, proj_key , MASTER_USER, MASTER_API_KEY, 
-                                            url_line ,'get_issue_types' , pyStAl = True )
+                                            url_line ,'get_issue_types' , pyStAl = True ) [de.ls_ji_result]
         return result
 
 

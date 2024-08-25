@@ -407,12 +407,12 @@ def write_request_jira_file( line, if_result, result_fi_na ):#
     file_content = file_content +    'from requests.auth import HTTPBasicAuth\n'
     file_content = file_content +    'import json\n'
     file_content = file_content +    '%s = []\n' %de.ls_ji_result
-    file_content = file_content +    'erro_ls = []\n'
+    file_content = file_content +    'error_ls = []\n'
     file_content = file_content +     line  + '\n'
     if if_result:
         file_content = file_content + de.dicc_ji_result +' = {}\n'
         file_content = file_content + de.dicc_ji_result + '["'+ de.ls_ji_result +'"] = '+ de.ls_ji_result+'\n'
-        file_content = file_content + de.dicc_ji_result + '["'+ de.key_errors +'"] = erro_ls\n'
+        file_content = file_content + de.dicc_ji_result + '["'+ de.key_errors +'"] = str(error_ls)\n'
         file_content = file_content +'json_object = json.dumps( {dicc_ji_result}, indent = 2 )\n'.format( dicc_ji_result = de.dicc_ji_result ) 
         file_content = file_content + 'with open( "{path}", "w") as fileFa:\n'.format( path = de.PY_PATH + result_fi_na )
         file_content = file_content +'    fileFa.write( str(json_object) )\n'
