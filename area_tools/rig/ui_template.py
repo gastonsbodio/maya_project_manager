@@ -11,10 +11,6 @@ except Exception as err:
     from PySide2.QtGui import *
     from PySide2.QtWidgets import *
 
-try:
-	import importlib
-except Exception:
-    pass
 
 ENVIROMENT = 'nuke'
 

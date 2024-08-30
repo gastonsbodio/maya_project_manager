@@ -1,7 +1,7 @@
 import maya.mel as mel
-import importlib
+from importlib import reload
 import ik_fk_switch_biped as ikfk
-importlib.reload(ikfk)
+reload(ikfk)
 
 
 comtrol_ls = [ ['*:FKScapula_L','*:PoleArm_L','*:IKArm_L', '*:FKWrist_L'] ,

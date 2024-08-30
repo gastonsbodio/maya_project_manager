@@ -4,9 +4,9 @@
     before executing, select first, the target ( control to parent to), and after that, all the sources ( objects to be parented with)
 """
 
-#import importlib
+#from importlib import reload
 #import parent_to_tool as p2t
-#importlib.reload(p2t)
+#reload(p2t)
 #p2t.do_parenting_thing('parent')
 
 import os
@@ -85,8 +85,8 @@ def script_job( cnt , MULT_DIV_ROT_VALUE, attribname):
     cmds.scriptJob( attributeChange=[ control+'.'+attribname , partial( do_default_ik_rot_attr, control , multipl_div ) ] )
 
 def create_script_node( cnt_na, MULT_DIV_ROT_VALUE , attribname = ""):
-    script =          "import importlib ;"
+    script =          "from importlib import reload ;"
     script = script + "import default_rot_value_script as drv ;"
-    script = script + "importlib.reload(p2t) ;"
+    script = script + "reload(p2t) ;"
     script = script + "drv.script_job( '%s', '%s' , '%s') ;" %( cnt_na, MULT_DIV_ROT_VALUE , attribname )
     nodeName = cmds.scriptNode( st=2, bs= 'python( "%s" );'%script , n = 'script_rot_defa_'+cnt_na+'_value')

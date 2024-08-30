@@ -3,18 +3,15 @@
 
 import sys
 from subprocess import call
-try:
-	import importlib
-except Exception:
-    pass
+from importlib import reload
 import definitions as de
 import helper as hlp
-try:
-    reload(de)
-    reload(hlp)
-except Exception:
-    importlib.reload(de)
-    importlib.reload(hlp)
+import perforce_conn.hlp_perf as hlp_perf
+
+reload(de)
+reload(hlp)
+reload(hlp_perf)
+
 if de.PY_PACKAGES not in sys.path:
     sys.path.append( de.PY_PACKAGES )
 try:
@@ -63,7 +60,7 @@ class PerforceRequests():
         else:
             line =        '    p4.run_add("%s")\n' %file
             line = line + '    p4.run_submit("-d", "%s", "%s")\n' %( comment, file )
-            file_content = hlp.write_perforce_command_file ( line , True, 'addsubmit_perf_query.json', 
+            file_content = hlp_perf.write_perforce_command_file ( line , True, 'addsubmit_perf_query.json', 
                                                             server, user, workspace, password )
             hlp.create_python_file ( 'add_and_submit', file_content )
             hlp.run_py_stand_alone( 'add_and_submit' )
@@ -121,7 +118,7 @@ class PerforceRequests():
                 return []
         else:
             line = '    {files_ls} = p4.run("{type}" ,"{folder}" + "*")'.format( files_ls= de.ls_result, type= type,folder= folder)
-            file_content = hlp.write_perforce_command_file ( line , True, 'get_perf_fi_dirs.json', server,
+            file_content = hlp_perf.write_perforce_command_file ( line , True, 'get_perf_fi_dirs.json', server,
                                                             user, workspace , password )
             hlp.create_python_file ('get_files_in_dir', file_content)
             hlp.run_py_stand_alone( 'get_files_in_dir'  )
@@ -143,7 +140,7 @@ class PerforceRequests():
             return p4.run_clients()
         else:
             line = '    {files_ls} = p4.run_clients()'.format( files_ls= de.ls_result )
-            file_content = hlp.write_perforce_command_file ( line , True, 'workspace_request.json', server,
+            file_content = hlp_perf.write_perforce_command_file ( line , True, 'workspace_request.json', server,
                                                             user, workspace, password )
             hlp.create_python_file ('get_workspaces', file_content)
             hlp.run_py_stand_alone( 'get_workspaces' )
@@ -164,7 +161,7 @@ class PerforceRequests():
             p4.disconnect()
         else:
             line = '    p4.run("sync", "-f" , "{file}")\n'.format( file = file)
-            file_content = hlp.write_perforce_command_file ( line , True, 'pull_perf_query.json', 
+            file_content = hlp_perf.write_perforce_command_file ( line , True, 'pull_perf_query.json', 
                                                             server, user, workspace, password )
             hlp.create_python_file ('pull_file', file_content)
             hlp.run_py_stand_alone( 'pull_file' )
@@ -185,7 +182,7 @@ class PerforceRequests():
             p4.disconnect()
         else:
             line = '    p4.run( "edit", "{file}" )\n'.format( file = local_path_file)
-            file_content = hlp.write_perforce_command_file ( line , True, 'result_perf_query.json', 
+            file_content = hlp_perf.write_perforce_command_file ( line , True, 'result_perf_query.json', 
                                                             server, user, workspace, password)
             hlp.create_python_file ('edit_file', file_content)
             hlp.run_py_stand_alone( 'edit_file' )
@@ -220,7 +217,7 @@ class PerforceRequests():
                                                                                                                 directory, 
                                                                                                                 server, user, 
                                                                                                                 workspace )
-                file_content = hlp.write_perforce_command_file ( line , True, 'get_perf_sub_fold.json', 
+                file_content = hlp_perf.write_perforce_command_file ( line , True, 'get_perf_sub_fold.json', 
                                                                 server, user, workspace, password )
                 hlp.create_python_file ('get_perf_sub_fold', file_content)
                 hlp.run_py_stand_alone( 'get_perf_sub_fold','Special' )
@@ -231,7 +228,7 @@ class PerforceRequests():
                                                                                                                 path_root, 
                                                                                                                 server, user, 
                                                                                                                 workspace )
-            file_content = hlp.write_perforce_command_file ( line , True, 'get_perf_fold.json', server, user,
+            file_content = hlp_perf.write_perforce_command_file ( line , True, 'get_perf_fold.json', server, user,
                                                             workspace, password )
             hlp.create_python_file ('get_perf_fold', file_content)
             hlp.run_py_stand_alone( 'get_perf_fold','Special' )

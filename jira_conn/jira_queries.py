@@ -3,18 +3,19 @@
 import sys
 import os
 import json
-try:
-	import importlib
-except Exception:
-    pass
+
+from importlib import reload
+
 import definitions as de
 import helper as hlp
-try:
-    reload(de)
-    reload(hlp)
-except Exception:
-    importlib.reload(de)
-    importlib.reload(hlp)
+import jira_conn.hlp_jira as hlp_ji
+import manager_tools.hlp_manager as hlp_manager
+
+reload(de)
+reload(hlp)
+reload(hlp_ji)
+reload(hlp_manager)
+
 if de.PY_PACKAGES not in sys.path:
     sys.path.append( de.PY_PACKAGES )
 try:
@@ -68,16 +69,21 @@ class JiraQueries():
                 if labels_ls != []:
                     main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
                     main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
+                    item_path = self.dicc_label_value( labels_ls, de.item_path )
+                    main_args_issue_dicc[ de.item_path ] = item_path
                     if main_args_issue_dicc[ de.area ] != PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
                         main_args_issue_dicc[ de.asset_na ] = self.dicc_label_value( labels_ls, de.asset_na )
+                        main_args_issue_dicc[ de.assType ] = hlp_manager.asset_type_extraction( item_path , PROJ_SETTINGS )
                     elif main_args_issue_dicc[ de.area ] == PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
                         main_args_issue_dicc[ de.ani_na ] = self.dicc_label_value( labels_ls, de.ani_na )
-                    main_args_issue_dicc[ de.item_path ] = self.dicc_label_value( labels_ls, de.item_path )
+                        main_args_issue_dicc[ de.aniType ] = hlp_manager.asset_type_extraction( item_path , PROJ_SETTINGS )
                 else:
                     main_args_issue_dicc[de.area] = ''
                     main_args_issue_dicc[de.asset_na] = '' 
                     main_args_issue_dicc[de.ani_na] = ''
                     main_args_issue_dicc[ de.item_path ] = ''
+                    main_args_issue_dicc[ de.assType ] = ''
+                    main_args_issue_dicc[ de.aniType ] = ''
                 assignee = issue.fields.assignee
                 if assignee != None:
                     main_args_issue_dicc[de.assignee] = assignee.displayName#.encode('utf-8')
@@ -100,12 +106,12 @@ class JiraQueries():
         else:
             line = '%s = {object}get_custom_user_issues( "%s", "%s", "%s" , "%s", "%s", jira , pyStAl = False ) \n' %(de.ls_ji_result, 
                                                         user, server, apikey , user_type, project_key )
-            file_content = hlp.write_jira_command_file ( line , True, 'task_dicc_request.json', user, server, apikey)
+            file_content = hlp_ji.write_jira_command_file ( line , True, 'task_dicc_request.json', user, server, apikey)
             hlp.create_python_file ('get_task_dicc', file_content)
             hlp.run_py_stand_alone( 'get_task_dicc' )
             return hlp.json2dicc_load( de.PY_PATH  + 'task_dicc_request.json')
 
-    def dicc_label_value(self, label_ls, prefix):
+    def dicc_label_value( self, label_ls, prefix ):
         result = ''
         for label_item in label_ls:
             if len ( label_item.split(prefix+'_') ) > 1:
@@ -128,7 +134,7 @@ class JiraQueries():
             return issues_ls
         else:
             line =   'issues_ls = jira.search_issues (jql_str = "status = %s"\n' %( '"'+status +'"' )
-            file_content = hlp.write_jira_command_file ( line , True, 'get_issue_by_status.json', user, server, API_KEY)
+            file_content = hlp_ji.write_jira_command_file ( line , True, 'get_issue_by_status.json', user, server, API_KEY)
             hlp.create_python_file ('get_issue_by_status', file_content)
             hlp.run_py_stand_alone( 'get_issue_by_status' )
             return hlp.json2dicc_load( de.PY_PATH  + 'get_issue_by_status.json')#[de.ls_ji_result]
@@ -158,7 +164,7 @@ class JiraQueries():
         #else:
         #    line = 'result = jira.statuses()\n'
         #    line = line + '    %s = [str(st) for st in result]\n' %de.ls_ji_result 
-        #    file_content = hlp.write_jira_command_file ( line , True, 'status_request.json', user, server, apikey)
+        #    file_content = hlp_ji.write_jira_command_file ( line , True, 'status_request.json', user, server, apikey)
         #    hlp.create_python_file ('get_status_types', file_content)
         #    hlp.run_py_stand_alone( 'get_status_types' )
         #    return hlp.json2dicc_load( de.PY_PATH  + 'status_request.json')#[de.ls_ji_result]
@@ -185,7 +191,7 @@ class JiraQueries():
             line =         'issue = jira.issue( "%s" )\n' %hlp.byte_string2string( str(issue_key) ) 
             line = line + '    jira.transition_issue(issue, transition= "{status}")\n'.format( status = new_status ) 
             line = line + '    {var} = "{status}"\n'.format( status = new_status , var = de.ls_ji_result )  
-            file_content = hlp.write_jira_command_file ( line , True, 'jira_request.json', user, server, apikey)
+            file_content = hlp_ji.write_jira_command_file ( line , True, 'jira_request.json', user, server, apikey)
             hlp.create_python_file ('change_status', file_content)
             hlp.run_py_stand_alone( 'change_status' )
             return hlp.json2dicc_load( de.PY_PATH  + 'jira_request.json')#[de.ls_ji_result]
@@ -231,7 +237,7 @@ class JiraQueries():
             line = line + 'query = {"jql": "project = %s" }\n' %hlp.byte_string2string( str(proj_key) ) 
             line = line + 'response = requests.request("GET", url, headers=headers , params=query , auth=auth )\n'
             line = line + '%s = json.loads( response.text )' %de.ls_ji_result
-            file_content = hlp.write_request_jira_file ( line , True, py_fi_na + '.json')
+            file_content = hlp_ji.write_request_jira_file ( line , True, py_fi_na + '.json')
             hlp.create_python_file ( py_fi_na, file_content)
             hlp.run_py_stand_alone( py_fi_na )
             dicc = hlp.json2dicc_load( de.PY_PATH  + py_fi_na +'.json')#[de.ls_ji_result]
@@ -265,7 +271,7 @@ class JiraQueries():
         line = line + 'headers = { "Accept": "application/json", "Content-Type": "application/json" }\n'
         line = line + payload
         line = line + 'response = requests.request( "PUT",url, data=payload, headers = headers, auth=auth )\n'
-        file_content = hlp.write_request_jira_file ( line , True, py_fi_na + '.json')
+        file_content = hlp_ji.write_request_jira_file ( line , True, py_fi_na + '.json')
         hlp.create_python_file ( py_fi_na, file_content)
         hlp.run_py_stand_alone( py_fi_na )
         dicc = hlp.json2dicc_load( de.PY_PATH  + py_fi_na +'.json')
@@ -295,7 +301,7 @@ class JiraQueries():
         else:
             line =        '{result} = jira.projects()\n'.format( result = de.ls_ji_result )
             line = line + '    {result} = [ str(p) for p in {result} ]\n'.format( result = de.ls_ji_result )
-            file_content = hlp.write_jira_command_file ( line , True, 'jira_request.json', MASTER_USER, server, MASTER_API_KEY )
+            file_content = hlp_ji.write_jira_command_file ( line , True, 'jira_request.json', MASTER_USER, server, MASTER_API_KEY )
             hlp.create_python_file ('get_projects', file_content)
             hlp.run_py_stand_alone( 'get_projects' )
             dicc = hlp.json2dicc_load( de.PY_PATH  + 'jira_request.json')#[de.ls_ji_result]
@@ -311,7 +317,7 @@ class JiraQueries():
             #comment_to_edit.update(body='New Content.')
         else:
             line = 'jira.add_comment( "%s" , "%s" )' %( hlp.byte_string2string( str(issue_key) ) , comment_body )
-            file_content = hlp.write_jira_command_file ( line , True, 'add_comment.json', MASTER_USER, server, MASTER_API_KEY )
+            file_content = hlp_ji.write_jira_command_file ( line , True, 'add_comment.json', MASTER_USER, server, MASTER_API_KEY )
             hlp.create_python_file ('add_comment', file_content)
             hlp.run_py_stand_alone( 'add_commentin' )
             dicc = hlp.json2dicc_load( de.PY_PATH  + 'add_comment.json')
@@ -337,7 +343,7 @@ class JiraQueries():
             line =         'issue = jira.issue("%s")\n' %hlp.byte_string2string( str(issue_key) ) 
             line = line +  '    issue.fields.labels.append( "{text}" )\n'.format( text = text )
             line = line +  '    issue.update(fields={"labels": issue.fields.labels})\n'
-            file_content = hlp.write_jira_command_file ( line , True, 'set_label.json', user, server, apikey, with_jira_q = False)
+            file_content = hlp_ji.write_jira_command_file ( line , True, 'set_label.json', user, server, apikey, with_jira_q = False)
             hlp.create_python_file ('generate_labels', file_content)
             hlp.run_py_stand_alone( 'generate_labels' )
             return hlp.json2dicc_load( de.PY_PATH  + 'set_label.json')
@@ -357,7 +363,7 @@ class JiraQueries():
         else:
             line  =         '%s = jira.create_issue( fields = %s )\n' %( de.ls_ji_result, issue_dict )
             line  =  line + '    %s = str(%s.key.encode("utf-8") )'%( de.ls_ji_result , de.ls_ji_result )
-            file_content = hlp.write_jira_command_file ( line , True, 'create_issue.json', user, server, apikey, with_jira_q = False)
+            file_content = hlp_ji.write_jira_command_file ( line , True, 'create_issue.json', user, server, apikey, with_jira_q = False)
             hlp.create_python_file ('create_issue', file_content)
             hlp.run_py_stand_alone( 'create_issue' )
             return hlp.json2dicc_load( de.PY_PATH  + 'create_issue.json')

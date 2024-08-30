@@ -4,10 +4,10 @@ import maya.mel as mel
 
 #import maya.mel as mel
 #import pre_built_proccess as pbp
-#import importlib
-#importlib.reload( pbp )
+#from importlib import reload
+#reload( pbp )
 #import char_setup_post_proccess as csp
-#importlib.reload( csp )
+#reload( csp )
 
 
 ##   1     import unreal skeleton template

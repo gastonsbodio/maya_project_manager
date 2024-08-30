@@ -5,9 +5,9 @@
     and you can set False if you want to skip some feature
 """
 
-#import importlib
+#from importlib import reload
 #import char_setup_post_proccess as cspp
-#importlib.reload( cspp )
+#reload( cspp )
 
 #mode = 'biped'
 
@@ -47,23 +47,21 @@
 
 #cspp.set_color_controls( True )
 
-import importlib
+from importlib import reload
 import parent_to_tool as p2t
-importlib.reload( p2t )
+reload( p2t )
 
 import default_rot_value_script as drvs
-importlib.reload( drvs )
-
+reload( drvs )
 
 import maya.cmds as cmds
 import maya.mel as mel
 
-from importlib import reload
 import spaceSwitch as ss
-importlib.reload(ss)
+reload(ss)
 
 import spaceCreator as sc
-importlib.reload( sc )
+reload( sc )
 
 ROOT = 'root'
 ROOTX_M = 'RootX_M'

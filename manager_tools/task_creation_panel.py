@@ -13,33 +13,32 @@ except Exception as err:
     from PySide2.QtGui import *
     from PySide2.QtWidgets import *
 import shutil
-try:
-    import importlib
-except Exception:
-    pass
+
+from importlib import reload
+
 import google_conn.google_sheet_request as gs
 import jira_conn.jira_queries as jq
 import definitions as de
 import helper as hlp
+import jira_conn.hlp_jira as hlp_ji
+import perforce_conn.hlp_perf as hlp_perf
+import manager_tools.hlp_manager as hlp_manager
+import google_conn.hlp_goo as hlp_goo
 import enviroment as ev
 import perforce_conn.perforce_requests as pr
 import manager_tools.anim_subpath as asp
-try:
-    reload(gs)
-    reload(jq)
-    reload(de)
-    reload(hlp)
-    reload(ev)
-    reload(pr)
-    reload(asp)
-except Exception:
-    importlib.reload(gs)
-    importlib.reload(jq)
-    importlib.reload(de)
-    importlib.reload(hlp)
-    importlib.reload(ev)
-    importlib.reload(pr)
-    importlib.reload(asp) 
+
+reload(gs)
+reload(jq)
+reload(de)
+reload(hlp)
+reload(ev)
+reload(pr)
+reload(asp)
+reload(hlp_ji)
+reload(hlp_perf)
+reload(hlp_manager)
+reload(hlp_goo)
 
 class TaskCreationPanel(QMainWindow):
     def __init__(self):
@@ -54,9 +53,9 @@ class TaskCreationPanel(QMainWindow):
         """Initializing functions, var and features.
         """
         self.jira_m = jq.JiraQueries()
-        self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp.load_jira_vars()
-        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE ,self.PERF_PASS = hlp.load_perf_vars()
-        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp.load_root_vars()
+        self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp_ji.load_jira_vars()
+        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE ,self.PERF_PASS = hlp_perf.load_perf_vars()
+        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         self.load_assign_user_combo()
         self.load_issues_types_combo()
@@ -70,7 +69,7 @@ class TaskCreationPanel(QMainWindow):
         self.ui.radioBut_create.clicked.connect(lambda: self.radio_but_clic_action() )
         self.default_radio_states()
         self.ui.radioBut_choose.nextCheckState()
-        hlp.set_logged_data_on_combo( self.ui.comboB_issue_type, de.issue_type_task )
+        hlp_manager.set_logged_data_on_combo( self.ui.comboB_issue_type, de.issue_type_task )
         self.set_defualt_state_combo_anim_asset()
         self.set_deault_state_combo_anim_asset_tag( )
         self.ui.pushBut_create_one_issue.clicked.connect( lambda: self.create_full_task() )
@@ -159,9 +158,9 @@ class TaskCreationPanel(QMainWindow):
 
 
     def get_google_asset_and_anims(self):
-        self.asset_tracked_ls_diccs = hlp.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA ,
+        self.asset_tracked_ls_diccs = hlp_goo.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA ,
                                                         self.PROJECT_KEY+'_'+de.issue_type_asset )
-        self.anim_tracked_ls_diccs = hlp.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA ,
+        self.anim_tracked_ls_diccs = hlp_goo.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA ,
                                                         self.PROJECT_KEY+'_'+de.issue_type_anim )
         
     def load_combo_item_na( self , tracked_ls_diccs, goog_column, comboB ):
@@ -176,7 +175,7 @@ class TaskCreationPanel(QMainWindow):
         """
         area = str(self.ui.comboB_item_area.currentText())
         item_na = str(self.ui.lineEd_asset_na.text() )
-        key_permission , area_done_dicc , row_idx , path_ls ,row_idx_crea_templa = hlp.check_created_task( self, QMessageBox, 
+        key_permission , area_done_dicc , row_idx , path_ls ,row_idx_crea_templa = hlp_manager.check_created_task( self, QMessageBox, 
                                                                                                         gs ,area, item_na )
         if key_permission:
             assign_name = str(self.ui.comboBuser_4_assign.currentText())
@@ -184,11 +183,11 @@ class TaskCreationPanel(QMainWindow):
             assetType = str(self.ui.comboB_asset_type.currentText())
             assign_user_id = self.dicc_users_id [ assign_name ]
             if str( self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim'] ) != str( area ):
-                goo_colum , value_ls = hlp.jira_creation_task_issue( self, QMessageBox ,de.issue_type_task, 
+                goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox ,de.issue_type_task, 
                                                                     assign_user_id , item_na , area , area_done_dicc ,
                                                                     path_ls , anim_asset, assetType )
                 item_area_path = self.create_template_and_submit( item_na , area , anim_asset , row_idx)
-                hlp.set_new_values_on_sheet( self , gs , QMessageBox , area, goo_colum , value_ls, row_idx  )
+                hlp_manager.set_new_values_on_sheet( self , gs , QMessageBox , area, goo_colum , value_ls, row_idx  )
                 if item_area_path != None :
                     QMessageBox.information( self, u'Done', item_area_path + '   created!'  )
             else:
@@ -212,14 +211,14 @@ class TaskCreationPanel(QMainWindow):
             anim_char = str(self.ui.comboB_asset_on_anim_tag.currentText())
         else:
             anim_char = ''
-        key_permission , area_done_dicc , row_idx , path_ls , row_idx_crea_templa = hlp.check_created_task( self, QMessageBox,
+        key_permission , area_done_dicc , row_idx , path_ls , row_idx_crea_templa = hlp_manager.check_created_task( self, QMessageBox,
                                                                                                         gs, area, item_na  )
         if key_permission:
             if ' ' not in issue_key:
                 area_done_dicc[ area ] = issue_key
-                label_ls , goo_colum , value_ls = hlp.define_main_item_vars( self, area , str(self.ui.comboB_asset_on_anim_tag.currentText()), item_na  , area_done_dicc , path_ls)
-                hlp.set_issue_label( self,  QMessageBox ,label_ls, issue_key , self.jira_m )
-                hlp.set_new_values_on_sheet(  self , gs, QMessageBox ,area, goo_colum , value_ls, row_idx  )
+                label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( self, area , str(self.ui.comboB_asset_on_anim_tag.currentText()), item_na  , area_done_dicc , path_ls)
+                hlp_ji.set_issue_label( self,  QMessageBox ,label_ls, issue_key , self.jira_m )
+                hlp_manager.set_new_values_on_sheet(  self , gs, QMessageBox ,area, goo_colum , value_ls, row_idx  )
                 QMessageBox.information(self, u'Done', 'Issue:  '+ issue_key +'   tagged. ' )
             else:
                 QMessageBox.information(self, u'Issue key error', 'Check you have not spaces on issue key text. ' )
@@ -243,11 +242,11 @@ class TaskCreationPanel(QMainWindow):
 
     def create_template_and_submit( self, item_na , area , anim_asset , row_idx ):
         assetType = str( self.ui.comboB_asset_type.currentText() )
-        type, anim_ass_fullpath, template_full_path, item_area_full_path , item_depot_path = hlp.item_path_builder(
+        type, anim_ass_fullpath, template_full_path, item_area_full_path , item_depot_path = hlp_manager.item_path_builder(
                                 self, item_na , area , anim_asset , assetType )
         if str( self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim'] ) != str( area ):
             perf = pr.PerforceRequests()
-            hlp.copy_and_submit( self, self.PROJ_SETTINGS, QMessageBox , perf ,  template_full_path , item_area_full_path , area ,
+            hlp_manager.copy_and_submit( self, self.PROJ_SETTINGS, QMessageBox , perf ,  template_full_path , item_area_full_path , area ,
                                 item_na  , type , anim_ass_fullpath )
             return item_area_full_path
         else:

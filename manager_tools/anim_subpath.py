@@ -12,33 +12,28 @@ except Exception as err:
     from PySide2.QtGui import *
     from PySide2.QtWidgets import *
 import shutil
-try:
-    import importlib
-except Exception:
-    pass
+
+from importlib import reload
+
 import google_conn.google_sheet_request as gs
 import jira_conn.jira_queries as jq
 import definitions as de
 import helper as hlp
+import jira_conn.hlp_jira as hlp_ji
+import perforce_conn.hlp_perf as hlp_perf
+import manager_tools.hlp_manager as hlp_manager
 import enviroment as ev
 import perforce_conn.perforce_requests as pr
-#import task_creation_panel as tc
-try:
-    reload(gs)
-    reload(jq)
-    reload(de)
-    reload(hlp)
-    reload(ev)
-    reload(pr)
-    #reload(tc)
-except Exception:
-    importlib.reload(gs)
-    importlib.reload(jq)
-    importlib.reload(de)
-    importlib.reload(hlp)
-    importlib.reload(ev)
-    importlib.reload(pr) 
-    #importlib.reload(tc) 
+
+reload(gs)
+reload(jq)
+reload(de)
+reload(hlp)
+reload(ev)
+reload(pr)
+reload(hlp_ji)
+reload(hlp_perf)
+reload(hlp_manager)
 
 class AnimSubPath( QMainWindow ):
     def __init__( self, anim_na = '' , area = '' , anim_asset = '' , signal= '', row_idx = None, 
@@ -63,12 +58,12 @@ class AnimSubPath( QMainWindow ):
         """Initializing functions, var and features.
         """
         self.jira_m = jq.JiraQueries()
-        self.USER , self.APIKEY, self.PROJECT_KEY  = hlp.load_jira_vars()
-        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE = hlp.load_perf_vars()
-        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp.load_root_vars()
+        self.USER , self.APIKEY, self.PROJECT_KEY  = hlp_ji.load_jira_vars()
+        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE = hlp_perf.load_perf_vars()
+        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         dicc_ = { 'keywordAnim': self.PROJ_SETTINGS['KEYWORDS']['areaAnim']  }
-        self.anim_root = hlp.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
+        self.anim_root = hlp_manager.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         self.ui.lineEdit_anim_root.setText( self.anim_root )
         self.load_qwlist(  self.ui.listWid_lavel1, 0 )
         self.ui.listWid_lavel1.currentItemChanged.connect( lambda: self.    load_qwlist( self.ui.listWid_lavel2 , 1 ))
@@ -127,7 +122,7 @@ class AnimSubPath( QMainWindow ):
         dicc = { 'subpath': subpaths ,'anim_na': anim_na ,
                 'keywordAnim': self.PROJ_SETTINGS['KEYWORDS']['areaAnim'] }
         
-        anim_full_path_fileroot = hlp.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,
+        anim_full_path_fileroot = hlp_manager.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,
                                                 self.PROJ_SETTINGS , dicc_ = dicc)
         self.ui.lab_final_anim_path.setText( anim_full_path_fileroot )
         self.ui.lab_final_anim_path.setStyleSheet("color: rgb( 0, 175 ,0 )")
@@ -149,36 +144,36 @@ class AnimSubPath( QMainWindow ):
         if self.signal == 'create_temp':
             area_done_dicc = self.area_done_dicc
             if 'unknown' == self.row_idx :
-                key_permission , area_done_dicc , row_idx , path_ls , row_idx_crea_templa = hlp.check_created_task( self, 
+                key_permission , area_done_dicc , row_idx , path_ls , row_idx_crea_templa = hlp_manager.check_created_task( self, 
                                                                                     QMessageBox, gs, area, item_na  )
                 if path not in path_ls:
                     path_ls.append( path)
                 self.row_idx = row_idx_crea_templa
-            hlp.set_new_values_on_sheet(  self , gs ,QMessageBox , area,   [ de.GOOGLE_SH_ANI_NA_COL, de.GOOGLE_SH_CREAT_PATH ] ,
+            hlp_manager.set_new_values_on_sheet(  self , gs ,QMessageBox , area,   [ de.GOOGLE_SH_ANI_NA_COL, de.GOOGLE_SH_CREAT_PATH ] ,
                                         [ item_na,    str( path_ls ) ] ,     self.row_idx  )
-            label_ls , goo_colum , value_ls = hlp.define_main_item_vars( self, area , self.anim_asset , item_na , area_done_dicc , path_ls )
+            label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( self, area , self.anim_asset , item_na , area_done_dicc , path_ls )
             label_ls = [ de.item_path+'_'+path ]
-            key = hlp.set_issue_label(  self, QMessageBox , label_ls,  self.issue_key  , self.jira_m  )
+            key = hlp_ji.set_issue_label(  self, QMessageBox , label_ls,  self.issue_key  , self.jira_m  )
             return key
         elif self.signal == 'create_full_task':
             if path not in self.path_ls:
                 self.path_ls.append( path)
-            goo_colum , value_ls = hlp.jira_creation_task_issue( self, QMessageBox , de.issue_type_task  , self.assign_user_id , item_na , area , self.area_done_dicc , self.path_ls , self.anim_asset )
-            hlp.set_new_values_on_sheet( self , gs , QMessageBox , area, goo_colum , value_ls, self.row_idx  )
+            goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox , de.issue_type_task  , self.assign_user_id , item_na , area , self.area_done_dicc , self.path_ls , self.anim_asset )
+            hlp_manager.set_new_values_on_sheet( self , gs , QMessageBox , area, goo_colum , value_ls, self.row_idx  )
         return True
         
     def done( self ):
         item_area_full_path_depot = str( self.ui.lab_final_anim_path.text() )
         item_area_full_path = str( self.ui.lab_final_anim_path.text() )
-        item_area_full_path = hlp.transform_given_path( item_area_full_path, 'local' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
+        item_area_full_path = hlp_perf.transform_given_path( item_area_full_path, 'local' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
         type = de.issue_type_anim
         dicc = { 'ass_na' : self.anim_asset }
-        anim_asset_fullpath = hlp.solve_path( 'local', 'Rig_Ass_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
-        template_full_path = hlp.solve_path( 'local', 'AnimRigPath_template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS )
+        anim_asset_fullpath = hlp_manager.solve_path( 'local', 'Rig_Ass_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
+        template_full_path = hlp_manager.solve_path( 'local', 'AnimRigPath_template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS )
         perf = pr.PerforceRequests()
         key = self.signal_action(  self.area, item_area_full_path_depot, self.anim_na )
         if key :
-            hlp.copy_and_submit( self, self.PROJ_SETTINGS, QMessageBox , perf ,  template_full_path , item_area_full_path , 
+            hlp_manager.copy_and_submit( self, self.PROJ_SETTINGS, QMessageBox , perf ,  template_full_path , item_area_full_path , 
                                 self.area , self.anim_na  , type , anim_asset_fullpath  )
         self.ui.close()
         QMessageBox.information( self, u'Done', item_area_full_path + '   created!'  )

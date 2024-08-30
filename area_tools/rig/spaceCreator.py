@@ -1,7 +1,7 @@
 import maya.cmds as cmds
-import importlib
+from importlib import reload
 import parent_to_tool as p2t
-importlib.reload( p2t )
+reload( p2t )
 
 def nullOffsetCreator(target,sources):
     addOffsetNull("Null_" + target)

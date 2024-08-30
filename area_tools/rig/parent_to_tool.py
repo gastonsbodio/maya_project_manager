@@ -4,9 +4,9 @@
     before executing, select first, the target ( control to parent to), and after that, all the sources ( objects to be parented with)
 """
 
-#import importlib
+#from importlib import reload
 #import parent_to_tool as p2t
-#importlib.reload(p2t)
+#reload(p2t)
 #p2t.do_parenting_thing('parent')
 
 import os
@@ -113,9 +113,9 @@ def script_job_matcher( cnt ):
     cmds.scriptJob( attributeChange=[ control+'.'+ATTR_NA , partial( match_control, control  ) ] )
 
 def create_script_node( cnt_na ):
-    script =          "import importlib;"
+    script =          "from importlib import reload;"
     script = script + "import parent_to_tool as p2t;"
-    script = script + "importlib.reload(p2t);"
+    script = script + "reload(p2t);"
     script = script + "p2t.script_job_matcher( '%s' )" %cnt_na
     nodeName = cmds.scriptNode( st=2, bs= 'python( "%s" );'%script , n = cnt_na+'matcher')
 

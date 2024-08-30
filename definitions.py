@@ -103,6 +103,7 @@ CHECK_ANIM_LS = [ anim , maya , fbx , unreal ]
 
 THUMB_IDX = 0
 ITEM_NA_IDX = 1
+ITEMTYPE_IDX = 2
 AREA_IDX = 3
 TITLE_IDX = 4
 STATUS_IDX = 7
@@ -117,6 +118,7 @@ height_anim_ch_row = 20
 open_fi_fol = 'explore file dir'
 dowload_fi_perf = 'get file from depot'
 do_thumb = 'do thumbnail'
+snip_thumb = 'sniping thumbnail'
 get_thumb = 'get thumbnail from depot'
 
 ## perforce vars

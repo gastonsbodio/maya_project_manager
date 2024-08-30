@@ -2,17 +2,15 @@ import sys
 import os
 import definitions as de
 import helper as hlp
+import google_conn.hlp_goo as hlp_goo
 import time
-try:
-    import importlib
-except Exception:
-    pass
-try:
-    reload( de )
-    reload( hlp )
-except Exception:
-    importlib.reload( de )
-    importlib.reload( hlp )
+
+from importlib import reload
+
+reload( de )
+reload( hlp )
+reload(hlp_goo)
+
 if de.PY_PACK_MOD not in sys.path:
     sys.path.append( de.PY_PACK_MOD )
 if de.PY2_PACKAGES not in sys.path:
@@ -37,7 +35,7 @@ class GoogleSheetRequests():
             [dicc]: [dicc with master user and pass]
         """
         line = '%s  = sheet.get_all_records()\n' %de.dicc_ji_result
-        file_content = hlp.write_goo_sheet_request ( line , True, 'google_sheet_query.json',
+        file_content = hlp_goo.write_goo_sheet_request ( line , True, 'google_sheet_query.json',
                                                     de.GOOGLE_SHET_DATA_NA , 'Sheet1' )
         hlp.create_python_file ( 'google_sheet_query', file_content )
         hlp.run_py_stand_alone( 'google_sheet_query' )
@@ -53,7 +51,7 @@ class GoogleSheetRequests():
             [dicc]: [dicc with master user and pass]
         """
         line = '%s  = sheet.get_all_records()\n' %de.ls_result
-        file_content = hlp.write_goo_sheet_request ( line , True, 'custom_google_doc.json',
+        file_content = hlp_goo.write_goo_sheet_request ( line , True, 'custom_google_doc.json',
                                                     google_sheet_doc_na, google_sheet_num )
         hlp.create_python_file ( 'custom_google_doc', file_content )
         hlp.run_py_stand_alone( 'custom_google_doc' )
@@ -75,7 +73,7 @@ class GoogleSheetRequests():
         line =  line + tab + '                break\n'
         line =  line + tab + '        num = %s + 2 \n' %int( rowIdx )
         line =  line + tab + '        sheet.update_acell( letCol + str( num ), %s[i] )\n' %str( new_value_ls )
-        file_content = hlp.write_goo_sheet_request ( line , True, 'edit_goo_sh_cell.json',
+        file_content = hlp_goo.write_goo_sheet_request ( line , True, 'edit_goo_sh_cell.json',
                                                     google_sheet_doc_na, google_sheet_num )
         hlp.create_python_file ( 'edit_goo_sh_cell', file_content )
         hlp.run_py_stand_alone( 'edit_goo_sh_cell' )
@@ -231,7 +229,7 @@ class GoogleDriveQuery():
         """
         SCRIPT_FOL = USER_DOC + "\\prod_manager\\jira_manager"
         sys.path.append( SCRIPT_FOL )
-        file_content = hlp.write_googld_func ( 'update_tools', '', False)
+        file_content = hlp_goo.write_googld_func ( 'update_tools', '', False)
         hlp.create_python_file ('update_tools', file_content)
         hlp.run_py_stand_alone( 'update_tools', True)
 
@@ -574,7 +572,7 @@ class GoogleDriveQuery():
                     hora = time.ctime(os.path.getmtime(local_file_path))
                     hora = hora.split(" ")[-2]
                     fechaLocalFi = fecha + "T" + hora
-                    return hlp.is_local_fi_mod( fechaLocalFi , fechaModGoogFi )
+                    return hlp_goo.is_local_fi_mod( fechaLocalFi , fechaModGoogFi )
             else:
                 return False
         else:

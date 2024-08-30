@@ -13,10 +13,10 @@
 ####SCRIPT_FOL = USER_DOC + "\\prod_manager\\jira_manager"
 ####sys.path.append(SCRIPT_FOL)
 ####
-####import importlib
+####from importlib import reload
 ####import manager_tools.jira_project_manager as jiraM
 ####
-####importlib.reload( jiraM )
+####reload( jiraM )
 ####widget = jiraM.MyMainWindow()
 ####widget.ui.show()
 
@@ -30,34 +30,31 @@ from PySide2 import QtCore
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-try:
-	import importlib
-except Exception:
-    pass
+
+from importlib import reload
+
 import google_conn.google_sheet_request as gs
 import jira_conn.jira_queries as jq
 import definitions as de
 import helper as hlp
+import jira_conn.hlp_jira as hlp_ji
+import perforce_conn.hlp_perf as hlp_perf
+import manager_tools.hlp_manager as hlp_manager
 import perforce_conn.perforce_requests as pr
 import enviroment as ev
 import manager_tools.comments_app as comm
-try:
-    reload(gs)
-    reload(jq)
-    reload(de)
-    reload(hlp)
-    reload(pr)
-    reload(ev)
-    reload(comm)
-except Exception as err:
-    print (err)
-    importlib.reload(gs)
-    importlib.reload(jq)
-    importlib.reload(de)
-    importlib.reload(hlp)
-    importlib.reload(pr) 
-    importlib.reload(ev) 
-    importlib.reload(comm) 
+
+reload(gs)
+reload(jq)
+reload(de)
+reload(hlp)
+reload(hlp_ji)
+reload(hlp_perf)
+reload(hlp_manager)
+reload(pr)
+reload(ev)
+reload(comm)
+
 
 class MyMainWindow(QMainWindow):
     def __init__(self):
@@ -73,11 +70,11 @@ class MyMainWindow(QMainWindow):
         """
         #self.get_master_creds()
         self.jira_m = jq.JiraQueries()
-        self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp.load_jira_vars()
-        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp.load_perf_vars()
-        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp.load_root_vars()
+        self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp_ji.load_jira_vars()
+        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp_perf.load_perf_vars()
+        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.load_project_combo()
-        hlp.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
+        hlp_manager.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
         self.set_roots()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         self.ui.comboB_projects.currentIndexChanged.connect(lambda: self.jira_combo_change_ac(1))
@@ -182,7 +179,7 @@ class MyMainWindow(QMainWindow):
     def jira_login_action(self):
         self.jira_combo_change_ac( 2 )
         self.load_project_combo()
-        hlp.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
+        hlp_manager.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
         QMessageBox.information(self, u'', "Jira login\n settings done"  )
         
     def jira_combo_change_ac(self, signal):
@@ -192,7 +189,7 @@ class MyMainWindow(QMainWindow):
         """
         dicc = hlp.json2dicc_load( de.TEMP_FOL+de.LOGIN_METADATA_FI_NA )
         if dicc!={}:
-            self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER = hlp.load_jira_vars()
+            self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER = hlp_ji.load_jira_vars()
         else:
             dicc['project'] = 'None'
             dicc['emailAddress'] = 'None'
@@ -228,7 +225,7 @@ class MyMainWindow(QMainWindow):
             dicc['perf_workspace'] = 'None'
             dicc['perf_pass'] = 'None'
         else:
-            self.PERF_USER ,self.PERF_SERVER ,self.PERF_WORKSPACE, self.PERF_PASS = hlp.load_perf_vars()
+            self.PERF_USER ,self.PERF_SERVER ,self.PERF_WORKSPACE, self.PERF_PASS = hlp_perf.load_perf_vars()
         if signal == 1:
             dicc['perf_user'] = str(self.ui.lineEd_perforce_user.text() )
             self.PERF_USER = dicc['perf_user']
@@ -253,9 +250,9 @@ class table_features( ):#QWidget ):
     """
     def __init__( self ,  table_assetsTasks , table_animTasks ,  main_widg = None ):
         self.jira_m = jq.JiraQueries()
-        self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER  = hlp.load_jira_vars()
-        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE, self.PERF_PASS = hlp.load_perf_vars()
-        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp.load_root_vars()
+        self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER  = hlp_ji.load_jira_vars()
+        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE, self.PERF_PASS = hlp_perf.load_perf_vars()
+        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         self.main_widg = main_widg
         self.table_assetsTasks = table_assetsTasks
@@ -266,9 +263,9 @@ class table_features( ):#QWidget ):
 
     def thumb_local_path_item( self , task, HEADER_LS ):
         if HEADER_LS [de.ITEM_NA_IDX ] == de.asset_na:
-            asset_type = hlp.asset_type_extract ( task [ de.item_path ] , self.PROJ_SETTINGS )
+            asset_type = hlp_manager.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
             dicc = { 'ass_na' : task[ de.asset_na ], 'assType': asset_type  }
-            item_thumb_path = hlp.solve_path( 'local', 'Ass_Thumb_Path' , self.LOCAL_ROOT , 
+            item_thumb_path = hlp_manager.solve_path( 'local', 'Ass_Thumb_Path' , self.LOCAL_ROOT , 
                                         self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc )
         elif HEADER_LS [de.ITEM_NA_IDX ] == de.ani_na:
             local_full_path, depot_full_path = self.get_anim_path(  task[ de.ani_na ], self.tasks_ls_ani_diccs )
@@ -282,13 +279,13 @@ class table_features( ):#QWidget ):
         Args:
             table ([qtablewid]): [description]
         """
-        self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER = hlp.load_jira_vars()
-        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE, self.PERF_PASS = hlp.load_perf_vars()
-        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp.load_root_vars()
+        self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER = hlp_ji.load_jira_vars()
+        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE, self.PERF_PASS = hlp_perf.load_perf_vars()
+        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         table.clear()
         if True :#try:
-            tasks_ls_diccs = hlp.get_self_tasks( self, QMessageBox , area_ls )
+            tasks_ls_diccs = hlp_ji.get_self_tasks( self, QMessageBox , area_ls )
             if self.PROJ_SETTINGS['KEYWORDS']['areaAnim']['anim'] in area_ls:
                 self.tasks_ls_ani_diccs = tasks_ls_diccs
         #except Exception as err:
@@ -473,9 +470,9 @@ class table_features( ):#QWidget ):
         """
         if type == de.asset_na:
             dicc = { 'ass_na': item_na }
-            local_full_path = hlp.solve_path( 'local' , area+'_Ass_Path', self.LOCAL_ROOT,
+            local_full_path = hlp_manager.solve_path( 'local' , area+'_Ass_Path', self.LOCAL_ROOT,
                                                 self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc )
-            depot_full_path = hlp.solve_path( 'depot', area+'_Ass_Path', self.LOCAL_ROOT,
+            depot_full_path = hlp_manager.solve_path( 'depot', area+'_Ass_Path', self.LOCAL_ROOT,
                                                 self.DEPOT_ROOT, '' , self.PROJ_SETTINGS , dicc_ = dicc)
         if type == de.ani_na:
             local_full_path, depot_full_path = self.get_anim_path( item_na, self.tasks_ls_ani_diccs )
@@ -485,7 +482,7 @@ class table_features( ):#QWidget ):
         for task in tasks_ls_ani_diccs:
             if item_na == task[ de.ani_na ]:
                 depot_full_path = task[ de.item_path ]
-                local_full_path = hlp.transform_given_path( depot_full_path, 'local' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
+                local_full_path = hlp_perf.transform_given_path( depot_full_path, 'local' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
                 break
         return local_full_path, depot_full_path
 
@@ -507,19 +504,21 @@ class table_features( ):#QWidget ):
             position ([qposition]): [don t need to be instanced]
         """
         item_na = self.get_text_item_colum( table, de.ITEM_NA_IDX)
-        asset_type = hlp.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
+        asset_type = self.get_text_item_colum( table, de.ITEMTYPE_IDX)
+        #asset_type = hlp_manager.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
         item_path = self.get_text_item_colum( table, de.ITEM_NA_IDX)
         if 'asset' in table.objectName():
             dicc = {'ass_na':item_na, 'assType': asset_type}
-            thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na(    hlp.solve_path( 'local', 'Ass_Thumb_Path', self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS , dicc_ = dicc ))
-            thumbDepotPath, thumb_fi_na = hlp.separate_path_and_na(    hlp.solve_path( 'depot', 'Ass_Thumb_Path' , self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc ))
+            thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'local', 'Ass_Thumb_Path', self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS , dicc_ = dicc ))
+            thumbDepotPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'depot', 'Ass_Thumb_Path' , self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc ))
         elif 'anim' in table.objectName():
             item_thumb_path = self.thumb_local_path_item(  { de.ani_na : item_na } , de.HEADER_ANI_LS )
             thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na( item_thumb_path )
-            thumbDepotPath = hlp.transform_given_path( thumbLocalPath, 'depot' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
+            thumbDepotPath = hlp_perf.transform_given_path( thumbLocalPath, 'depot' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
         menu_thumb = QMenu()
         doThumbnailAc1 = menu_thumb.addAction( de.do_thumb, lambda: self.do_row_thumb( thumbLocalPath, thumb_fi_na, table , de.THUMB_IDX ) )
-        doThumbnailAc2 = menu_thumb.addAction( de.get_thumb , lambda: self.get_thumb_from_depot( thumbDepotPath , thumb_fi_na , table , de.THUMB_IDX) )
+        doThumbnailAc2 = menu_thumb.addAction( de.snip_thumb, lambda: self.do_snip_thumb( thumbLocalPath, thumb_fi_na, table , de.THUMB_IDX ) )
+        doThumbnailAc3 = menu_thumb.addAction( de.get_thumb , lambda: self.get_thumb_from_depot( thumbDepotPath , thumb_fi_na , table , de.THUMB_IDX) )
         actionThumb = menu_thumb.exec_(table.mapToGlobal(position))
 
     def get_thumb_from_depot( self, thumbDepotPath, thumb_fi_na , table , colum_idx ):
@@ -530,7 +529,7 @@ class table_features( ):#QWidget ):
             table ([qtalbe]): [qtable widget]
             colum_idx ([int]): [integer related to the column index]
         """
-        local_path = hlp.transform_given_path( thumbDepotPath, 'local' , self.PROJ_SETTINGS, self.LOCAL_ROOT, self.DEPOT_ROOT)
+        local_path = hlp_perf.transform_given_path( thumbDepotPath, 'local' , self.PROJ_SETTINGS, self.LOCAL_ROOT, self.DEPOT_ROOT)
         try:
             os.remove( local_path+thumb_fi_na )
         except Exception:
@@ -579,6 +578,21 @@ class table_features( ):#QWidget ):
                 QMessageBox.information(self.main_widg, u' ', " Check if current Scene is matching with selected task ")
         except AttributeError: 
             QMessageBox.information(self.main_widg, u' ',  " No Scene Opened ")
+
+    def do_snip_thumb( self, thumbLocalPath, thumb_fi_na, table , de.THUMB_IDX ) :
+        import snipping_tool as st
+        self.windSnip = st.MyWidget(asspath+"/thumbnailPrg_"+assname+".jpg")
+        self.windSnip.show()
+        try:
+            if self.windSnip.exec_():
+                print (' .')
+        except Exception:
+            import qthreadPrg as qsn
+            self.thread_pool = qsn.ThreadPool(max_thread_count=1, json = var_prG + "/snip2ffmpeg.json")  #, json = json
+            self.thread_pool.pool_started.connect(self.thread_Snnip_on_start)
+            self.thread_pool.pool_finished.connect(self.thread_pool_on_finish)
+            self.thread_pool.worker_finished.connect(lambda : self.worker_on_finish('',asspath,assname,shotOrAsset))
+            self.thread_pool.start(1)    
 
     def status_menu_func(self, table, position):
         """Menu on Status column witch change jira issue status.
