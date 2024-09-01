@@ -85,33 +85,33 @@ def solve_path( root_state, key_path, local_root,
     
 
 def go_2_perf_root_path( path, proj_settings , depot_root ):
-    real_dp_fol_root = proj_settings['KEYWORDS']['real_depot_fol_root']
-    mapped_dp_fol_root = proj_settings['KEYWORDS']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYWORDS']['local_fol_root']
+    real_dp_fol_root = proj_settings['KEYW']['real_depot_fol_root']
+    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
+    local_fol_root = proj_settings['KEYW']['local_fol_root']
     path_ = path.replace(    '/'+local_fol_root+'/'  ,    '/'+mapped_dp_fol_root+'/'   )
     new_root = depot_root.split( '/'+real_dp_fol_root )[0]
     path_ = new_root+'/'+mapped_dp_fol_root+'/'+ path_.split( '/'+mapped_dp_fol_root+'/' )[-1]
     return path_
 
 def go_2_local_root_path( path, proj_settings , local_root ):
-    mapped_dp_fol_root = proj_settings['KEYWORDS']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYWORDS']['local_fol_root']
+    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
+    local_fol_root = proj_settings['KEYW']['local_fol_root']
     path_ = path.replace(    '/'+mapped_dp_fol_root+'/'     ,   '/'+local_fol_root+'/'    )
     path_ = local_root+'/'+local_fol_root+'/'+ path_.split( '/'+local_fol_root+'/' )[-1]
     return path_
 
 def fix_perf_mapped_root_path( path, proj_settings ):
-    real_dp_fol_root = proj_settings['KEYWORDS']['real_depot_fol_root']
-    mapped_dp_fol_root = proj_settings['KEYWORDS']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYWORDS']['local_fol_root']
+    real_dp_fol_root = proj_settings['KEYW']['real_depot_fol_root']
+    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
+    local_fol_root = proj_settings['KEYW']['local_fol_root']
     path_ = path.replace(    real_dp_fol_root+'/'+local_fol_root     ,   mapped_dp_fol_root    )
     return path_
 
 
 def get_item_na_label(  area , PROJ_SETTINGS ):
-    if area in list(    PROJ_SETTINGS['KEYWORDS']['areaAssets'].values()    ):
+    if area in list(    PROJ_SETTINGS['KEYW']['areaAssets'].values()    ):
         item_na = de.asset_na
-    elif area  in list(    PROJ_SETTINGS['KEYWORDS']['areaAnim'].values()    ):  
+    elif area  in list(    PROJ_SETTINGS['KEYW']['areaAnim'].values()    ):  
         item_na = de.ani_na
     return item_na
         
@@ -134,9 +134,9 @@ def copy_local_asset_template(  target_path, source_path, target_name , source_n
                         os.path.join( target_path , target_name ) )
     
 def change_reference( PROJ_SETTINGS, full_file_path_2_replace , new_asset_file_rig_name):
-    generic_asset_fileRig_pattern_na = str( PROJ_SETTINGS ['KEYWORDS']['asset_rig_template'] )
-    generic_asset_name = str( PROJ_SETTINGS ['KEYWORDS']['asset_name_template'] )
-    new_asset_name = new_asset_file_rig_name.split(   '_'+str( PROJ_SETTINGS ['KEYWORDS']['areaAssets']['rig'] )  )[0]
+    generic_asset_fileRig_pattern_na = str( PROJ_SETTINGS ['KEYW']['asset_rig_template'] )
+    generic_asset_name = str( PROJ_SETTINGS ['KEYW']['asset_name_template'] )
+    new_asset_name = new_asset_file_rig_name.split(   '_'+str( PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] )  )[0]
     hlp.make_read_writeable( full_file_path_2_replace  )
     with open( full_file_path_2_replace , 'r') as fi:
         fiLinesLsStrings = fi.readlines()
@@ -168,13 +168,13 @@ def copy_and_submit( app, PROJ_SETTINGS, QMessageBox , perf ,template_full_path 
             hlp.make_read_writeable( target_path + target_name  )
         perf_hlp.check_template_exists(  app , QMessageBox , source_path , source_name , perf )
         copy_local_asset_template(  target_path, source_path, target_name , source_name )
-        if str( PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim'] ) == str( area ):
+        if str( PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) == str( area ):
             change_reference(  PROJ_SETTINGS, item_area_full_path , anim_asset_na )
         perf_hlp.perf_task_submit( app, QMessageBox, perf, item_na, area, target_path+target_name , app.PERF_SERVER,
                          app.PERF_USER, app.PERF_WORKSPACE , app.PERF_PASS )
 
 def set_new_values_on_sheet( app, gs , QMessageBox , area , column_ls , value_ls , row_idx ):
-    if area == app.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
+    if area == app.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_anim
     else:
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_asset
@@ -191,7 +191,7 @@ def check_forbiden_char( app, full_word_2_analize, QMessageBox):
     return key_permission
         
 def check_created_task( app , QMessageBox , gs, area, item_na ):
-    if area == app.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
+    if area == app.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
         item_na_colum  = de.GOOGLE_SH_ANI_NA_COL 
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_anim
     else:
@@ -224,27 +224,29 @@ def check_created_task( app , QMessageBox , gs, area, item_na ):
 def item_path_builder( app, item_na , area , anim_asset  , assetType , *arg ):
     projsett = app.PROJ_SETTINGS
     localr = app.LOCAL_ROOT
-    dicc = { 'ass_na' : item_na , 'assType' : assetType }
+    itemTypeAss = projsett['KEYW']['item_types']['asset']
+    dicc = { 'ass_na' : item_na , 'assType' : assetType ,'itemType': itemTypeAss }
     anim_asset_fullpath = ''
-    if str( projsett ['KEYWORDS']['areaAssets']['rig'] ) == str( area ):
+    if str( projsett ['KEYW']['areaAssets']['rig'] ) == str( area ):
         type = de.issue_type_asset
-        if assetType == projsett ['KEYWORDS']['assets_types']['characters']:
-            dicc['areaAssRig'] = projsett ['KEYWORDS']['areaAssets']['rig']
+        if assetType == projsett ['KEYW']['assets_types']['characters']:
+            dicc['areaAssRig'] = projsett ['KEYW']['areaAssets']['rig']
             template_full_path = solve_path( 'local', 'RigTemplateMalePath' , localr,  '', '' ,  projsett, dicc_ = dicc )
         item_area_full_path = solve_path( 'local' , 'Rig_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc)
         item_depot_path = solve_path( 'depot' , 'Rig_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc)
 
-    elif str( projsett ['KEYWORDS']['areaAssets']['mod'] ) == str( area ):
+    elif str( projsett ['KEYW']['areaAssets']['mod'] ) == str( area ):
         type = de.issue_type_asset
-        dicc['areaAssMod'] = projsett ['KEYWORDS']['areaAssets']['mod']
+        dicc['areaAssMod'] = projsett ['KEYW']['areaAssets']['mod']
         template_full_path = solve_path( 'local', 'ModTemplateMalePath' , localr,  '', '' ,  projsett , dicc_ = dicc )
         item_area_full_path = solve_path( 'local' , 'Mod_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc )
         item_depot_path = solve_path( 'depot' , 'Mod_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc )
 
-    elif str( projsett ['KEYWORDS']['areaAnim']['anim'] ) == str( area ):
+    elif str( projsett ['KEYW']['areaAnim']['anim'] ) == str( area ):
         type = de.issue_type_anim
-        character = projsett ['KEYWORDS']['assets_types']['characters']
-        dicc = { 'anim_char' : anim_asset , 'characters' : character }
+        character = projsett ['KEYW']['assets_types']['characters']
+        itemTypeAni = projsett['KEYW']['item_types']['anim']
+        dicc = { 'anim_char' : anim_asset , 'characters' : character ,'itemType': itemTypeAni }
         anim_asset_fullpath = solve_path( 'local', 'AnimRigPath' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         template_full_path = solve_path( 'local', 'AnimRigPath_template' , localr ,  '', '' ,  projsett )
         item_area_full_path = solve_path( 'local' , 'Anim_Root' , localr ,  '', '' ,  projsett )
@@ -264,7 +266,7 @@ def get_area_path_from_path_ls (path_ls, area):
 
 def define_main_item_vars( app, area , anim_asset, item_na , area_done_dicc  , path_ls , assetType):
     type, anim_ass_fullpath, templ_full_path, item_area_full_path , item_depot_path = item_path_builder( app, item_na , area , ''  , assetType ) #
-    if area == app.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
+    if area == app.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
         item_na_prefix = de.ani_na
         item_depot_path = get_area_path_from_path_ls ( path_ls, area )
         if item_depot_path != '':
@@ -284,8 +286,68 @@ def define_main_item_vars( app, area , anim_asset, item_na , area_done_dicc  , p
 
 
 def asset_type_extraction( path , proj_sett ):
-    assets_types_ls = list( proj_sett['KEYWORDS']['assets_types'].values() )
+    assets_types_ls = list( proj_sett['KEYW']['assets_types'].values() )
     for type in assets_types_ls:
         if '/' + type + '/' in path:
             return type
 
+def item_type_extraction( path , proj_sett ):
+    item_types_ls = list( proj_sett['KEYW']['item_types'].values() )
+    for type in item_types_ls:
+        if '/' + type + '/' in path:
+            return type
+        
+def get_path_from_task_ls(name, as_ani_type, task_ls_dicc):
+    for task in task_ls_dicc:
+        if task[de.asset_na] == name :
+            if task[de.assType] == as_ani_type or task[de.aniType] == as_ani_type:
+                return task[de.item_path]
+            
+def line_4_snipping( thumb_full_path , h , w , bucle_fil_na):
+    line =        "app = QApplication(sys.argv)\n"
+    line = line + "windSnip = st.MyWidget( '%s' )\n" %thumb_full_path
+    line = line + "windSnip.show()\n"
+    line = line + "sys.exit(app.exec())\n"
+
+    nircmdPath = de.PY3_PACKAGES +'\\nircmd\\'
+    nircmdFilePath = '%snircmd.exe' %(nircmdPath)
+    path =   thumb_full_path.replace('/','\\') 
+    #linesBat =             '"%s" cmdwait 1500 savescreenshotwin "%s"   beep 1600 500 \n' %( nircmdFilePath, path )
+    linesBat =   'type NUL > "%s%s"\n'%(de.PY_PATH+'\\', bucle_fil_na)
+    linesBat =  linesBat +'"%sffmpeg" -y -i "%s" ' %( nircmdPath, path )
+    linesBat =  linesBat + ' -vf scale=%s:%s "%s" \n' %( str(w) , str(h) , path )
+    linesBat = linesBat + 'del "%s%s"\n'%(de.PY_PATH+'\\', bucle_fil_na)
+    return line, linesBat
+
+#def execute_bat():
+
+def snipping_tool_launch( line, if_result, result_fi_na ):#
+    """.
+    Args:
+        line ([str]): [code line to insert on script]
+        if_result ([Bool]): [if is able a return ending lines]
+        result_fi_na ([str]): [name of file saved with the return result]
+    Returns:
+        [str]: [python script command content formated]
+    """
+    file_content =                   'import sys\n'
+    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content +    'from subprocess import call\n'
+    file_content = file_content +    hlp.ADDITIONAL_LINE_PY3
+    #file_content = file_content +    'reload(de)\n'
+    file_content = file_content +    'sys.path.append( r"%s" )\n'%de.PY3_PACKAGES
+    file_content = file_content +    'from PySide6.QtWidgets import *\n'
+    file_content = file_content +    'import manager_tools.snipping_tool as st\n'
+    file_content = file_content +    'import json\n'
+    file_content = file_content +    '%s = []\n' %de.ls_ji_result
+    file_content = file_content +    'error_ls = []\n'
+    file_content = file_content +     line  + '\n'
+    if if_result:
+        file_content = file_content + de.dicc_ji_result +' = {}\n'
+        file_content = file_content + de.dicc_ji_result + '["'+ de.ls_ji_result +'"] = '+ de.ls_ji_result+'\n'
+        file_content = file_content + de.dicc_ji_result + '["'+ de.key_errors +'"] = str(error_ls)\n'
+        file_content = file_content +'json_object = json.dumps( {dicc_ji_result}, indent = 2 )\n'.format( dicc_ji_result = de.dicc_ji_result ) 
+        file_content = file_content + 'with open( "{path}", "w") as fileFa:\n'.format( path = de.PY_PATH + result_fi_na )
+        file_content = file_content +'    fileFa.write( str(json_object) )\n'
+        file_content = file_content +'    fileFa.close()\n'
+    return file_content

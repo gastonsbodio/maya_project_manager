@@ -9,7 +9,7 @@
 ####dll = ctypes.windll.shell32
 ####buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
 ####if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-####	USER_DOC = buf.value
+####    USER_DOC = buf.value
 ####SCRIPT_FOL = USER_DOC + "\\prod_manager\\jira_manager"
 ####sys.path.append(SCRIPT_FOL)
 ####
@@ -25,6 +25,8 @@ import webbrowser
 import os
 import time
 from threading import Thread
+import subprocess
+si = subprocess.STARTUPINFO()
 from PySide2.QtUiTools import QUiLoader
 from PySide2 import QtCore
 from PySide2.QtGui import *
@@ -90,8 +92,8 @@ class MyMainWindow(QMainWindow):
         self.ui.lineEd_perforce_pass.setEchoMode( QLineEdit.Password )
         self.ui.lineEd_perforce_pass.setText( self.PERF_PASS  )
         self.t_fea = table_features( self.ui.table_assetsTasks , self.ui.table_animTasks , main_widg = self )
-        diccAni =  self.PROJ_SETTINGS['KEYWORDS']['areaAnim'] 
-        diccAss =   self.PROJ_SETTINGS['KEYWORDS']['areaAssets'] 
+        diccAni =  self.PROJ_SETTINGS['KEYW']['areaAnim'] 
+        diccAss =   self.PROJ_SETTINGS['KEYW']['areaAssets'] 
 
         if self.PROJ_SETTINGS != None:
             assetsAreaLs = list(diccAss.values())
@@ -206,8 +208,8 @@ class MyMainWindow(QMainWindow):
             self.APIKEY = str( dicc['apikey'] )
             self.ui.lineEd_apiKey.setText('')
         hlp.metadata_dicc2json( de.TEMP_FOL+de.LOGIN_METADATA_FI_NA , dicc )
-        area_ani_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAnim'].values() )
-        area_ass_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAssets'].values() )
+        area_ani_ls = list( self.PROJ_SETTINGS['KEYW']['areaAnim'].values() )
+        area_ass_ls = list( self.PROJ_SETTINGS['KEYW']['areaAssets'].values() )
         if self.PROJ_SETTINGS != None:
             self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, area_ass_ls , de.HEADER_ASS_LS)
             self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, area_ani_ls  , de.HEADER_ANI_LS)
@@ -264,13 +266,15 @@ class table_features( ):#QWidget ):
     def thumb_local_path_item( self , task, HEADER_LS ):
         if HEADER_LS [de.ITEM_NA_IDX ] == de.asset_na:
             asset_type = hlp_manager.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
-            dicc = { 'ass_na' : task[ de.asset_na ], 'assType': asset_type  }
+            item_type = hlp_manager.item_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
+            dicc = { 'ass_na' : task[ de.asset_na ], 'assType': asset_type  , 'itemType': item_type }
             item_thumb_path = hlp_manager.solve_path( 'local', 'Ass_Thumb_Path' , self.LOCAL_ROOT , 
                                         self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc )
         elif HEADER_LS [de.ITEM_NA_IDX ] == de.ani_na:
             local_full_path, depot_full_path = self.get_anim_path(  task[ de.ani_na ], self.tasks_ls_ani_diccs )
             item_path , item_file = hlp.separate_path_and_na( local_full_path )
-            thumb_sufix = self.PROJ_SETTINGS['KEYWORDS']['item_thumbn_sufix']
+            #item_type = hlp_manager.item_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
+            thumb_sufix = self.PROJ_SETTINGS['KEYW']['item_thumbn_sufix']
             item_thumb_path = item_path + task[ de.ani_na ] + thumb_sufix
         return item_thumb_path
 
@@ -286,8 +290,10 @@ class table_features( ):#QWidget ):
         table.clear()
         if True :#try:
             tasks_ls_diccs = hlp_ji.get_self_tasks( self, QMessageBox , area_ls )
-            if self.PROJ_SETTINGS['KEYWORDS']['areaAnim']['anim'] in area_ls:
+            if self.PROJ_SETTINGS['KEYW']['areaAnim']['anim'] in area_ls:
                 self.tasks_ls_ani_diccs = tasks_ls_diccs
+            elif self.PROJ_SETTINGS['KEYW']['areaAssets']['rig'] in area_ls:
+                self.tasks_ls_ass_diccs = tasks_ls_diccs
         #except Exception as err:
         #    print ( err )
         #    print ( 'try warning error getting tasks')
@@ -404,8 +410,8 @@ class table_features( ):#QWidget ):
         """Refresh given tables
         """
         id_rows_dicc_ls = [    self.id_rows_ass ,   self.id_rows_ani    ]
-        area_ass_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAssets'].values() )
-        area_ani_ls = list( self.PROJ_SETTINGS['KEYWORDS']['areaAnim'].values() )
+        area_ass_ls = list( self.PROJ_SETTINGS['KEYW']['areaAssets'].values() )
+        area_ani_ls = list( self.PROJ_SETTINGS['KEYW']['areaAnim'].values() )
         area_ls_ls = [ area_ass_ls , area_ani_ls ]
         HEADER_LS_ls = [ de.HEADER_ASS_LS, de.HEADER_ANI_LS]
         for idx, table in enumerate([ self.table_assetsTasks, self.table_animTasks ]):
@@ -469,16 +475,26 @@ class table_features( ):#QWidget ):
             [tuple]: [return to arg as touple format: local full path and perforce repo full path]
         """
         if type == de.asset_na:
-            dicc = { 'ass_na': item_na }
+            asset_type = self.get_text_item_colum( self.table_assetsTasks, de.ITEMTYPE_IDX)
+            item_path = hlp_manager.get_path_from_task_ls ( item_na, asset_type, self.tasks_ls_ass_diccs )
+            itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
+            key_area = hlp.get_matching_key( self.PROJ_SETTINGS['KEYW']['areaAssets'], area )
+            area_ass = self.PROJ_SETTINGS['KEYW']['areaAssets'][key_area]
+            dicc = { 'ass_na': item_na , 'itemType': itemt_type  , 'assType': asset_type ,
+                    'areaAss'+area: area_ass}
             local_full_path = hlp_manager.solve_path( 'local' , area+'_Ass_Path', self.LOCAL_ROOT,
                                                 self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc )
             depot_full_path = hlp_manager.solve_path( 'depot', area+'_Ass_Path', self.LOCAL_ROOT,
                                                 self.DEPOT_ROOT, '' , self.PROJ_SETTINGS , dicc_ = dicc)
         if type == de.ani_na:
+            anim_type = self.get_text_item_colum( self.table_animTasks, de.ITEMTYPE_IDX)
+            item_path = hlp_manager.get_path_from_task_ls ( item_na, anim_type, self.tasks_ls_ani_diccs )
+            itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
             local_full_path, depot_full_path = self.get_anim_path( item_na, self.tasks_ls_ani_diccs )
         return local_full_path, depot_full_path
 
     def get_anim_path( self, item_na, tasks_ls_ani_diccs ):
+        #item_type = hlp_manager.item_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
         for task in tasks_ls_ani_diccs:
             if item_na == task[ de.ani_na ]:
                 depot_full_path = task[ de.item_path ]
@@ -505,10 +521,10 @@ class table_features( ):#QWidget ):
         """
         item_na = self.get_text_item_colum( table, de.ITEM_NA_IDX)
         asset_type = self.get_text_item_colum( table, de.ITEMTYPE_IDX)
-        #asset_type = hlp_manager.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
-        item_path = self.get_text_item_colum( table, de.ITEM_NA_IDX)
+        item_path = hlp_manager.get_path_from_task_ls ( item_na, asset_type, self.tasks_ls_ass_diccs )
+        itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
         if 'asset' in table.objectName():
-            dicc = {'ass_na':item_na, 'assType': asset_type}
+            dicc = {'ass_na':item_na, 'assType': asset_type, 'itemType' : itemt_type}
             thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'local', 'Ass_Thumb_Path', self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS , dicc_ = dicc ))
             thumbDepotPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'depot', 'Ass_Thumb_Path' , self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc ))
         elif 'anim' in table.objectName():
@@ -579,20 +595,58 @@ class table_features( ):#QWidget ):
         except AttributeError: 
             QMessageBox.information(self.main_widg, u' ',  " No Scene Opened ")
 
-    def do_snip_thumb( self, thumbLocalPath, thumb_fi_na, table , de.THUMB_IDX ) :
-        import snipping_tool as st
-        self.windSnip = st.MyWidget(asspath+"/thumbnailPrg_"+assname+".jpg")
-        self.windSnip.show()
+    def thumbnail_snip_cmd( self, thumbLocalPath, thumb_fi_na, h , w , bucle_fi_na) :
+        
+        line, lineBat = hlp_manager.line_4_snipping( thumbLocalPath + thumb_fi_na , h , w , bucle_fi_na)
+        file_content = hlp_manager.snipping_tool_launch( line , True, 'snipping_featue.json' )
+        hlp.create_python_file ( 'snipping_featue', file_content )
+        hlp.run_py_stand_alone( 'snipping_featue', with_console = False , extraLine= lineBat)
+        #while not os.path.isfile ( thumbLocalPath + thumb_fi_na ):
+        #    time.sleep(0.1)
+
+    def do_snip_thumb( self, thumbLocalPath, thumb_fi_na, table , THUMB_IDX ) :
+        """Creates thumbnail sniping tool sourcing screen images
+        Args:
+            thumbMediaPath ([str]): [thumb path]
+            thumb_fi_na ([str]): [thumb file name]
+            table ([qtalbe]): [qtable widget]
+            colum_idx ([int]): [integer related to the column index]
+        """
+        perf = pr.PerforceRequests()
         try:
-            if self.windSnip.exec_():
-                print (' .')
-        except Exception:
-            import qthreadPrg as qsn
-            self.thread_pool = qsn.ThreadPool(max_thread_count=1, json = var_prG + "/snip2ffmpeg.json")  #, json = json
-            self.thread_pool.pool_started.connect(self.thread_Snnip_on_start)
-            self.thread_pool.pool_finished.connect(self.thread_pool_on_finish)
-            self.thread_pool.worker_finished.connect(lambda : self.worker_on_finish('',asspath,assname,shotOrAsset))
-            self.thread_pool.start(1)    
+            perf.checkout_file( thumbLocalPath+thumb_fi_na , self.PERF_SERVER,
+                               self.PERF_USER, self.PERF_WORKSPACE , self.PERF_PASS )
+            hlp.make_read_writeable( thumbLocalPath+thumb_fi_na )
+            os.remove( thumbLocalPath+thumb_fi_na )
+        except Exception as er:
+            print(er)
+        bucle_fi_na = 'EmptyFile.txt'
+        full_path_bucle_fi = os.path.join (de.PY_PATH.replace('\\','/'),bucle_fi_na)
+        self.thumbnail_snip_cmd( thumbLocalPath, thumb_fi_na, de.height_as_thum, de.width_as_thum , bucle_fi_na)
+        time.sleep(0.1)
+        while os.path.isfile ( full_path_bucle_fi ):
+            time.sleep(0.1)
+        label_thumb = getThumbnClass( None, thumbLocalPath+thumb_fi_na,  (de.width_as_thum , de.height_as_thum)   )
+        table.setCellWidget(table.currentRow(), THUMB_IDX, label_thumb )
+        comment='new thumbnail created'
+        full_path = os.path.join (thumbLocalPath, thumb_fi_na)
+        dicc = perf.add_and_submit( full_path, comment , self.PERF_SERVER,
+                                   self.PERF_USER, self.PERF_WORKSPACE , self.PERF_PASS )
+        if dicc[de.key_errors] != '[]':
+            QMessageBox.information(self.main_widg, u' ', str(dicc[de.key_errors]))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def status_menu_func(self, table, position):
         """Menu on Status column witch change jira issue status.
@@ -660,32 +714,32 @@ class getThumbnClass(QLabel):
 
 
 if str(sys.version).startswith('2'): #ThreadReturnPy2
-	class ThreadReturn(Thread):
-		def __init__(self, group=None, target=None, name=None,args=(), kwargs={}, Verbose=None):
-			Thread.__init__(self, group, target, name, args, kwargs) #, Verbose
-			self._return = None
-		def run(self):
-			try:
-				print (self._Thread__target)
-			except Exception:
-				self._Thread__target = None
-			if self._Thread__target is not None:
-				self._return = self._Thread__target(*self._Thread__args,
-												   **self._Thread__kwargs)
-		def join(self):
-			Thread.join(self)
-			return self._return
+    class ThreadReturn(Thread):
+        def __init__(self, group=None, target=None, name=None,args=(), kwargs={}, Verbose=None):
+            Thread.__init__(self, group, target, name, args, kwargs) #, Verbose
+            self._return = None
+        def run(self):
+            try:
+                print (self._Thread__target)
+            except Exception:
+                self._Thread__target = None
+            if self._Thread__target is not None:
+                self._return = self._Thread__target(*self._Thread__args,
+                                                   **self._Thread__kwargs)
+        def join(self):
+            Thread.join(self)
+            return self._return
 
 elif str(sys.version).startswith('3'):
-	class ThreadReturn(Thread): #ThreadReturnPy3
-		def __init__(self, group=None, target=None, name=None,
-					args=(), kwargs={}, Verbose=None):
-			Thread.__init__(self, group, target, name, args, kwargs)
-			self._return = None
-		def run(self):
-			if self._target is not None:
-				self._return = self._target(*self._args,
-													**self._kwargs)
-		def join(self, *args):
-			Thread.join(self, *args)
-			return self._return
+    class ThreadReturn(Thread): #ThreadReturnPy3
+        def __init__(self, group=None, target=None, name=None,
+                    args=(), kwargs={}, Verbose=None):
+            Thread.__init__(self, group, target, name, args, kwargs)
+            self._return = None
+        def run(self):
+            if self._target is not None:
+                self._return = self._target(*self._args,
+                                                    **self._kwargs)
+        def join(self, *args):
+            Thread.join(self, *args)
+            return self._return

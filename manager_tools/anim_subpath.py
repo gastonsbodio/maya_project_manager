@@ -62,7 +62,7 @@ class AnimSubPath( QMainWindow ):
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        dicc_ = { 'keywordAnim': self.PROJ_SETTINGS['KEYWORDS']['areaAnim']  }
+        dicc_ = { 'keywordAnim': self.PROJ_SETTINGS['KEYW']['areaAnim']  }
         self.anim_root = hlp_manager.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         self.ui.lineEdit_anim_root.setText( self.anim_root )
         self.load_qwlist(  self.ui.listWid_lavel1, 0 )
@@ -120,7 +120,7 @@ class AnimSubPath( QMainWindow ):
 
     def get_final_path (self, subpaths , anim_na):
         dicc = { 'subpath': subpaths ,'anim_na': anim_na ,
-                'keywordAnim': self.PROJ_SETTINGS['KEYWORDS']['areaAnim'] }
+                'keywordAnim': self.PROJ_SETTINGS['KEYW']['areaAnim'] }
         
         anim_full_path_fileroot = hlp_manager.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,
                                                 self.PROJ_SETTINGS , dicc_ = dicc)

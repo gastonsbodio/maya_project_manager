@@ -87,7 +87,7 @@ class TaskCreationPanel(QMainWindow):
 
     def item_area_tag_combo_change_action(self):
         selection = str(self.ui.comboB_item_area_tag.currentText())
-        if selection == self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
+        if selection == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
             self.load_combo_item_na( self.anim_tracked_ls_diccs, de.GOOGLE_SH_ANI_NA_COL, self.ui.comboB_item_names )
             self.ui.comboB_asset_on_anim_tag.setEnabled( True )
             self.ui.lab_asset_anim_tag.setEnabled( True )
@@ -104,7 +104,7 @@ class TaskCreationPanel(QMainWindow):
         self.ui.lab_asset_anim.setEnabled( False )
 
     def issue_type_combo_change_action(self):
-        if str(self.ui.comboB_item_area.currentText()) == self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim'] :
+        if str(self.ui.comboB_item_area.currentText()) == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] :
             self.ui.comboB_asset_on_anim.setEnabled( True )
             self.ui.lab_asset_anim.setEnabled( True )
         else:
@@ -138,8 +138,8 @@ class TaskCreationPanel(QMainWindow):
         """populate area combob.
         """
         if self.PROJ_SETTINGS != None: 
-            list_ = [     self.PROJ_SETTINGS ['KEYWORDS']['areaAssets']['mod']   ,    self.PROJ_SETTINGS ['KEYWORDS']['areaAssets']['rig']    ,
-                        self.PROJ_SETTINGS ['KEYWORDS']['areaAssets']['text']    ,  self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']   ]
+            list_ = [     self.PROJ_SETTINGS ['KEYW']['areaAssets']['mod']   ,    self.PROJ_SETTINGS ['KEYW']['areaAssets']['rig']    ,
+                        self.PROJ_SETTINGS ['KEYW']['areaAssets']['text']    ,  self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']   ]
             self.ui.comboB_item_area_tag.clear()
             self.ui.comboB_item_area.clear()
             for item in list_:
@@ -149,7 +149,7 @@ class TaskCreationPanel(QMainWindow):
     def load_asset_type_combo(self):
         """populate area combob.
         """
-        assets_types_ls = list( self.PROJ_SETTINGS['KEYWORDS']['assets_types'].values() )
+        assets_types_ls = list( self.PROJ_SETTINGS['KEYW']['assets_types'].values() )
         self.ui.comboB_asset_type.clear()
         self.ui.comboB_asset_type_tag.clear()
         for item in assets_types_ls:
@@ -182,7 +182,7 @@ class TaskCreationPanel(QMainWindow):
             anim_asset = str(self.ui.comboB_asset_on_anim.currentText())
             assetType = str(self.ui.comboB_asset_type.currentText())
             assign_user_id = self.dicc_users_id [ assign_name ]
-            if str( self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim'] ) != str( area ):
+            if str( self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) != str( area ):
                 goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox ,de.issue_type_task, 
                                                                     assign_user_id , item_na , area , area_done_dicc ,
                                                                     path_ls , anim_asset, assetType )
@@ -207,7 +207,7 @@ class TaskCreationPanel(QMainWindow):
     def tag_issue(self):
         issue_key = str( self.ui.lineEd_issue_key.text() )
         item_na, area = self.get_asset_na_and_area()
-        if area == self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
+        if area == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
             anim_char = str(self.ui.comboB_asset_on_anim_tag.currentText())
         else:
             anim_char = ''
@@ -244,7 +244,7 @@ class TaskCreationPanel(QMainWindow):
         assetType = str( self.ui.comboB_asset_type.currentText() )
         type, anim_ass_fullpath, template_full_path, item_area_full_path , item_depot_path = hlp_manager.item_path_builder(
                                 self, item_na , area , anim_asset , assetType )
-        if str( self.PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim'] ) != str( area ):
+        if str( self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) != str( area ):
             perf = pr.PerforceRequests()
             hlp_manager.copy_and_submit( self, self.PROJ_SETTINGS, QMessageBox , perf ,  template_full_path , item_area_full_path , area ,
                                 item_na  , type , anim_ass_fullpath )
