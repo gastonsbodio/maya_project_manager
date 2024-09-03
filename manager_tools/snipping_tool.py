@@ -2,8 +2,8 @@ import sys, os
 import definitions as de
 from importlib import reload
 reload(de)
-if de.SCRIPT_FOL not in sys.path:
-    sys.path.append( de.SCRIPT_FOL )
+if de.SCRIPT_MANAG_FOL not in sys.path:
+    sys.path.append( de.SCRIPT_MANAG_FOL )
 if de.PY3_PACKAGES not in sys.path:
     sys.path.append(de.PY3_PACKAGES)
 #try:
@@ -60,7 +60,7 @@ class MyWidget(QWidget):
         y2 = max(self.begin.y(), self.end.y())
         img = ImageGrab.grab(bbox=(x1, y1, x2, y2))
         img.save(self.capturePath)
-        with open( de.SCRIPT_FOL  + '/snip2ffmpeg.json', 'w') as fi:
+        with open( de.SCRIPT_MANAG_FOL  + '/snip2ffmpeg.json', 'w') as fi:
             fi.write('empty')
             fi.close()
         QApplication.setOverrideCursor(QCursor(QtCore.Qt.ArrowCursor))

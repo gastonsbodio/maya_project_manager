@@ -331,7 +331,7 @@ def snipping_tool_launch( line, if_result, result_fi_na ):#
         [str]: [python script command content formated]
     """
     file_content =                   'import sys\n'
-    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
     file_content = file_content +    'from subprocess import call\n'
     file_content = file_content +    hlp.ADDITIONAL_LINE_PY3
     #file_content = file_content +    'reload(de)\n'

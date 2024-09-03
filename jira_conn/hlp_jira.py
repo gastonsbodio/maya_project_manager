@@ -48,7 +48,7 @@ def write_jira_command_file( line, if_result, result_fi_na , user , server, apik
         [str]: [python script command content formated]
     """
     file_content =                   'import sys\n'
-    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
     file_content = file_content +    'import definitions as de\n'
     file_content = file_content +    'import jira_conn.jira_queries as jq\n'
     file_content = file_content +    hlp.ADDITIONAL_LINE_PY3   
@@ -94,7 +94,7 @@ def write_request_jira_file( line, if_result, result_fi_na ):#
         [str]: [python script command content formated]
     """
     file_content =                   'import sys\n'
-    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
     file_content = file_content +    'import definitions as de\n'
     file_content = file_content +    hlp.ADDITIONAL_LINE_PY3
     file_content = file_content +    'reload(de)\n'

@@ -47,7 +47,7 @@ def write_perforce_command_file ( line, if_result, result_fi_na, perf_server, pe
         [str]: [python script command content formated]
     """
     file_content =                'import sys \n'
-    file_content = file_content + 'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_FOL )
+    file_content = file_content + 'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
     file_content = file_content + 'sys.path.append( r"%s" )\n' %de.PY3_PACKAGES  #de.PY2_PACKAGES
     file_content = file_content + 'from P4 import P4,P4Exception \n' 
     file_content = file_content + 'import json\n'  

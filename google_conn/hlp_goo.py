@@ -76,7 +76,7 @@ def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHET_DATA_NA
     """
     file_content =                'import sys\n'
     file_content = file_content + 'import json\n'
-    file_content = file_content + 'sys.path.append( r"%s")\n' %de.SCRIPT_FOL
+    file_content = file_content + 'sys.path.append( r"%s")\n' %de.SCRIPT_MANAG_FOL
     file_content = file_content +'for path in sys.path:\n'
     file_content = file_content +'    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:\n'
     file_content = file_content +'        sys.path.remove(path)\n'
@@ -124,7 +124,7 @@ def write_googld_func( func_na, result_fi_na, if_result):
         [str]: [python script command content formated]
     """
     file_content =                'import sys\n'
-    file_content = file_content + 'sys.path.append( r"%s")\n' %de.SCRIPT_FOL
+    file_content = file_content + 'sys.path.append( r"%s")\n' %de.SCRIPT_MANAG_FOL
     file_content = file_content + 'import json\n'
     file_content = file_content + 'for path in sys.path:\n'
     file_content = file_content + '    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:\n'

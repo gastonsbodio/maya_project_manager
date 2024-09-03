@@ -11,9 +11,10 @@ buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
 ## general vars
 if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 	USER_DOC = buf.value
-SCRIPT_FOL = USER_DOC + "\\prod_manager\\jira_manager"
+COMPANY_TOOLS_FOL = "company_tools"
+SCRIPT_MANAG_FOL = USER_DOC + "\\"+COMPANY_TOOLS_FOL+"\\jira_manager"
 
-PY_PACK_MOD = USER_DOC + "\\prod_manager\\packages"
+PY_PACK_MOD = USER_DOC + "\\"+COMPANY_TOOLS_FOL+"\\packages"
 PY2_PACKAGES = PY_PACK_MOD + "\\py2" 
 PY3_PACKAGES = PY_PACK_MOD + "\\py3" 
 if sys.version_info.major == 2:

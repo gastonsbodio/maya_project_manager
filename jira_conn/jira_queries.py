@@ -54,7 +54,7 @@ class JiraQueries():
         """
         project_key = hlp.byte_string2string( str(project_key) ) 
         if pyStAl == False:
-            PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + project_key + de.SETTINGS_SUFIX )
+            PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + project_key + de.SETTINGS_SUFIX )
             issues_ls = jira.search_issues(jql_str="project = %s AND %s = '%s'" %( project_key, user_type, user ) )#status = 'User Acceptance'")
             issue_dicc_ls = []
             for issue in issues_ls:

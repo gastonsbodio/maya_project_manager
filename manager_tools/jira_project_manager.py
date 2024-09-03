@@ -10,7 +10,7 @@
 ####buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
 ####if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 ####    USER_DOC = buf.value
-####SCRIPT_FOL = USER_DOC + "\\prod_manager\\jira_manager"
+####SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 ####sys.path.append(SCRIPT_FOL)
 ####
 ####from importlib import reload
@@ -62,7 +62,7 @@ class MyMainWindow(QMainWindow):
     def __init__(self):
         super(MyMainWindow, self).__init__( ) # Call the inherited classes __init__ method
         loader = QUiLoader()
-        uifile = QtCore.QFile( de.SCRIPT_FOL.replace('\\','/') +'/manager_tools/' + de.MANAGE_PROD_UI)
+        uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/' + de.MANAGE_PROD_UI)
         uifile.open(QtCore.QFile.ReadOnly)
         self.ui = loader.load( uifile, ev.getWindow(QWidget) )
         self.initialize_widget_conn()
@@ -78,7 +78,7 @@ class MyMainWindow(QMainWindow):
         self.load_project_combo()
         hlp_manager.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
         self.set_roots()
-        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         self.ui.comboB_projects.currentIndexChanged.connect(lambda: self.jira_combo_change_ac(1))
         self.ui.lab_jiraServer.setText( self.JI_SERVER )
         self.ui.lineEd_jira_user.setText( self.USER )
@@ -200,7 +200,7 @@ class MyMainWindow(QMainWindow):
         if signal == 1 :
             dicc['project'] = str( self.ui.comboB_projects.currentText() )
             self.PROJECT_KEY = dicc['project']
-            self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+            self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         elif signal == 2:
             dicc['emailAddress'] = str( self.ui.lineEd_jira_user.text() )
             self.USER = dicc['emailAddress']
@@ -257,7 +257,7 @@ class table_features( ):#QWidget ):
         self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER  = hlp_ji.load_jira_vars()
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE, self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
-        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         self.main_widg = main_widg
         self.table_assetsTasks = table_assetsTasks
         self.table_animTasks = table_animTasks
@@ -288,7 +288,7 @@ class table_features( ):#QWidget ):
         self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER = hlp_ji.load_jira_vars()
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE, self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
-        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         table.clear()
         if True :#try:
             tasks_ls_diccs = hlp_ji.get_self_tasks( self, QMessageBox , area_ls )

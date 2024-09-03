@@ -44,7 +44,7 @@ class TaskCreationPanel(QMainWindow):
     def __init__(self):
         super(TaskCreationPanel, self).__init__( )
         loader = QUiLoader()
-        uifile = QtCore.QFile( de.SCRIPT_FOL.replace('\\','/') +'/manager_tools/'+ de.TASK_CREATION_UI)
+        uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/'+ de.TASK_CREATION_UI)
         uifile.open(QtCore.QFile.ReadOnly)
         self.ui = loader.load( uifile, ev.getWindow(QWidget) )
         self.initialize_widget_conn()
@@ -56,7 +56,7 @@ class TaskCreationPanel(QMainWindow):
         self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp_ji.load_jira_vars()
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE ,self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
-        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         self.load_assign_user_combo()
         self.load_issues_types_combo()
         self.load_area_combo()

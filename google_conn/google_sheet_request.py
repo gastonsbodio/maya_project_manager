@@ -13,12 +13,14 @@ reload(hlp_goo)
 
 if de.PY_PACK_MOD not in sys.path:
     sys.path.append( de.PY_PACK_MOD )
-if de.PY2_PACKAGES not in sys.path:
-    sys.path.append( de.PY2_PACKAGES )
 
-from py3.pydrive import auth
-from py3.pydrive.auth import GoogleAuth
-from py3.pydrive.drive import GoogleDrive
+if de.PY3_PACKAGES not in sys.path:
+    sys.path.append( de.PY3_PACKAGES )
+    PYTHON_VERSION_PATH = de.PY3_PACKAGES
+    from py3.pydrive import auth
+    from py3.pydrive.auth import GoogleAuth
+    from py3.pydrive.drive import GoogleDrive
+
 import sys
 import ctypes
 from ctypes.wintypes import MAX_PATH
@@ -87,8 +89,8 @@ class GoogleDriveQuery():
             [type]: [description]
         """
         gauth = GoogleAuth( )
-        GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = de.PY2_PACKAGES.replace('\\','/') + "/creds/client_secrets.json"
-        c = gauth.LoadCredentialsFile( de.PY2_PACKAGES.replace('\\','/')  + "/creds/mycreds.txt" )
+        GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = PYTHON_VERSION_PATH.replace('\\','/') + "/creds/client_secrets.json"
+        c = gauth.LoadCredentialsFile( PYTHON_VERSION_PATH.replace('\\','/')  + "/creds/mycreds.txt" )
         if gauth.credentials is None or c is None:
             gauth.LocalWebserverAuth()
         elif gauth.access_token_expired:
@@ -98,7 +100,7 @@ class GoogleDriveQuery():
                 gauth.Authorize(c)
         else:
             gauth.Authorize()
-        gauth.SaveCredentialsFile( de.PY2_PACKAGES.replace('\\','/') + "/creds/mycreds.txt" )
+        gauth.SaveCredentialsFile( PYTHON_VERSION_PATH.replace('\\','/') + "/creds/mycreds.txt" )
         return GoogleDrive(gauth)
 
     def dowload_fi(self, googleFi, targuet_full_path):
@@ -189,15 +191,15 @@ class GoogleDriveQuery():
         credentials = self.login()
         goo_obj_tool_fol = self.find_goo_tools_fol( credentials , de.GOOG_CONTENT_TOOLS_FOL)
         tool_fi_ls = self.listContentFold(  credentials , goo_obj_tool_fol['id'] )
-        if not os.path.exists( de.SCRIPT_FOL.replace('\\','/')  ):
+        if not os.path.exists( de.SCRIPT_MANAG_FOL.replace('\\','/')  ):
             try:
-                os.makedirs( de.SCRIPT_FOL.replace('\\','/') )
+                os.makedirs( de.SCRIPT_MANAG_FOL.replace('\\','/') )
             except Exception:
                 pass
         for goo_fi in tool_fi_ls:
-            full_path_name = de.SCRIPT_FOL.replace('\\','/') + '/' + goo_fi['title'] 
+            full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') + '/' + goo_fi['title'] 
             if '.cpython-39.py' in full_path_name:
-                full_path_name = de.SCRIPT_FOL.replace('\\','/') +'/'+ de.PY3CACHE_FOL +'/'+ goo_fi['title'] 
+                full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') +'/'+ de.PY3CACHE_FOL +'/'+ goo_fi['title'] 
             self.dowload_fi ( goo_fi, full_path_name  )
             print ( ' downloading:      ' + full_path_name )
 
@@ -209,7 +211,7 @@ class GoogleDriveQuery():
         tool_fi_ls = self.listContentFold(  credentials , goo_obj_tool_fol['id'] )
         if not os.path.exists(  de.USER_DOC.replace('\\','/')  + "/" + de.STU_LIB_FOL_NA  ):
             try:
-                os.makedirs( de.SCRIPT_FOL.replace('\\','/') )
+                os.makedirs( de.SCRIPT_MANAG_FOL.replace('\\','/') )
             except Exception:
                 pass
         for goo_fi in tool_fi_ls:
@@ -227,8 +229,7 @@ class GoogleDriveQuery():
     def shelf_butt_launch_update_tools():
         """is not a real function, it is just to preserve the code to call -update tools-
         """
-        SCRIPT_FOL = USER_DOC + "\\prod_manager\\jira_manager"
-        sys.path.append( SCRIPT_FOL )
+        sys.path.append( de.SCRIPT_MANAG_FOL )
         file_content = hlp_goo.write_googld_func ( 'update_tools', '', False)
         hlp.create_python_file ('update_tools', file_content)
         hlp.run_py_stand_alone( 'update_tools', True)

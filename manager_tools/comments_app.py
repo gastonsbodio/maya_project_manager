@@ -33,7 +33,7 @@ class CommentsApp( QMainWindow ):
                     item_na = '' , area = '' ):
         super(CommentsApp, self).__init__( )
         loader = QUiLoader()
-        uifile = QtCore.QFile( de.SCRIPT_FOL.replace('\\','/') +'/manager_tools/'+ de.COMMENTS_UI)
+        uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/'+ de.COMMENTS_UI)
         uifile.open(QtCore.QFile.ReadOnly)
         self.ui = loader.load( uifile, mainApp )
         self.issue_key = issue_key
@@ -52,7 +52,7 @@ class CommentsApp( QMainWindow ):
         self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp_ji.load_jira_vars()
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE ,  self.PERF_PASS= hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
-        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
 
     def load_old_comments( self , dicc_comment_ls):
         self.ui.textBrow_comments.clear()

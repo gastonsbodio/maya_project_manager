@@ -320,7 +320,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>change it on... prod_manager/jira_manager/definitions.py</string>
+       <string>change it on... company_tools/jira_manager/definitions.py</string>
       </property>
      </widget>
     </widget>
