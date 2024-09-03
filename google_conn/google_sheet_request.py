@@ -16,9 +16,9 @@ if de.PY_PACK_MOD not in sys.path:
 if de.PY2_PACKAGES not in sys.path:
     sys.path.append( de.PY2_PACKAGES )
 
-from py2.pydrive import auth
-from py2.pydrive.auth import GoogleAuth
-from py2.pydrive.drive import GoogleDrive
+from py3.pydrive import auth
+from py3.pydrive.auth import GoogleAuth
+from py3.pydrive.drive import GoogleDrive
 import sys
 import ctypes
 from ctypes.wintypes import MAX_PATH

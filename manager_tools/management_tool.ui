@@ -43,7 +43,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="login_tab">
      <attribute name="title">
@@ -222,7 +222,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>p4.ad.straykitestudios.com:1666</string>
+       <string/>
       </property>
      </widget>
      <widget class="QPushButton" name="pushBut_login_perf">

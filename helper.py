@@ -95,25 +95,25 @@ def format_path(path):
 
 
 def go_2_perf_root_path( path, proj_settings , depot_root ):
-    real_dp_fol_root = proj_settings['KEYWORDS']['real_depot_fol_root']
-    mapped_dp_fol_root = proj_settings['KEYWORDS']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYWORDS']['local_fol_root']
+    real_dp_fol_root = proj_settings['KEYW']['real_depot_fol_root']
+    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
+    local_fol_root = proj_settings['KEYW']['local_fol_root']
     path_ = path.replace(    '/'+local_fol_root+'/'  ,    '/'+mapped_dp_fol_root+'/'   )
     new_root = depot_root.split( '/'+real_dp_fol_root )[0]
     path_ = new_root+'/'+mapped_dp_fol_root+'/'+ path_.split( '/'+mapped_dp_fol_root+'/' )[-1]
     return path_
 
 def go_2_local_root_path( path, proj_settings , local_root ):
-    mapped_dp_fol_root = proj_settings['KEYWORDS']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYWORDS']['local_fol_root']
+    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
+    local_fol_root = proj_settings['KEYW']['local_fol_root']
     path_ = path.replace(    '/'+mapped_dp_fol_root+'/'     ,   '/'+local_fol_root+'/'    )
     path_ = local_root+'/'+local_fol_root+'/'+ path_.split( '/'+local_fol_root+'/' )[-1]
     return path_
 
 def fix_perf_mapped_root_path( path, proj_settings ):
-    real_dp_fol_root = proj_settings['KEYWORDS']['real_depot_fol_root']
-    mapped_dp_fol_root = proj_settings['KEYWORDS']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYWORDS']['local_fol_root']
+    real_dp_fol_root = proj_settings['KEYW']['real_depot_fol_root']
+    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
+    local_fol_root = proj_settings['KEYW']['local_fol_root']
     path_ = path.replace(    real_dp_fol_root+'/'+local_fol_root     ,   mapped_dp_fol_root    )
     return path_
 
@@ -126,13 +126,14 @@ def only_name_out_extention( file_path , with_prefix = True, prefix = '' ):
             file = prefix + file
     return file
 
-def run_py_stand_alone( python_file_na , with_console = False):
+def run_py_stand_alone( python_file_na , with_console = False, extraLine= '' ):
     """create a bat file witch run python stand alone
     Args:
         python_file_na ([str]): [python file path]
     """
     batPythonExec = '@echo off\n'
     batPythonExec = batPythonExec + '"'+ de.PY_PATH.replace('/','\\') + 'python.exe" "'+de.PY_PATH.replace('/','\\')+python_file_na+'.py" \n'
+    batPythonExec = batPythonExec + '\n'+extraLine
     with open( de.PY_PATH+"Execute_" + python_file_na + ".bat", "w") as fileFa:
         fileFa.write( batPythonExec )
         fileFa.close()
@@ -156,7 +157,10 @@ def create_python_file( python_file_na, python_file_content ):
         fileFa.write( python_file_content )
         fileFa.close()
  
-
+def get_matching_key( dicc, value ):
+    for key in dicc:
+        if dicc[key] == value:
+            return key
         
 
 

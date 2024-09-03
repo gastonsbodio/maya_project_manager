@@ -1,5 +1,8 @@
 ### specific SUP settings (path, files)
-KEYWORDS:
+KEYW:
+    item_types:
+        asset: 'Assets'
+        anim: 'Animation'
     assets_types:
         props: Props
         characters: Characters
@@ -9,6 +12,9 @@ KEYWORDS:
         text: Textures
     areaAnim:
         anim: Animation
+        lay: Layout
+        fx: VFX
+
     asset_rig_template: genericMale_Rig_Starter
     asset_name_template: genericMale
     bindPose_pattern: _Bindpose
@@ -17,15 +23,15 @@ KEYWORDS:
     maped_depot_fol_root: source
     local_fol_root: ContentSource
 Paths:
-    Rig_Ass_Path:        /Assets/{assType}/{ass_na}/Maya/{ass_na}_{areaAssRig}.ma
-    Mod_Ass_Path:        /Assets/{assType}/{ass_na}/Maya/{ass_na}_{areaAssMod}.ma
-    Ass_Thumb_Path:      /Assets/{assType}/{ass_na}/{ass_na}_thumbnail.jpg
+    Rig_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{ass_na}_{areaAssRig}.ma
+    Mod_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{ass_na}_{areaAssMod}.ma
+    Ass_Thumb_Path:      /{itemType}/{assType}/{ass_na}/{ass_na}_thumbnail.jpg
     
-    RigTemplateMalePath:  /Assets/{assType}/genericMale/Maya/genericMale_Rig_Starter.ma
-    AnimRigPath:          /Assets/{assType}/{anim_char}/Maya/{anim_char}_Bindpose.ma
-    AnimRigPath_template: /Assets/{assType}/genericMale/Maya/genericMale_Bindpose.ma
-    ModTemplateMalePath:  /Assets/{assType}/genericMale/Maya/genericMale_Model_Starter.ma
-    Anim_Path:            /Assets/{keywordAnim}/{subpath}{anim_na}_v000.ma
-    Anim_Root:            /Assets/{keywordAnim}/
-    #Unreal_Anim_Root:     /Assets/Content/Sim/Characters/Generic/Art/Anim/
+    RigTemplateMalePath:  /{itemType}/{assType}/genericMale/Maya/genericMale_Rig_Starter.ma
+    AnimRigPath:          /{itemType}/{assType}/{anim_char}/Maya/{anim_char}_Bindpose.ma
+    AnimRigPath_template: /{itemType}/{assType}/genericMale/Maya/genericMale_Bindpose.ma
+    ModTemplateMalePath:  /{itemType}/{assType}/genericMale/Maya/genericMale_Model_Starter.ma
+    Anim_Path:            /{itemType}/{keywordAnim}/{subpath}{anim_na}_v000.ma
+    Anim_Root:            /{itemType}/{keywordAnim}/
+    #Unreal_Anim_Root:     /{itemType}/Content/Sim/Characters/Generic/Art/Anim/
 

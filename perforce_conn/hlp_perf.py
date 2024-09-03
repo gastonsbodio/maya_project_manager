@@ -62,7 +62,7 @@ def write_perforce_command_file ( line, if_result, result_fi_na, perf_server, pe
     file_content = file_content + 'try:\n'
     file_content = file_content + '    perf = pr.PerforceRequests()\n'
     file_content = file_content + '    p4.connect()\n'
-    file_content = file_content + line +'\n'
+    file_content = file_content +      line +'\n'
     file_content = file_content + '    p4.disconnect()\n' 
     file_content = file_content + 'except P4Exception as err:\n'
     file_content = file_content + '    print( err )\n' 

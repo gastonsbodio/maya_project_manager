@@ -87,6 +87,7 @@ class MyMainWindow(QMainWindow):
         self.ui.pushBut_set_jira_login.clicked.connect( lambda: self.jira_login_action() )
 
         self.ui.pushBut_login_perf.clicked.connect(lambda: self.perf_combo_change_ac(1))
+        self.ui.lineEd_perforce_server.setText( self.PERF_SERVER )
         self.ui.lineEd_perforce_user.setText( self.PERF_USER )
         self.ui.lineEd_perf_worksp.setText( self.PERF_WORKSPACE  )
         self.ui.lineEd_perforce_pass.setEchoMode( QLineEdit.Password )
@@ -215,6 +216,7 @@ class MyMainWindow(QMainWindow):
             self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, area_ani_ls  , de.HEADER_ANI_LS)
         else:
             QMessageBox.warning(self, u'', "Project Settings Value is None"  )
+
     def perf_combo_change_ac( self, signal ):
         """ComboB or other widget action triggered when user changes values perforce logging
         Args:
@@ -554,12 +556,13 @@ class table_features( ):#QWidget ):
         dicc = perf.pull_file_2_local( thumbDepotPath+thumb_fi_na, True , self.PERF_SERVER,
                                       self.PERF_USER, self.PERF_WORKSPACE , self.PERF_PASS )
         thumb_fi = os.path.join(  local_path, thumb_fi_na)
-        if dicc[de.key_errors] == '[]':
-            if os.path.isfile( thumb_fi ):
-                label_thumb = getThumbnClass( None, local_path +thumb_fi_na,   (de.width_as_thum , de.height_as_thum)   )
-                table.setCellWidget(table.currentRow(), colum_idx, label_thumb )
-        else:
+        if os.path.isfile( thumb_fi ):
+            label_thumb = getThumbnClass( None, local_path +thumb_fi_na,   (de.width_as_thum , de.height_as_thum)   )
+            table.setCellWidget(table.currentRow(), colum_idx, label_thumb )
+        if dicc[de.key_errors] != '[]':
             QMessageBox.information(self.main_widg, u'Dowloading humbnail error.', str( dicc[de.key_errors] )  )
+
+
 
     def do_row_thumb ( self, thumbLocalPath, thumb_fi_na, table , colum_idx ):
         """Creates thumbnail, applies this thumbnail to the task, and submits it to perforce depot

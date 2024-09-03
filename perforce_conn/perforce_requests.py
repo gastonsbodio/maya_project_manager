@@ -157,7 +157,7 @@ class PerforceRequests():
         """
         if pyStAl == False:
             p4 = self.connection( server, user, workspace, password )
-            p4.run("sync",file)
+            p4.run("sync",file, f = True)
             p4.disconnect()
         else:
             line = '    p4.run("sync", "-f" , "{file}")\n'.format( file = file)

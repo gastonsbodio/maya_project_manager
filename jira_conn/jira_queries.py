@@ -71,12 +71,14 @@ class JiraQueries():
                     main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
                     item_path = self.dicc_label_value( labels_ls, de.item_path )
                     main_args_issue_dicc[ de.item_path ] = item_path
-                    if main_args_issue_dicc[ de.area ] != PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
+                    if main_args_issue_dicc[ de.area ] != PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
                         main_args_issue_dicc[ de.asset_na ] = self.dicc_label_value( labels_ls, de.asset_na )
                         main_args_issue_dicc[ de.assType ] = hlp_manager.asset_type_extraction( item_path , PROJ_SETTINGS )
-                    elif main_args_issue_dicc[ de.area ] == PROJ_SETTINGS ['KEYWORDS']['areaAnim']['anim']:
+                        main_args_issue_dicc[ de.itemType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
+                    elif main_args_issue_dicc[ de.area ] == PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
                         main_args_issue_dicc[ de.ani_na ] = self.dicc_label_value( labels_ls, de.ani_na )
                         main_args_issue_dicc[ de.aniType ] = hlp_manager.asset_type_extraction( item_path , PROJ_SETTINGS )
+                        main_args_issue_dicc[ de.itemType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
                 else:
                     main_args_issue_dicc[de.area] = ''
                     main_args_issue_dicc[de.asset_na] = '' 
@@ -84,6 +86,7 @@ class JiraQueries():
                     main_args_issue_dicc[ de.item_path ] = ''
                     main_args_issue_dicc[ de.assType ] = ''
                     main_args_issue_dicc[ de.aniType ] = ''
+                    main_args_issue_dicc[ de.itemType ] = ''
                 assignee = issue.fields.assignee
                 if assignee != None:
                     main_args_issue_dicc[de.assignee] = assignee.displayName#.encode('utf-8')

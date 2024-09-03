@@ -85,6 +85,7 @@ item_path = 'Path'
 thumbnail = 'Thumbnail'
 assType = 'Asset Type'
 aniType = 'Shot Type'
+itemType = 'Item Type'
 HEADER_ASS_LS = [ thumbnail , asset_na , assType,  area , title , spec, comments , status ]
 HEADER_ANI_LS = [ thumbnail , ani_na , aniType , area , title , spec, comments , status ]
 
