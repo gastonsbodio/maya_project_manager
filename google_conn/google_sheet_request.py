@@ -12,14 +12,17 @@ reload( hlp )
 reload(hlp_goo)
 
 if de.PY_PACK_MOD not in sys.path:
-    sys.path.append( de.PY_PACK_MOD )
+    print ('paso por aca')
+    sys.path.append( de.PY_PACK_MOD.replace('/','\\') + '\\' )
 
-if de.PY3_PACKAGES not in sys.path:
-    sys.path.append( de.PY3_PACKAGES )
-    PYTHON_VERSION_PATH = de.PY3_PACKAGES
-    from py3.pydrive import auth
-    from py3.pydrive.auth import GoogleAuth
-    from py3.pydrive.drive import GoogleDrive
+#if de.PY3_PACKAGES not in sys.path:
+#    print ( 'bla bla ')
+#    sys.path.append( de.PY3_PACKAGES )
+PYTHON_VERSION_PATH = de.PY3_PACKAGES
+print ( de.PY3_PACKAGES )
+from py3.pydrive2 import auth
+from py3.pydrive2.auth import GoogleAuth
+from py3.pydrive2.drive import GoogleDrive
 
 import sys
 import ctypes
@@ -136,6 +139,8 @@ class GoogleDriveQuery():
         Returns:
             [ls]: [list of google files objects]
         """
+        print ("credentials")
+        print ( credentials )
         top_list = credentials.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
         return top_list
 
@@ -190,6 +195,7 @@ class GoogleDriveQuery():
         """
         credentials = self.login()
         goo_obj_tool_fol = self.find_goo_tools_fol( credentials , de.GOOG_CONTENT_TOOLS_FOL)
+        print ( goo_obj_tool_fol['title'] )
         tool_fi_ls = self.listContentFold(  credentials , goo_obj_tool_fol['id'] )
         if not os.path.exists( de.SCRIPT_MANAG_FOL.replace('\\','/')  ):
             try:
@@ -200,7 +206,7 @@ class GoogleDriveQuery():
             full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') + '/' + goo_fi['title'] 
             if '.cpython-39.py' in full_path_name:
                 full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') +'/'+ de.PY3CACHE_FOL +'/'+ goo_fi['title'] 
-            self.dowload_fi ( goo_fi, full_path_name  )
+            #self.dowload_fi ( goo_fi, full_path_name  )
             print ( ' downloading:      ' + full_path_name )
 
     def download_studio_library (self):
