@@ -320,7 +320,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>change it on... company_tools/jira_manager/definitions.py</string>
+       <string>change it on... prod_manager/jira_manager/definitions.py</string>
       </property>
      </widget>
     </widget>
@@ -624,14 +624,20 @@ Save</string>
      <string>_________________________________</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menu_Api_Key">
+   <widget class="QMenu" name="menu_Help">
     <property name="title">
-     <string>          Jira Api Key         </string>
+     <string>           Help          </string>
     </property>
-    <addaction name="actionGet_Jira_Api_Key"/>
+   </widget>
+   <widget class="QMenu" name="menuPipeline_Tools">
+    <property name="title">
+     <string>Pipeline Tools</string>
+    </property>
+    <addaction name="actionTask_Creation_Tools"/>
    </widget>
    <addaction name="menukey"/>
-   <addaction name="menu_Api_Key"/>
+   <addaction name="menu_Help"/>
+   <addaction name="menuPipeline_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionget_api_key">
@@ -644,7 +650,7 @@ Save</string>
     <string>input jira api key</string>
    </property>
   </action>
-  <action name="actionGet_Jira_Api_Key">
+  <action name="actionGet_helpLinks">
    <property name="text">
     <string>How to get Jira ApiKey</string>
    </property>
@@ -652,6 +658,11 @@ Save</string>
   <action name="actionSet_Jira_Api_Key">
    <property name="text">
     <string>Set Jira Api Key</string>
+   </property>
+  </action>
+  <action name="actionTask_Creation_Tools">
+   <property name="text">
+    <string>Task Creation Tools</string>
    </property>
   </action>
  </widget>

@@ -45,7 +45,6 @@ import manager_tools.hlp_manager as hlp_manager
 import perforce_conn.perforce_requests as pr
 import enviroment as ev
 import manager_tools.comments_app as comm
-
 reload(gs)
 reload(jq)
 reload(de)
@@ -57,6 +56,18 @@ reload(pr)
 reload(ev)
 reload(comm)
 
+class entringWid( ):
+    def __init__(self, widg, parent=None):
+        self.widg = widg
+        #super(mainwindow, self).__init__(parent)
+
+    def enterEvent(self, event):
+        print ( "Mouse Entered" )
+        return self.widg.enterEvent(event)
+
+    def leaveEvent(self, event):
+        print ( "Mouse Left" )
+        return self.widg.enterEvent(event)
 
 class MyMainWindow(QMainWindow):
     def __init__(self):
@@ -107,13 +118,36 @@ class MyMainWindow(QMainWindow):
         self.t_fea.initialized_features_table(self.ui.table_assetsTasks)
         self.t_fea.initialized_features_table(self.ui.table_animTasks)
         self.ui.pushBut_reload_tables.clicked.connect( lambda: self.t_fea.refresh_tables( )  )
-        self.ui.actionGet_Jira_Api_Key.triggered.connect( lambda:  self.get_api_token_help( )  )
+        self.menu_help()
+        #self.ui.actionGet_Jira_Api_Key.triggered.connect( lambda:  self.get_help_link( )  )
 
         area_ani_ls = list(diccAni.values())
 
         area_ass_ls = list(diccAss.values())
         self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , area_ani_ls  )    )
         self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , area_ass_ls  )  )
+
+    def menu_help(self):
+        help_dicc = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\'+ de.HELP_YAML_NA )
+        self.dicc_menu = help_dicc['HELP_MENU']
+        actionMenu = {}
+        action_ls = []
+        for idx, key in enumerate ( self.dicc_menu ):
+            link = self.dicc_menu[ key ]
+            self.key_value = key
+            action = QAction( key , self.ui  )
+            action_ls.append( ( action , link ))
+            menuAct = self.ui.menu_Help.addAction(   action   )
+            receiver = lambda link=link : self.get_help_link( link  ) 
+            self.ui.connect( action,   QtCore.SIGNAL('triggered()') , receiver)
+            
+
+
+    def get_help_link( self, link  ):
+        """Browse help
+        """
+
+        webbrowser.open( link , new=2) 
 
     def tableOnClicItemAction( self ,table, id_rows ,area_ls):
         column_idx = table.currentColumn()
@@ -128,11 +162,6 @@ class MyMainWindow(QMainWindow):
                                         area_ls = area_ls  , item_na = item_na ,  area = area)
             widget.ui.show()
 
-    def get_api_token_help(self):
-        """Browse help for get jira api token
-        """
-        link = de.JIRA_API_TOKEN_HELP
-        webbrowser.open(link, new=2) 
             
     def load_project_combo(self):
         """populate projects combob.

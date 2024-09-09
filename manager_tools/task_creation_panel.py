@@ -158,9 +158,9 @@ class TaskCreationPanel(QMainWindow):
 
 
     def get_google_asset_and_anims(self):
-        self.asset_tracked_ls_diccs = hlp_goo.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA ,
+        self.asset_tracked_ls_diccs = hlp_goo.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA ,
                                                         self.PROJECT_KEY+'_'+de.issue_type_asset )
-        self.anim_tracked_ls_diccs = hlp_goo.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA ,
+        self.anim_tracked_ls_diccs = hlp_goo.get_google_doc_data( self, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA ,
                                                         self.PROJECT_KEY+'_'+de.issue_type_anim )
         
     def load_combo_item_na( self , tracked_ls_diccs, goog_column, comboB ):

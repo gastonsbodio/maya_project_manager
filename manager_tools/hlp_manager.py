@@ -178,7 +178,7 @@ def set_new_values_on_sheet( app, gs , QMessageBox , area , column_ls , value_ls
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_anim
     else:
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_asset
-    goo_hlp.edit_google_sheet_cell( app, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA , sheet_num,
+    goo_hlp.edit_google_sheet_cell( app, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA , sheet_num,
                                                 column_ls , value_ls , row_idx )
     
 def check_forbiden_char( app, full_word_2_analize, QMessageBox):
@@ -197,7 +197,7 @@ def check_created_task( app , QMessageBox , gs, area, item_na ):
     else:
         item_na_colum  = de.GOOGLE_SH_ASS_NA_COL
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_asset
-    item_tracked_ls_diccs = goo_hlp.get_google_doc_data( app, QMessageBox , gs , de.GOOGLE_SHET_DATA_NA , sheet_num )
+    item_tracked_ls_diccs = goo_hlp.get_google_doc_data( app, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA , sheet_num )
     area_done_dicc = {} 
     path_ls = []
     item_created_ls = [ item[ item_na_colum ] for item in item_tracked_ls_diccs ]

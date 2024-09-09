@@ -1,2 +1,40 @@
+KEYW:
+    WEB_LINKS:
+        JI_SERVER: "https://gastonsbodio.atlassian.net/" #"https://straykitestudios.atlassian.net"
+        TRACK_SHEET_ITEMS: 'https://docs.google.com/spreadsheets/d/1sy7NgFtjADYhvmU45rqlgfl4qznpW2adECWv892Ua-Q/edit?usp=sharing'
+    GOO_SHEETS_TRACK:
+        GOOG_CONTENT_TOOLS_FOL: "jira_manager"
+        GOOGLE_SHEET_DOC_NA: "jira_manager_data"
+        GOOGLE_SHEET_ANIM_CHECK: "Task_001"
+        GOOGLE_SH_ASS_NA_COL: "asset_name"
+        GOOGLE_SH_ANI_NA_COL: "anim_name"
+        GOOGLE_SH_CREAT_AREA_COL: 'created_area'
+        GOOGLE_SH_CREAT_PATH: "path"
+        GOOGLE_SH_ANIM_ASSET_COL: 'character_in'
+        GOOGLE_SH_ISSUE_KEY: 'jira_issue_key'
+    ANIM_ASSET_TABLES_LABELS:
+        thumbnail: 'Thumbnail'
+        asset_na: 'AssetName'
+        assType: 'AssetType'
+        area: 'Area'
+        title: 'Title'
+        spec: 'Spec'
+        comments: 'Comments'
+        status: "Status"
+        ani_na: 'AnimName'
+        aniType: 'ShotType'
+    CHECK_ANIM_TOOL:
+      anim: 'Animation'
+      maya: 'Maya'
+      fbx: 'FBX'
+      unreal: 'Unreal'
+      anim_check_colum_sheet_column: 'Narrative Request Outline'
+    MENUES_LABELS:
+      open_fi_fol: 'explore file dir'
+      dowload_fi_perf: 'get file from depot'
+      do_thumb: 'do thumbnail'
+      snip_thumb: 'sniping thumbnail'
+      get_thumb: 'get thumbnail from depot'
 
+    STU_LIB_FOL_NA: "studiolibrary-2.9.11"
 

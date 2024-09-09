@@ -9,11 +9,10 @@ si = subprocess.STARTUPINFO()
 import definitions as de
 
 from importlib import reload
-
 reload(de)
 
 sys.path.append( de.PY_PACKAGES)
-import yaml as yaml
+#import yaml as yaml
 import shutil
 
 ADDITIONAL_LINE_PY3 = 'from importlib import reload\n'  #'\n'#
@@ -57,24 +56,9 @@ def byte_string2string( string ):
         string=string.replace("'","")
     return string
 
-def get_yaml_fil_data(path):
-    """Read a yaml metadata file and return a dicc
-    Args:
-        path ([str]): [given yamel file path]
-    Returns:
-        [dicc]: [description]
-    """
-    data = {}
-    if os.path.isfile( path ):
-        with open(path , "r") as stream:
-            try:
-                data = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
-            stream.close()
-        return data
-    else:
-        return None
+def get_yaml_fil_data( path ):
+    return de.get_yaml_fil_data( path )
+     
 
 def separate_path_and_na(full_path):
     """Return separated values on a full path (path and file)

@@ -4,36 +4,65 @@ import tempfile
 import os
 import ctypes
 from ctypes.wintypes import MAX_PATH
-
 dll = ctypes.windll.shell32
 buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-
-## general vars
 if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 	USER_DOC = buf.value
+USER_NA = os.environ['USERNAME']
 COMPANY_TOOLS_FOL = "company_tools"
-SCRIPT_MANAG_FOL = USER_DOC + "\\"+COMPANY_TOOLS_FOL+"\\jira_manager"
-
 PY_PACK_MOD = USER_DOC + "\\"+COMPANY_TOOLS_FOL+"\\packages"
+
+sys.path.append( PY_PACK_MOD )
+import py3.yaml as yaml
+
+def get_yaml_fil_data ( path ):
+    """Read a yaml metadata file and return a dicc
+    Args:
+        path ([str]): [given yamel file path]
+    Returns:
+        [dicc]: [description]
+    """
+    data = {}
+    if os.path.isfile( path ):
+        with open(path , "r") as stream:
+            try:
+                data = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
+            stream.close()
+        return data
+    else:
+        return None
+
+
+##### general vars ##
+###########
+######
+#
+
 PY2_PACKAGES = PY_PACK_MOD + "\\py2" 
 PY3_PACKAGES = PY_PACK_MOD + "\\py3" 
+JIRA_MANAGE_FOL = 'jira_manager'
+SCRIPT_MANAG_FOL = USER_DOC + "\\"+COMPANY_TOOLS_FOL+"\\"+JIRA_MANAGE_FOL
+OPEN_DEFINI_YAML = 'open_definitions.yaml'
+HELP_YAML_NA = '__help__.yaml' 
+
+DEFIN_DICC = get_yaml_fil_data( SCRIPT_MANAG_FOL +'\\' + OPEN_DEFINI_YAML )
+HELP_DICC = get_yaml_fil_data( SCRIPT_MANAG_FOL +'\\' + HELP_YAML_NA )
+
 if sys.version_info.major == 2:
 	PY_PACKAGES = PY2_PACKAGES
 elif sys.version_info.major == 3:
-    
 	PY_PACKAGES = PY3_PACKAGES
 PY3CACHE_FOL = '__pycache__'
 TEMP_FOL = tempfile.gettempdir().replace("\\","/") + "/"
-
+JI_SERVER = DEFIN_DICC['KEYW']['WEB_LINKS']['JI_SERVER']
 # witch python standalone we will use
-PY_PATH = 'C:/Users/gasco/AppData/Local/Programs/Python/Python312/' #'C:/Python27/' 
-         #'C:/Users/gasco/AppData/Local/Programs/Python/Python37/'   
+PY_PATH = 'C:/Users/%s/AppData/Local/Programs/Python/Python312/'%USER_NA #'C:/Python27/'  
+TRACK_SHEET_ITEMS = DEFIN_DICC['KEYW']['WEB_LINKS']['TRACK_SHEET_ITEMS']
 
-JI_SERVER = "https://gastonsbodio.atlassian.net/" #"https://straykitestudios.atlassian.net"
-#"https://genvidtech.atlassian.net"  #
-JIRA_API_TOKEN_HELP = 'https://docs.searchunify.com/Content/Content-Sources/Atlassian-Jira-Confluence-Authentication-Create-API-Token.htm'
-TRACK_SHEET_ITEMS = 'https://docs.google.com/spreadsheets/d/1sy7NgFtjADYhvmU45rqlgfl4qznpW2adECWv892Ua-Q/edit?usp=sharing'
 INSTRUCTION_CHECK_ANIM_TOOL = 'https://docs.google.com/document/d/1gAxtH1fhukNAWPnWSfflYai9NQe0qsh6OVcnn7FzlKU/edit?usp=sharing'
+#### lo voy a descontinuar con el nuevo help yaml
 
 LINK_ICON_PATH =  PY2_PACKAGES.replace('\\','/')  + "/icon/link.png" 
 COMMENT_ICON_PATH =  PY2_PACKAGES.replace('\\','/')  + "/icon/comment.png" 
@@ -42,7 +71,6 @@ ANIM_PATH_TASK_CREAT = 'anim_path_creation_tool.json'
 LOGIN_METADATA_FI_NA ='login_metadata.json'
 PERF_LOG_METADATA_FI_NA ='perf_log_metadata.json'
 ROOTS_METAD_FI_NA = 'roots_metadata.json'
-JIRA_MANAGE_FOL = 'jira_manager'
 SETTINGS_SUFIX = '__settings__.yaml'
 MANAGE_PROD_UI = 'management_tool.ui'
 TASK_CREATION_UI = 'task_creation_panel.ui'
@@ -55,17 +83,18 @@ FORBIDDEN_CHARS = [" ","-","_","@","%", "$","?", "!", "|","*",".",",",";"]
 #MASTER_USER = ""
 #MASTER_API_KEY = ""
 
-#### Googlesheets vars
-GOOGLE_SHET_DATA_NA = "jira_manager_data"
-GOOGLE_SHET_ANIM_CHECK = "Task_001"
-GOOG_CONTENT_TOOLS_FOL = "jira_manager"
-STU_LIB_FOL_NA = "studiolibrary-2.9.11"
-GOOGLE_SH_ASS_NA_COL = "asset_name"
-GOOGLE_SH_ANI_NA_COL = "anim_name"
-GOOGLE_SH_CREAT_AREA_COL = 'created_area'
-GOOGLE_SH_CREAT_PATH = "path"
-GOOGLE_SH_ANIM_ASSET_COL = 'character_in'
-GOOGLE_SH_ISSUE_KEY = 'jira_issue_key'
+#### Googles vars
+STU_LIB_FOL_NA = DEFIN_DICC['KEYW']['STU_LIB_FOL_NA']
+GOOG_CONTENT_TOOLS_FOL = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOG_CONTENT_TOOLS_FOL']
+GOOGLE_SHEET_DOC_NA = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SHEET_DOC_NA']
+GOOGLE_SHEET_ANIM_CHECK = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SHEET_ANIM_CHECK']
+GOOGLE_SH_ASS_NA_COL = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SH_ASS_NA_COL']
+GOOGLE_SH_ANI_NA_COL = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SH_ANI_NA_COL']
+GOOGLE_SH_CREAT_AREA_COL = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SH_CREAT_AREA_COL']
+GOOGLE_SH_CREAT_PATH = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SH_CREAT_PATH']
+GOOGLE_SH_ANIM_ASSET_COL = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SH_ANIM_ASSET_COL']
+GOOGLE_SH_ISSUE_KEY = DEFIN_DICC['KEYW']['GOO_SHEETS_TRACK']['GOOGLE_SH_ISSUE_KEY']
+
 GOOG_SH_ALPHA_LS =   ["A","B","C","D","E","F","G","H","I","J", "K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 GOOG_SH_NUM_COL =[ 1,  2,  3,  4,  5,  6,  7,  8,  9,  10,  11, 12, 13, 14, 15, 16, 17,18, 19, 20, 21, 22, 23, 24, 25, 26]
 
@@ -74,18 +103,18 @@ GOOG_SH_NUM_COL =[ 1,  2,  3,  4,  5,  6,  7,  8,  9,  10,  11, 12, 13, 14, 15, 
 assignee = 'Assignee'
 reporter = 'Reporter'
 id = 'Id'
-status = "Status"
-comments = 'Comments'
-spec = 'Spec'
-title= 'Title'
-area = 'Area'
-asset_na = 'AssetName'
-ani_na = 'AnimName'
+status = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['status']
+comments = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['comments']
+spec = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['spec']
+title = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['title']
+area = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['area']
+asset_na = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['asset_na']
+ani_na = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['ani_na']
 anim_char = 'CharIn'
 item_path = 'Path'
-thumbnail = 'Thumbnail'
-assType = 'Asset Type'
-aniType = 'Shot Type'
+thumbnail = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['thumbnail']
+assType = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['assType']
+aniType = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['aniType']
 itemType = 'Item Type'
 HEADER_ASS_LS = [ thumbnail , asset_na , assType,  area , title , spec, comments , status ]
 HEADER_ANI_LS = [ thumbnail , ani_na , aniType , area , title , spec, comments , status ]
@@ -96,11 +125,11 @@ comment_author = 'comm_author'
 comment_date = 'comm_date'
 
 ### check anim tool
-anim = 'Animation'
-maya = 'Maya'
-fbx = 'FBX'
-unreal = 'Unreal'
-anim_check_colum_sheet_column = 'Narrative Request Outline'
+anim = DEFIN_DICC['KEYW']['CHECK_ANIM_TOOL']['anim']
+maya = DEFIN_DICC['KEYW']['CHECK_ANIM_TOOL']['maya']
+fbx = DEFIN_DICC['KEYW']['CHECK_ANIM_TOOL']['fbx']
+unreal = DEFIN_DICC['KEYW']['CHECK_ANIM_TOOL']['unreal']
+anim_check_colum_sheet_column = DEFIN_DICC['KEYW']['CHECK_ANIM_TOOL']['anim_check_colum_sheet_column']
 CHECK_ANIM_LS = [ anim , maya , fbx , unreal ]
 
 THUMB_IDX = 0
@@ -117,11 +146,11 @@ height_as_thum = 65
 height_anim_ch_row = 20
 
 ##  menues texts
-open_fi_fol = 'explore file dir'
-dowload_fi_perf = 'get file from depot'
-do_thumb = 'do thumbnail'
-snip_thumb = 'sniping thumbnail'
-get_thumb = 'get thumbnail from depot'
+open_fi_fol = DEFIN_DICC['KEYW']['MENUES_LABELS']['open_fi_fol']
+dowload_fi_perf = DEFIN_DICC['KEYW']['MENUES_LABELS']['dowload_fi_perf']
+do_thumb = DEFIN_DICC['KEYW']['MENUES_LABELS']['do_thumb']
+snip_thumb = DEFIN_DICC['KEYW']['MENUES_LABELS']['snip_thumb']
+get_thumb = DEFIN_DICC['KEYW']['MENUES_LABELS']['get_thumb']
 
 ## perforce vars
 dicc_result = 'dicc_result'
@@ -140,3 +169,7 @@ key_errors= 'errors'
 
 #######  anim check tool vars
 UNR_EXCEPTION_SUFIXS = [ "_Cinematics.uasset", "_Montage.uasset"]
+
+#######  help definitions ##
+JIRA_API_TOKEN_HELP = HELP_DICC['HELP_MENU']['JiraApiTokenHelp']
+INSTRUCTION_CHECK_ANIM_TOOL = HELP_DICC['HELP_MENU']['CheckAnimToolInstructions']

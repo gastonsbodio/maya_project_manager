@@ -12,18 +12,17 @@ reload( hlp )
 reload(hlp_goo)
 
 if de.PY_PACK_MOD not in sys.path:
-    print ('paso por aca')
     sys.path.append( de.PY_PACK_MOD.replace('/','\\') + '\\' )
-
 #if de.PY3_PACKAGES not in sys.path:
 #    print ( 'bla bla ')
 #    sys.path.append( de.PY3_PACKAGES )
 PYTHON_VERSION_PATH = de.PY3_PACKAGES
-print ( de.PY3_PACKAGES )
-from py3.pydrive2 import auth
-from py3.pydrive2.auth import GoogleAuth
-from py3.pydrive2.drive import GoogleDrive
-
+try:
+    from py3.pydrive2 import auth
+    from py3.pydrive2.auth import GoogleAuth
+    from py3.pydrive2.drive import GoogleDrive
+except Exception:
+    pass
 import sys
 import ctypes
 from ctypes.wintypes import MAX_PATH
@@ -41,7 +40,7 @@ class GoogleSheetRequests():
         """
         line = '%s  = sheet.get_all_records()\n' %de.dicc_ji_result
         file_content = hlp_goo.write_goo_sheet_request ( line , True, 'google_sheet_query.json',
-                                                    de.GOOGLE_SHET_DATA_NA , 'Sheet1' )
+                                                    de.GOOGLE_SHEET_DOC_NA , 'Sheet1' )
         hlp.create_python_file ( 'google_sheet_query', file_content )
         hlp.run_py_stand_alone( 'google_sheet_query' )
         dicc = hlp.json2dicc_load( de.PY_PATH  + 'google_sheet_query.json')[0]
@@ -187,6 +186,8 @@ class GoogleDriveQuery():
                 if fatherID == f['id']:
                     gRoot = f['title']
             pathh = gRoot +'/'+ pathh
+            if not pathh.startswith('/'):
+                pathh = '/'+pathh
             pathTuple.append(pathh)
         return pathTuple
 
@@ -195,18 +196,21 @@ class GoogleDriveQuery():
         """
         credentials = self.login()
         goo_obj_tool_fol = self.find_goo_tools_fol( credentials , de.GOOG_CONTENT_TOOLS_FOL)
-        print ( goo_obj_tool_fol['title'] )
         tool_fi_ls = self.listContentFold(  credentials , goo_obj_tool_fol['id'] )
-        if not os.path.exists( de.SCRIPT_MANAG_FOL.replace('\\','/')  ):
+        if not os.path.exists( de.SCRIPT_MANAG_FOL.replace('\\','/') ):
             try:
                 os.makedirs( de.SCRIPT_MANAG_FOL.replace('\\','/') )
             except Exception:
                 pass
         for goo_fi in tool_fi_ls:
-            full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') + '/' + goo_fi['title'] 
-            if '.cpython-39.py' in full_path_name:
-                full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') +'/'+ de.PY3CACHE_FOL +'/'+ goo_fi['title'] 
-            #self.dowload_fi ( goo_fi, full_path_name  )
+            goo_path_name = self.buildPathGooD( credentials, [ goo_fi ] )[0]
+            if not goo_path_name.startswith('/'):
+                goo_path_name = '/'+goo_path_name
+            print ( goo_path_name )
+            end_path_name = goo_path_name.split('/'+de.GOOG_CONTENT_TOOLS_FOL+'/')[-1]
+            print (end_path_name)
+            full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') + '/'+end_path_name
+            self.dowload_fi ( goo_fi, full_path_name  )
             print ( ' downloading:      ' + full_path_name )
 
     def download_studio_library (self):
@@ -600,8 +604,5 @@ class GoogleDriveQuery():
                         cloud_date =  goo_fi['modifiedDate'] 
                         local_path = full_path_name[0].replace( folder+'/', stulib_local_root_fol+'/' )
                         pre_roo = anim_root.split(stulib_local_root_fol)[0]
-                        print( pre_roo )
-                        print( 'pre_roo')
                         full_local_path = pre_roo + local_path
                         print( full_local_path )
-                        print('bla')

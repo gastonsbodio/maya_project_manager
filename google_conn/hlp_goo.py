@@ -64,7 +64,7 @@ def edit_google_sheet_cell( app , QMessageBox , gs , sheet_na , sheet_num , goog
     else:
         return []
 
-def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHET_DATA_NA , sheet_num ):
+def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHEET_DOC_NA , sheet_num ):
     """Specific Jira command, will be the content on a python file made with python requests.
         not possible to run Jira commands when you launch Maya with Gearbox launcher.
     Args:
@@ -97,7 +97,7 @@ def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHET_DATA_NA
     file_content = file_content + '%s = []\n' %de.ls_result
     file_content = file_content + 'try:\n'
     file_content = file_content + '    client = gspread.authorize (creds)\n'
-    file_content = file_content + '    sheetLs = client.openall( "%s" )\n' %( GOOGLE_SHET_DATA_NA )
+    file_content = file_content + '    sheetLs = client.openall( "%s" )\n' %( GOOGLE_SHEET_DOC_NA )
     file_content = file_content + '    for she in sheetLs:\n'
     file_content = file_content + '        worksheets = she.worksheets()\n'
     file_content = file_content + '        for sheet in worksheets:\n'
