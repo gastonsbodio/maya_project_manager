@@ -1,14 +1,15 @@
 import sys
 import os
 try:
-    from PySide  import QtCore
-    from PySide.QtGui import *
-    from PySide.QtUiTools import QUiLoader
-except Exception as err:
     from PySide2.QtUiTools import QUiLoader
     from PySide2 import QtCore
     from PySide2.QtGui import *
     from PySide2.QtWidgets import *
+except Exception as err:
+    from PySide6.QtUiTools import QUiLoader
+    from PySide6 import QtCore
+    from PySide6.QtGui import *
+    from PySide6.QtWidgets import *
 
 from importlib import reload
 

@@ -170,6 +170,6 @@ key_errors= 'errors'
 #######  anim check tool vars
 UNR_EXCEPTION_SUFIXS = [ "_Cinematics.uasset", "_Montage.uasset"]
 
-#######  help definitions ##
-JIRA_API_TOKEN_HELP = HELP_DICC['HELP_MENU']['JiraApiTokenHelp']
-INSTRUCTION_CHECK_ANIM_TOOL = HELP_DICC['HELP_MENU']['CheckAnimToolInstructions']
+#######  menu pipeline  tools ##
+TASK_CREATION_TOOL = 'Task Creation Tool'
+

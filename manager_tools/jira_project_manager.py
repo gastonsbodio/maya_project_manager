@@ -27,12 +27,26 @@ import time
 from threading import Thread
 import subprocess
 si = subprocess.STARTUPINFO()
-from PySide2.QtUiTools import QUiLoader
-from PySide2 import QtCore
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-
-
+try:
+    from PySide2.QtUiTools import QUiLoader
+    from PySide2 import QtCore
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except Exception:
+    from PySide6.QtUiTools import QUiLoader
+    from PySide6 import QtCore
+    from PySide6.QtGui import *
+    from PySide6.QtWidgets import *
+    import sys
+    import ctypes
+    from ctypes.wintypes import MAX_PATH
+    dll = ctypes.windll.shell32
+    buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+    if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+        USER_DOC = buf.value
+    SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+    sys.path.append(SCRIPT_FOL)
+    
 from importlib import reload
 
 import google_conn.google_sheet_request as gs
@@ -56,226 +70,17 @@ reload(pr)
 reload(ev)
 reload(comm)
 
-class entringWid( ):
-    def __init__(self, widg, parent=None):
-        self.widg = widg
-        #super(mainwindow, self).__init__(parent)
-
-    def enterEvent(self, event):
-        print ( "Mouse Entered" )
-        return self.widg.enterEvent(event)
-
-    def leaveEvent(self, event):
-        print ( "Mouse Left" )
-        return self.widg.enterEvent(event)
-
-class MyMainWindow(QMainWindow):
-    def __init__(self):
-        super(MyMainWindow, self).__init__( ) # Call the inherited classes __init__ method
-        loader = QUiLoader()
-        uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/' + de.MANAGE_PROD_UI)
-        uifile.open(QtCore.QFile.ReadOnly)
-        self.ui = loader.load( uifile, ev.getWindow(QWidget) )
-        self.initialize_widget_conn()
-
-    def initialize_widget_conn(self):
-        """Initializing functions, var and features.
-        """
-        #self.get_master_creds()
-        self.jira_m = jq.JiraQueries()
-        self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp_ji.load_jira_vars()
-        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp_perf.load_perf_vars()
-        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
-        self.load_project_combo()
-        hlp_manager.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
-        self.set_roots()
-        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        self.ui.comboB_projects.currentIndexChanged.connect(lambda: self.jira_combo_change_ac(1))
-        self.ui.lab_jiraServer.setText( self.JI_SERVER )
-        self.ui.lineEd_jira_user.setText( self.USER )
-        self.ui.lineEd_apiKey.setEchoMode( QLineEdit.Password )
-        self.ui.lineEd_apiKey.setText( self.APIKEY )
-        self.ui.pushBut_set_jira_login.clicked.connect( lambda: self.jira_login_action() )
-
-        self.ui.pushBut_login_perf.clicked.connect(lambda: self.perf_combo_change_ac(1))
-        self.ui.lineEd_perforce_server.setText( self.PERF_SERVER )
-        self.ui.lineEd_perforce_user.setText( self.PERF_USER )
-        self.ui.lineEd_perf_worksp.setText( self.PERF_WORKSPACE  )
-        self.ui.lineEd_perforce_pass.setEchoMode( QLineEdit.Password )
-        self.ui.lineEd_perforce_pass.setText( self.PERF_PASS  )
-        self.t_fea = table_features( self.ui.table_assetsTasks , self.ui.table_animTasks , main_widg = self )
-        diccAni =  self.PROJ_SETTINGS['KEYW']['areaAnim'] 
-        diccAss =   self.PROJ_SETTINGS['KEYW']['areaAssets'] 
-
-        if self.PROJ_SETTINGS != None:
-            assetsAreaLs = list(diccAss.values())
-            animAreaLs = list(diccAni.values())
-            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, assetsAreaLs  , de.HEADER_ASS_LS)
-            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, animAreaLs  , de.HEADER_ANI_LS )
-        else:
-            self.id_rows_ass = {}
-            self.id_rows_ani = {}
-        self.t_fea.initialized_features_table(self.ui.table_assetsTasks)
-        self.t_fea.initialized_features_table(self.ui.table_animTasks)
-        self.ui.pushBut_reload_tables.clicked.connect( lambda: self.t_fea.refresh_tables( )  )
-        self.menu_help()
-        #self.ui.actionGet_Jira_Api_Key.triggered.connect( lambda:  self.get_help_link( )  )
-
-        area_ani_ls = list(diccAni.values())
-
-        area_ass_ls = list(diccAss.values())
-        self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , area_ani_ls  )    )
-        self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , area_ass_ls  )  )
-
-    def menu_help(self):
-        help_dicc = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\'+ de.HELP_YAML_NA )
-        self.dicc_menu = help_dicc['HELP_MENU']
-        actionMenu = {}
-        action_ls = []
-        for idx, key in enumerate ( self.dicc_menu ):
-            link = self.dicc_menu[ key ]
-            self.key_value = key
-            action = QAction( key , self.ui  )
-            action_ls.append( ( action , link ))
-            menuAct = self.ui.menu_Help.addAction(   action   )
-            receiver = lambda link=link : self.get_help_link( link  ) 
-            self.ui.connect( action,   QtCore.SIGNAL('triggered()') , receiver)
-            
-
-
-    def get_help_link( self, link  ):
-        """Browse help
-        """
-
-        webbrowser.open( link , new=2) 
-
-    def tableOnClicItemAction( self ,table, id_rows ,area_ls):
-        column_idx = table.currentColumn()
-        row_idx = table.currentRow()
-        item_na = self.t_fea.get_text_item_colum(table, de.ITEM_NA_IDX)
-        area = self.t_fea.get_text_item_colum(table, de.AREA_IDX)
-        if column_idx ==  de.ISSUE_LINK_IDX :
-            link = de.JI_SERVER +'/browse/'+ id_rows[str(row_idx)][0]
-            webbrowser.open(link, new=2)
-        elif column_idx == de.COMMENT_IDX :
-            widget = comm.CommentsApp( mainApp = self.ui, issue_key = id_rows[str(row_idx)][0]  , dicc_comment_ls = id_rows[str(row_idx)][1]   ,
-                                        area_ls = area_ls  , item_na = item_na ,  area = area)
-            widget.ui.show()
-
-            
-    def load_project_combo(self):
-        """populate projects combob.
-        """
-        self.ui.comboB_projects.clear()
-        dicc = self.jira_m.get_projects( de.JI_SERVER , self.USER , self.APIKEY )
-        if dicc[ de.key_errors ] != '[]':
-            QMessageBox.information(self, u'Loading projects error.', str( dicc[de.key_errors] )  )
-        for proj in ['None'] + dicc[ de.ls_ji_result ]:
-            self.ui.comboB_projects.addItem(str(proj))
-
-    def set_roots(self):
-        """instancing local root and depot root related with the choosen workspace.
-        """
-        self.set_worksp_ls()
-        dicc = {}
-        for proj in self.worksp_ls:
-            try:
-                if str(proj['client']) == self.PERF_WORKSPACE:
-                    print ( proj )
-                    self.LOCAL_ROOT = str(proj['Root']).replace('\\','/')
-                    dicc['local_root'] = self.LOCAL_ROOT
-                    self.DEPOT_ROOT = str(proj['Stream']).replace('\\','/')
-                    dicc['depot_root'] = self.DEPOT_ROOT
-                    break
-            except Exception as err:
-                print ( err)
-                print ('try warning')
-        hlp.metadata_dicc2json( de.TEMP_FOL+de.ROOTS_METAD_FI_NA , dicc)
-
-
-    def set_worksp_ls(self):
-        """get all workspaces data
-        """
-        perf = pr.PerforceRequests()
-        if self.PERF_USER != 'None' and self.PERF_USER != '':
-            dicc = perf.workspaces_ls( True , self.PERF_SERVER, self.PERF_USER,
-                                      self.PERF_WORKSPACE, self.PERF_PASS )
-            if dicc[de.key_errors] == '[]':
-                self.worksp_ls = dicc[de.ls_result]
-            else:
-                self.worksp_ls = []
-                QMessageBox.information(self, u'Loading perf workspaces error.', str( dicc[de.key_errors] )  )
-        else:
-            self.worksp_ls = []
-
-    def jira_login_action(self):
-        self.jira_combo_change_ac( 2 )
-        self.load_project_combo()
-        hlp_manager.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
-        QMessageBox.information(self, u'', "Jira login\n settings done"  )
-        
-    def jira_combo_change_ac(self, signal):
-        """ComboB or other widget action triggered when user changes values on Jira logging
+class getThumbnClass(QLabel):
+    def __init__(self, parent=None, path=None, size=(0,0)):
+        """Qlabel class for asume as thumbnail
         Args:
-            signal ([int]): [number for distinguish witch particular widget change you want to work with]
+            parent ([q object], optional): [q object for been parented]. Defaults to None.
+            path ([str], optional): [thumbnail path]. Defaults to None.
+            size (touple, optional): [touple with height and width values]. Defaults to (0,0).
         """
-        dicc = hlp.json2dicc_load( de.TEMP_FOL+de.LOGIN_METADATA_FI_NA )
-        if dicc!={}:
-            self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER = hlp_ji.load_jira_vars()
-        else:
-            dicc['project'] = 'None'
-            dicc['emailAddress'] = 'None'
-            dicc['apikey'] = 'None'
-        if signal == 1 :
-            dicc['project'] = str( self.ui.comboB_projects.currentText() )
-            self.PROJECT_KEY = dicc['project']
-            self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        elif signal == 2:
-            dicc['emailAddress'] = str( self.ui.lineEd_jira_user.text() )
-            self.USER = dicc['emailAddress']
-            self.ui.lineEd_jira_user.setText( self.USER )
-            dicc['apikey'] = str(self.ui.lineEd_apiKey.text())
-            self.APIKEY = str( dicc['apikey'] )
-            self.ui.lineEd_apiKey.setText('')
-        hlp.metadata_dicc2json( de.TEMP_FOL+de.LOGIN_METADATA_FI_NA , dicc )
-        area_ani_ls = list( self.PROJ_SETTINGS['KEYW']['areaAnim'].values() )
-        area_ass_ls = list( self.PROJ_SETTINGS['KEYW']['areaAssets'].values() )
-        if self.PROJ_SETTINGS != None:
-            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, area_ass_ls , de.HEADER_ASS_LS)
-            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, area_ani_ls  , de.HEADER_ANI_LS)
-        else:
-            QMessageBox.warning(self, u'', "Project Settings Value is None"  )
-
-    def perf_combo_change_ac( self, signal ):
-        """ComboB or other widget action triggered when user changes values perforce logging
-        Args:
-            signal ([int]): [number for distinguish witch particular widget change you want to work with]
-        """
-        dicc = hlp.json2dicc_load( de.TEMP_FOL+de.PERF_LOG_METADATA_FI_NA )
-        if dicc =={}:
-            dicc['perf_user'] = 'None'
-            dicc['perf_server'] = 'None'
-            dicc['perf_workspace'] = 'None'
-            dicc['perf_pass'] = 'None'
-        else:
-            self.PERF_USER ,self.PERF_SERVER ,self.PERF_WORKSPACE, self.PERF_PASS = hlp_perf.load_perf_vars()
-        if signal == 1:
-            dicc['perf_user'] = str(self.ui.lineEd_perforce_user.text() )
-            self.PERF_USER = dicc['perf_user']
-
-            dicc['perf_server'] = str(self.ui.lineEd_perforce_server.text() )
-            self.PERF_SERVER = dicc['perf_server']
-
-            dicc['perf_pass'] = str(self.ui.lineEd_perforce_pass.text() )
-            self.PERF_PASS = dicc['perf_pass']
-            
-            QMessageBox.information(self, u'', "Perforce login \n     settings done"  )
-
-            dicc['perf_workspace'] = str(self.ui.lineEd_perf_worksp.text())
-            self.PERF_WORKSPACE = str( dicc['perf_workspace'] )
-            self.set_roots()
-        hlp.metadata_dicc2json( de.TEMP_FOL+de.PERF_LOG_METADATA_FI_NA , dicc)
-
+        super(getThumbnClass, self).__init__(parent)
+        pic = QPixmap( path ).scaled(QtCore.QSize(size[0],size[1]), QtCore.Qt.KeepAspectRatio)
+        self.setPixmap(pic)
 
 
 class table_features( ):#QWidget ):
@@ -667,19 +472,6 @@ class table_features( ):#QWidget ):
         if dicc[de.key_errors] != '[]':
             QMessageBox.information(self.main_widg, u' ', str(dicc[de.key_errors]))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     def status_menu_func(self, table, position):
         """Menu on Status column witch change jira issue status.
         Args:
@@ -730,20 +522,235 @@ class table_features( ):#QWidget ):
         if actionLink != None:
             if actionLink.text() == "open issue link":
                 webbrowser.open(link, new=2) 
-    
 
-class getThumbnClass(QLabel):
-    def __init__(self, parent=None, path=None, size=(0,0)):
-        """Qlabel class for asume as thumbnail
-        Args:
-            parent ([q object], optional): [q object for been parented]. Defaults to None.
-            path ([str], optional): [thumbnail path]. Defaults to None.
-            size (touple, optional): [touple with height and width values]. Defaults to (0,0).
+
+class MyMainWindow(QMainWindow):
+    def __init__(self, loader = None ):
+        super(MyMainWindow, self).__init__( )
+        if ev.ENVIROMENT != 'Windows':
+            loader = QUiLoader()
+        
+        uifile = QtCore.QFile( r''+de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/' + de.MANAGE_PROD_UI)
+        uifile.open(QtCore.QFile.ReadOnly)
+        self.ui = loader.load( uifile, ev.getWindow(QWidget) )
+        self.initialize_widget_conn()
+
+    def initialize_widget_conn(self):
+        """Initializing functions, var and features.
         """
-        super(getThumbnClass, self).__init__(parent)
-        pic = QPixmap( path ).scaled(QtCore.QSize(size[0],size[1]), QtCore.Qt.KeepAspectRatio)
-        self.setPixmap(pic)
+        #self.get_master_creds()
+        self.jira_m = jq.JiraQueries()
+        self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp_ji.load_jira_vars()
+        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp_perf.load_perf_vars()
+        self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
+        self.load_project_combo()
+        hlp_manager.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
+        self.set_roots()
+        self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+        self.ui.comboB_projects.currentIndexChanged.connect(lambda: self.jira_combo_change_ac(1))
+        self.ui.lab_jiraServer.setText( self.JI_SERVER )
+        self.ui.lineEd_jira_user.setText( self.USER )
+        self.ui.lineEd_apiKey.setEchoMode( QLineEdit.Password )
+        self.ui.lineEd_apiKey.setText( self.APIKEY )
+        self.ui.pushBut_set_jira_login.clicked.connect( lambda: self.jira_login_action() )
 
+        self.ui.pushBut_login_perf.clicked.connect(lambda: self.perf_combo_change_ac(1))
+        self.ui.lineEd_perforce_server.setText( self.PERF_SERVER )
+        self.ui.lineEd_perforce_user.setText( self.PERF_USER )
+        self.ui.lineEd_perf_worksp.setText( self.PERF_WORKSPACE  )
+        self.ui.lineEd_perforce_pass.setEchoMode( QLineEdit.Password )
+        self.ui.lineEd_perforce_pass.setText( self.PERF_PASS  )
+        self.t_fea = table_features( self.ui.table_assetsTasks , self.ui.table_animTasks , main_widg = self )
+        diccAni =  self.PROJ_SETTINGS['KEYW']['areaAnim'] 
+        diccAss =   self.PROJ_SETTINGS['KEYW']['areaAssets'] 
+
+        if self.PROJ_SETTINGS != None:
+            assetsAreaLs = list(diccAss.values())
+            animAreaLs = list(diccAni.values())
+            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, assetsAreaLs  , de.HEADER_ASS_LS)
+            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, animAreaLs  , de.HEADER_ANI_LS )
+        else:
+            self.id_rows_ass = {}
+            self.id_rows_ani = {}
+        self.t_fea.initialized_features_table(self.ui.table_assetsTasks)
+        self.t_fea.initialized_features_table(self.ui.table_animTasks)
+        self.ui.pushBut_reload_tables.clicked.connect( lambda: self.t_fea.refresh_tables( )  )
+        self.run_menues( )
+        area_ani_ls = list(diccAni.values())
+        area_ass_ls = list(diccAss.values())
+        self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , area_ani_ls  )    )
+        self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , area_ass_ls  )  )
+
+    def run_menues( self ):
+        self.menu_help()
+        self.menu_pipeline_tools( )
+        
+    def menu_help(self):
+        help_dicc = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\'+ de.HELP_YAML_NA )
+        self.dicc_menu = help_dicc['HELP_MENU']
+        action_ls = []
+        for idx, key in enumerate ( self.dicc_menu ):
+            link = self.dicc_menu[ key ]
+            self.key_value = key
+            action = QAction( key , self.ui  )
+            action_ls.append( ( action , link ))
+            self.ui.menu_Help.addAction(   action   )
+            receiver = lambda link=link : self.get_help_link( link  ) 
+            self.ui.connect( action,   QtCore.SIGNAL('triggered()') , receiver)
+            
+    def get_help_link( self, link  ):
+        """Browse help
+        """
+        webbrowser.open( link , new=2) 
+
+    def menu_pipeline_tools( self):
+        action = QAction( de.TASK_CREATION_TOOL , self.ui  )
+        self.ui.menuPipeline_Tools.addAction(  action )#, triggered = self.launch_task_creation_panel )
+        receiver = lambda: self.launch_task_creation_panel() 
+        self.ui.connect( action,   QtCore.SIGNAL('triggered()') , receiver)
+
+    def launch_task_creation_panel( self ):
+        import manager_tools.task_creation_panel as task
+        reload( task )
+        widget = task.TaskCreationPanel()
+        widget.ui.show()   
+
+    def tableOnClicItemAction( self ,table, id_rows ,area_ls):
+        column_idx = table.currentColumn()
+        row_idx = table.currentRow()
+        item_na = self.t_fea.get_text_item_colum(table, de.ITEM_NA_IDX)
+        area = self.t_fea.get_text_item_colum(table, de.AREA_IDX)
+        if column_idx ==  de.ISSUE_LINK_IDX :
+            link = de.JI_SERVER +'/browse/'+ id_rows[str(row_idx)][0]
+            webbrowser.open(link, new=2)
+        elif column_idx == de.COMMENT_IDX :
+            widget = comm.CommentsApp( mainApp = self.ui, issue_key = id_rows[str(row_idx)][0]  , dicc_comment_ls = id_rows[str(row_idx)][1]   ,
+                                        area_ls = area_ls  , item_na = item_na ,  area = area)
+            widget.ui.show()
+
+            
+    def load_project_combo(self):
+        """populate projects combob.
+        """
+        self.ui.comboB_projects.clear()
+        dicc = self.jira_m.get_projects( de.JI_SERVER , self.USER , self.APIKEY )
+        if dicc[ de.key_errors ] != '[]':
+            QMessageBox.information(self, u'Loading projects error.', str( dicc[de.key_errors] )  )
+        for proj in ['None'] + dicc[ de.ls_ji_result ]:
+            self.ui.comboB_projects.addItem(str(proj))
+
+    def set_roots(self):
+        """instancing local root and depot root related with the choosen workspace.
+        """
+        self.set_worksp_ls()
+        dicc = {}
+        for proj in self.worksp_ls:
+            try:
+                if str(proj['client']) == self.PERF_WORKSPACE:
+                    print ( proj )
+                    self.LOCAL_ROOT = str(proj['Root']).replace('\\','/')
+                    dicc['local_root'] = self.LOCAL_ROOT
+                    self.DEPOT_ROOT = str(proj['Stream']).replace('\\','/')
+                    dicc['depot_root'] = self.DEPOT_ROOT
+                    break
+            except Exception as err:
+                print ( err)
+                print ('try warning')
+        hlp.metadata_dicc2json( de.TEMP_FOL+de.ROOTS_METAD_FI_NA , dicc)
+
+
+    def set_worksp_ls(self):
+        """get all workspaces data
+        """
+        perf = pr.PerforceRequests()
+        if self.PERF_USER != 'None' and self.PERF_USER != '':
+            dicc = perf.workspaces_ls( True , self.PERF_SERVER, self.PERF_USER,
+                                      self.PERF_WORKSPACE, self.PERF_PASS )
+            if dicc[de.key_errors] == '[]':
+                self.worksp_ls = dicc[de.ls_result]
+            else:
+                self.worksp_ls = []
+                QMessageBox.information(self, u'Loading perf workspaces error.', str( dicc[de.key_errors] )  )
+        else:
+            self.worksp_ls = []
+
+    def jira_login_action(self):
+        self.jira_combo_change_ac( 2 )
+        self.load_project_combo()
+        hlp_manager.set_logged_data_on_combo( self.ui.comboB_projects, self.PROJECT_KEY)
+        QMessageBox.information(self, u'', "Jira login\n settings done"  )
+        
+    def jira_combo_change_ac(self, signal):
+        """ComboB or other widget action triggered when user changes values on Jira logging
+        Args:
+            signal ([int]): [number for distinguish witch particular widget change you want to work with]
+        """
+        dicc = hlp.json2dicc_load( de.TEMP_FOL+de.LOGIN_METADATA_FI_NA )
+        if dicc!={}:
+            self.USER , self.APIKEY, self.PROJECT_KEY, self.JI_SERVER = hlp_ji.load_jira_vars()
+        else:
+            dicc['project'] = 'None'
+            dicc['emailAddress'] = 'None'
+            dicc['apikey'] = 'None'
+        if signal == 1 :
+            dicc['project'] = str( self.ui.comboB_projects.currentText() )
+            self.PROJECT_KEY = dicc['project']
+            self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
+        elif signal == 2:
+            dicc['emailAddress'] = str( self.ui.lineEd_jira_user.text() )
+            self.USER = dicc['emailAddress']
+            self.ui.lineEd_jira_user.setText( self.USER )
+            dicc['apikey'] = str(self.ui.lineEd_apiKey.text())
+            self.APIKEY = str( dicc['apikey'] )
+            self.ui.lineEd_apiKey.setText('')
+        hlp.metadata_dicc2json( de.TEMP_FOL+de.LOGIN_METADATA_FI_NA , dicc )
+        area_ani_ls = list( self.PROJ_SETTINGS['KEYW']['areaAnim'].values() )
+        area_ass_ls = list( self.PROJ_SETTINGS['KEYW']['areaAssets'].values() )
+        if self.PROJ_SETTINGS != None:
+            self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, area_ass_ls , de.HEADER_ASS_LS)
+            self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, area_ani_ls  , de.HEADER_ANI_LS)
+        else:
+            QMessageBox.warning(self, u'', "Project Settings Value is None"  )
+
+    def perf_combo_change_ac( self, signal ):
+        """ComboB or other widget action triggered when user changes values perforce logging
+        Args:
+            signal ([int]): [number for distinguish witch particular widget change you want to work with]
+        """
+        dicc = hlp.json2dicc_load( de.TEMP_FOL+de.PERF_LOG_METADATA_FI_NA )
+        if dicc =={}:
+            dicc['perf_user'] = 'None'
+            dicc['perf_server'] = 'None'
+            dicc['perf_workspace'] = 'None'
+            dicc['perf_pass'] = 'None'
+        else:
+            self.PERF_USER ,self.PERF_SERVER ,self.PERF_WORKSPACE, self.PERF_PASS = hlp_perf.load_perf_vars()
+        if signal == 1:
+            dicc['perf_user'] = str(self.ui.lineEd_perforce_user.text() )
+            self.PERF_USER = dicc['perf_user']
+
+            dicc['perf_server'] = str(self.ui.lineEd_perforce_server.text() )
+            self.PERF_SERVER = dicc['perf_server']
+
+            dicc['perf_pass'] = str(self.ui.lineEd_perforce_pass.text() )
+            self.PERF_PASS = dicc['perf_pass']
+            
+            QMessageBox.information(self, u'', "Perforce login \n     settings done"  )
+
+            dicc['perf_workspace'] = str(self.ui.lineEd_perf_worksp.text())
+            self.PERF_WORKSPACE = str( dicc['perf_workspace'] )
+            self.set_roots()
+        hlp.metadata_dicc2json( de.TEMP_FOL+de.PERF_LOG_METADATA_FI_NA , dicc)
+
+print ( ev.ENVIROMENT )
+if ev.ENVIROMENT == 'Windows':
+    ###   manager launch  ####
+    import manager_tools.jira_project_manager as jiraM
+    loader = QUiLoader()
+    app = QApplication(sys.argv)
+    widget = jiraM.MyMainWindow( loader = loader)
+    widget.ui.show()
+    sys.exit(app.exec())
 
 if str(sys.version).startswith('2'): #ThreadReturnPy2
     class ThreadReturn(Thread):
