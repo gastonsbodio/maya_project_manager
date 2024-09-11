@@ -2,17 +2,28 @@ import sys
 import os
 import time
 import ast
+
 try:
-    from PySide  import QtCore
-    from PySide.QtGui import *
-    from PySide.QtUiTools import QUiLoader
-except Exception as err:
     from PySide2.QtUiTools import QUiLoader
     from PySide2 import QtCore
     from PySide2.QtGui import *
     from PySide2.QtWidgets import *
+except Exception as err:
+    from PySide6.QtUiTools import QUiLoader
+    from PySide6 import QtCore
+    from PySide6.QtGui import *
+    from PySide6.QtWidgets import *
+    import sys
+    import ctypes
+    from ctypes.wintypes import MAX_PATH
+    dll = ctypes.windll.shell32
+    buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+    if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+        USER_DOC = buf.value
+    SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+    sys.path.append(SCRIPT_FOL)
+    
 import shutil
-
 from importlib import reload
 
 import google_conn.google_sheet_request as gs
@@ -36,11 +47,12 @@ reload(hlp_perf)
 reload(hlp_manager)
 
 class AnimSubPath( QMainWindow ):
-    def __init__( self, anim_na = '' , area = '' , anim_asset = '' , signal= '', row_idx = None, 
+    def __init__( self, loader = None ,anim_na = '' , area = '' , anim_asset = '' , signal= '', row_idx = None, 
                     assign_user_id = '' ,  path_ls = [] , area_done_dicc = {} ,  issue_key = ''  ):
         super(AnimSubPath, self).__init__( )
-        loader = QUiLoader()
-        uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/'+ de.ANIM_PATH_TREE_UI)
+        if loader == None:
+            loader = QUiLoader()
+        uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') + '/manager_tools/' + de.ANIM_PATH_TREE_UI)
         uifile.open(QtCore.QFile.ReadOnly)
         self.ui = loader.load( uifile, ev.getWindow( QWidget ) )
         self.anim_na = anim_na
@@ -58,12 +70,12 @@ class AnimSubPath( QMainWindow ):
         """Initializing functions, var and features.
         """
         self.jira_m = jq.JiraQueries()
-        self.USER , self.APIKEY, self.PROJECT_KEY  = hlp_ji.load_jira_vars()
-        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE = hlp_perf.load_perf_vars()
+        self.USER , self.APIKEY, self.PROJECT_KEY , self.JI_SERVER = hlp_ji.load_jira_vars()
+        self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        dicc_ = { 'keywordAnim': self.PROJ_SETTINGS['KEYW']['areaAnim']  }
-        self.anim_root = hlp_manager.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
+        dicc_ = { 'keywordAnim': self.PROJ_SETTINGS['KEYW']['areaAnim']  , 'itemType':'' }
+        self.anim_root = hlp_manager.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc_ )
         self.ui.lineEdit_anim_root.setText( self.anim_root )
         self.load_qwlist(  self.ui.listWid_lavel1, 0 )
         self.ui.listWid_lavel1.currentItemChanged.connect( lambda: self.    load_qwlist( self.ui.listWid_lavel2 , 1 ))
@@ -180,9 +192,10 @@ class AnimSubPath( QMainWindow ):
         
 if ev.ENVIROMENT == 'Windows':
     if __name__ == '__main__':
+        loader = QUiLoader()
         app = QApplication(sys.argv)
-        widget = AnimSubPath()
+        widget = AnimSubPath( loader )
         widget.ui.show()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
         
         

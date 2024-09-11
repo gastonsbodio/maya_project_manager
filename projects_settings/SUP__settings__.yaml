@@ -14,7 +14,6 @@ KEYW:
         anim: Animation
         lay: Layout
         fx: VFX
-
     asset_rig_template: genericMale_Rig_Starter
     asset_name_template: genericMale
     bindPose_pattern: _Bindpose

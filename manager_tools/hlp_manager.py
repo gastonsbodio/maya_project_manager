@@ -56,7 +56,7 @@ def load_root_vars():
     else:
         LOCAL_ROOT = 'None'
         DEPOT_ROOT = 'None'
-    return  LOCAL_ROOT ,DEPOT_ROOT 
+    return  LOCAL_ROOT , DEPOT_ROOT 
 
 
 def solve_path( root_state, key_path, local_root,

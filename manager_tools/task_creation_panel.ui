@@ -190,7 +190,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Asset Type</string>
+       <string>Item Type</string>
       </property>
      </widget>
     </widget>

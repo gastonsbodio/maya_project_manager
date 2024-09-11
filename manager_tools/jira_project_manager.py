@@ -17,7 +17,8 @@
 ####import manager_tools.jira_project_manager as jiraM
 ####
 ####reload( jiraM )
-####widget = jiraM.MyMainWindow()
+#####loader = QUiLoader()
+####widget = jiraM.MyMainWindow( loader = loader )
 ####widget.ui.show()
 
 import sys
@@ -527,7 +528,7 @@ class table_features( ):#QWidget ):
 class MyMainWindow(QMainWindow):
     def __init__(self, loader = None ):
         super(MyMainWindow, self).__init__( )
-        if ev.ENVIROMENT != 'Windows':
+        if loader == None:
             loader = QUiLoader()
         
         uifile = QtCore.QFile( r''+de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/' + de.MANAGE_PROD_UI)
@@ -612,7 +613,8 @@ class MyMainWindow(QMainWindow):
     def launch_task_creation_panel( self ):
         import manager_tools.task_creation_panel as task
         reload( task )
-        widget = task.TaskCreationPanel()
+        loader = QUiLoader()
+        widget = task.TaskCreationPanel( loader = loader, parent = self.ui ,launched_by = 'manager')
         widget.ui.show()   
 
     def tableOnClicItemAction( self ,table, id_rows ,area_ls):
@@ -742,7 +744,6 @@ class MyMainWindow(QMainWindow):
             self.set_roots()
         hlp.metadata_dicc2json( de.TEMP_FOL+de.PERF_LOG_METADATA_FI_NA , dicc)
 
-print ( ev.ENVIROMENT )
 if ev.ENVIROMENT == 'Windows':
     ###   manager launch  ####
     import manager_tools.jira_project_manager as jiraM

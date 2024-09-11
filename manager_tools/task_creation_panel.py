@@ -13,6 +13,15 @@ except Exception as err:
     from PySide6 import QtCore
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
+    import sys
+    import ctypes
+    from ctypes.wintypes import MAX_PATH
+    dll = ctypes.windll.shell32
+    buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+    if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+        USER_DOC = buf.value
+    SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+    sys.path.append(SCRIPT_FOL)
     
 import shutil
 from importlib import reload
@@ -40,14 +49,19 @@ reload(hlp_ji)
 reload(hlp_perf)
 reload(hlp_manager)
 reload(hlp_goo)
-
+LAUNCHED_BY = None
 class TaskCreationPanel(QMainWindow):
-    def __init__(self):
+    def __init__(self, loader = None , launched_by = None, parent = None):
         super(TaskCreationPanel, self).__init__( )
-        loader = QUiLoader()
+        global LAUNCHED_BY
+        LAUNCHED_BY = launched_by
+        if loader == None:
+            loader = QUiLoader()
         uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/'+ de.TASK_CREATION_UI)
         uifile.open(QtCore.QFile.ReadOnly)
-        self.ui = loader.load( uifile, ev.getWindow(QWidget) )
+        if parent == None:
+            parent = ev.getWindow(QWidget)
+        self.ui = loader.load( uifile, parent )
         self.initialize_widget_conn()
 
     def initialize_widget_conn(self):
@@ -95,6 +109,10 @@ class TaskCreationPanel(QMainWindow):
         else:
             self.load_combo_item_na( self.asset_tracked_ls_diccs, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_item_names )
             self.set_deault_state_combo_anim_asset_tag( )
+
+
+
+
 
     def set_deault_state_combo_anim_asset_tag( self ):
         self.ui.comboB_asset_on_anim_tag.setEnabled( False )
@@ -150,10 +168,14 @@ class TaskCreationPanel(QMainWindow):
     def load_asset_type_combo(self):
         """populate area combob.
         """
-        assets_types_ls = list( self.PROJ_SETTINGS['KEYW']['assets_types'].values() )
+        area = str(self.ui.comboB_item_area.currentText())
+        if area == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
+            item_types_ls = list( self.PROJ_SETTINGS['KEYW']['areaAnim'].values() )
+        else:
+            item_types_ls = list( self.PROJ_SETTINGS['KEYW']['assets_types'].values() )
         self.ui.comboB_asset_type.clear()
         self.ui.comboB_asset_type_tag.clear()
-        for item in assets_types_ls:
+        for item in item_types_ls:
             self.ui.comboB_asset_type.addItem( item )
             self.ui.comboB_asset_type_tag.addItem( item )
 
@@ -263,14 +285,17 @@ class TaskCreationPanel(QMainWindow):
         
     def execute_anim_sub_path( self , anim_na , area , anim_asset , signal, row_idx, path_ls, area_done_dicc , assign_user_id = None  ):
         issue_key = str(self.ui.lineEd_issue_key.text())
-        widget = asp.AnimSubPath( anim_na = anim_na , area = area , anim_asset = anim_asset , signal = signal, 
-                                row_idx = row_idx ,assign_user_id = assign_user_id ,  path_ls = path_ls, 
-                                area_done_dicc = area_done_dicc, issue_key = issue_key)
+        loader = QUiLoader()
+        widget = asp.AnimSubPath( loader = loader, anim_na = anim_na , area = area , anim_asset = anim_asset ,
+                                 signal = signal, row_idx = row_idx ,assign_user_id = assign_user_id , 
+                                 path_ls = path_ls,  area_done_dicc = area_done_dicc, issue_key = issue_key)
         widget.ui.show()
         
 if ev.ENVIROMENT == 'Windows':
     if __name__ == '__main__':
+        loader = QUiLoader()
         app = QApplication(sys.argv)
-        widget = TaskCreationPanel()
-        widget.ui.show()
-        sys.exit(app.exec_())
+        widget = TaskCreationPanel( loader = loader)
+        if LAUNCHED_BY == None:
+            widget.ui.show()
+            sys.exit(app.exec())
