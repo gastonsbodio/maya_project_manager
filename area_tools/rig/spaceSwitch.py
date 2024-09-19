@@ -1,3 +1,4 @@
+"""avoid_auto_read"""
 import maya.cmds as mc
 from maya.api.OpenMaya import MMatrix
 

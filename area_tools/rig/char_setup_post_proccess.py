@@ -4,9 +4,10 @@
     and take out initial hastag, you can choose "quadruped"  or "biped" mode
     and you can set False if you want to skip some feature
 """
+"""avoid_auto_read"""
 
 #from importlib import reload
-#import char_setup_post_proccess as cspp
+#import area_tools.rig.char_setup_post_proccess as cspp
 #reload( cspp )
 
 #mode = 'biped'

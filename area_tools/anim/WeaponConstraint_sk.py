@@ -5,7 +5,7 @@
 """
 
 #from importlib import reload
-#import WeaponConstraint_sk as wc
+#import area_tools.anim.WeaponConstraint_sk as wc
 #reload(wc)
 #widget = wc.parentWeapon()
 
@@ -34,11 +34,13 @@ from ctypes.wintypes import MAX_PATH
 dll = ctypes.windll.shell32
 buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
 
-
 if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 	USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append(SCRIPT_FOL)
+import definitions as de
+reload(de)
 MAYA_SCRIPT_FOL = USER_DOC + "\\maya"
-
 for path in sys.path:
     if "Maya2020" in path :
         MAYA_VER = '2020'
@@ -72,6 +74,8 @@ HAND_CONTRAIN = "_hand__Constraint"
 HAND_PARENT_FOLLOW = 'gun_follow_%s_cnt'
 DUPLI_SUF = '_dupli'
 
+ANIM_FOL_FILES = de.ANIM_FOL_FILES
+
 ui_name = 'ImportFileUI'
 def getWindow():
     pointer = mui.MQtUtil.mainWindow()
@@ -90,9 +94,9 @@ class parentWeapon(QDialog):
         maya_fol = MAYA_SCRIPT_FOL.replace('\\','/')
         self.centralLayout = QVBoxLayout(self)
         self.centralLayout.setContentsMargins(0, 0, 0, 0)
-        for script_path in [ maya_fol + '/scripts/' ,  maya_fol + '/' + MAYA_VER + '/scripts/' ]:
+        for script_path in [ de.SCRIPT_MANAG_FOL.replace('\\','/') + ANIM_FOL_FILES  ]:
             try:
-                uifile = QtCore.QFile(os.path.join(script_path, "parentWeaponTool.ui"))
+                uifile = QtCore.QFile(os.path.join(script_path, de.PARENTWEAP_TOOL_UI))
                 uifile.open(QtCore.QFile.ReadOnly)
                 self.ui = loader.load(uifile)
                 break

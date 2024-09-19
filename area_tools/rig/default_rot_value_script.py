@@ -1,11 +1,12 @@
 """ instructions: place this file on maya script folder, 
     copy the 4th lines bellow  and paste it on script editor (python tab)
-    take out the # (hashtag chars)
+    take out the hashtag chars
     before executing, select first, the target ( control to parent to), and after that, all the sources ( objects to be parented with)
 """
+"""avoid_auto_read"""
 
 #from importlib import reload
-#import parent_to_tool as p2t
+#import area_tools.rig.parent_to_tool as p2t
 #reload(p2t)
 #p2t.do_parenting_thing('parent')
 

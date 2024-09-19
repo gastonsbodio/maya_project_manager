@@ -26,8 +26,17 @@ except exception:
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
 
-
 from importlib import reload
+
+import ctypes
+from ctypes.wintypes import MAX_PATH
+dll = ctypes.windll.shell32
+buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+	USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append(SCRIPT_FOL)
+
 import perforce_conn.perforce_requests as pr
 import google_conn.google_sheet_request as gs
 import jira_conn.jira_queries as jq

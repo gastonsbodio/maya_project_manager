@@ -17,7 +17,6 @@
 #reload(att)
 #att.ik_copying_animation()
 
-
 import sys
 import os
 import json
@@ -47,9 +46,12 @@ import ctypes
 from ctypes.wintypes import MAX_PATH
 dll = ctypes.windll.shell32
 buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-
 if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 	USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append(SCRIPT_FOL)
+import definitions as de
+reload( de )
 MAYA_FOL = USER_DOC + "\\maya"
 MAYA_FOL = MAYA_FOL.replace('\\','/')
 for path in sys.path:
@@ -73,7 +75,7 @@ for path in sys.path:
         break
 
 TEMP_FOL = tempfile.gettempdir().replace("\\","/") + "/"
-MAYA_SCRIPT_FOL_LS = [ MAYA_FOL + '/scripts/' ,  MAYA_FOL + '/' + MAYA_VER + '/scripts/' ]
+UI_ANIM_FOL = [ de.SCRIPT_MANAG_FOL.replace('\\','/') + de.ANIM_FOL_FILES  ]
 ROOT = 'C:/dev/'
 SKELETON = 'skeleton.ma'
 ANIM_RIG_EXP = 'anim_rig_exporter.ma'
@@ -97,14 +99,6 @@ DICC_MIRROR = { 'FKIndexFinger1': 'index_01', 'FKIndexFinger2': 'index_02' , 'FK
   'FKHip':'thigh', 'FKKnee': 'calf',
   'FKAnkle': 'foot', 'FKToes': 'ball',
   'FKEye': 'eye'}
-
-
-#ANIM_FOLDER = "C:/Users/gasco/Downloads/anim_list/"
-#MATCH_FILE_NA = "anim_rig_exporter.ma"
-#SKELETON_SETUP_MATCH_FILE = "C:/dev/hydrogen/ContentSource/characters/zikius/archer/Model/Rig/" + MATCH_FILE_NA
-#SET_UP_REF = 'Archer_Rig.ma'
-#SET_UP_REF_PATH = "C:/dev/hydrogen/ContentSource/characters/zikius/archer/Model/Rig/"
-
 
 def json2dicc_load( path ):
     """Read a json dicc and return a python dicc
@@ -192,9 +186,9 @@ class animTransference(QDialog):
         self.centralLayout = QVBoxLayout(self)
         self.centralLayout.setContentsMargins(0, 0, 0, 0)
         self.setWindowTitle("Animation Transference Tool")
-        for script_path in  MAYA_SCRIPT_FOL_LS :
+        for script_path in  UI_ANIM_FOL :
             try:
-                uifile = QtCore.QFile(os.path.join(script_path, "transferAnimTool.ui"))
+                uifile = QtCore.QFile(os.path.join(script_path, de.TRANSF_ANIM_T_UI))
                 uifile.open(QtCore.QFile.ReadOnly)
                 self.ui = loader.load(uifile)
                 break
@@ -260,7 +254,7 @@ class animTransference(QDialog):
 
     def generate_switch_tampla_ls( self ):
         templates_fi = []
-        for path_ in MAYA_SCRIPT_FOL_LS:
+        for path_ in UI_ANIM_FOL:
             files_ls = os.listdir( path_ )
             for filee in files_ls:   
                 if filee.startswith('ik_fk_switch_'):
@@ -480,7 +474,7 @@ class animTransference(QDialog):
         line = line + "import os\n"
         line = line + "cmds.loadPlugin('fbxmaya', quiet=True)\n"
         #cmds.loadPlugin('AbcExport', quiet=True)
-        for spath in MAYA_SCRIPT_FOL_LS:
+        for spath in UI_ANIM_FOL:
             line = line + "sys.path.append( '" + spath + "' )\n"
         line = line + "import Anim_Transference_tool_sk as att\n"
         line = line + "toolcommand = att.transfer_anim_( key_checkBFKIK_matcher = %s ,\n"%str(bool_value)

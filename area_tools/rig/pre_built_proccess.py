@@ -1,14 +1,14 @@
-import maya.cmds as cmds
-import maya.mel as mel
-
+"""avoid_auto_read"""
 
 #import maya.mel as mel
-#import pre_built_proccess as pbp
+#import area_tools.rig.pre_built_proccess as pbp
 #from importlib import reload
 #reload( pbp )
 #import char_setup_post_proccess as csp
 #reload( csp )
 
+import maya.cmds as cmds
+import maya.mel as mel
 
 ##   1     import unreal skeleton template
 #pbp.run_all_preskeleton_code()

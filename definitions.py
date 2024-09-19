@@ -47,6 +47,7 @@ SCRIPT_MANAG_FOL = USER_DOC + "\\"+COMPANY_TOOLS_FOL+"\\"+JIRA_MANAGE_FOL
 OPEN_DEFINI_YAML = 'open_definitions.yaml'
 HELP_YAML_NA = '__help__.yaml' 
 ANIM_FOL_FILES = '/area_tools/anim/'
+RIG_FOL_FILES = '/area_tools/rig/'
 
 DEFIN_DICC = get_yaml_fil_data( SCRIPT_MANAG_FOL +'\\' + OPEN_DEFINI_YAML )
 HELP_DICC = get_yaml_fil_data( SCRIPT_MANAG_FOL +'\\' + HELP_YAML_NA )
@@ -78,6 +79,8 @@ TASK_CREATION_UI = 'task_creation_panel.ui'
 ANIM_CHECK_UI = 'checker_anim_tool.ui'
 ANIM_PATH_TREE_UI = 'anim_path_treel.ui'
 COMMENTS_UI = 'comments_panel.ui'
+TRANSF_ANIM_T_UI = "transferAnimTool.ui"
+PARENTWEAP_TOOL_UI = "parentWeaponTool.ui"
 FORBIDDEN_CHARS = [" ","-","_","@","%", "$","?", "!", "|","*",".",",",";"]
 
 ###########

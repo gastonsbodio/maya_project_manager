@@ -1,3 +1,5 @@
+"""avoid_auto_read"""
+
 import maya.cmds as cmds
 from importlib import reload
 import parent_to_tool as p2t

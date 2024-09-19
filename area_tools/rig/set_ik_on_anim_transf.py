@@ -1,3 +1,4 @@
+"""avoid_auto_read"""
 import maya.mel as mel
 from importlib import reload
 import ik_fk_switch_biped as ikfk

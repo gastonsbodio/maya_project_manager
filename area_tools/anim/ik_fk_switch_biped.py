@@ -3,13 +3,13 @@
 
 """   IK  to FK   """
 #from importlib import reload
-#import ik_fk_switch_biped as ikfk
+#import area_tools.anim.ik_fk_switch_biped as ikfk
 #reload(ikfk)
 #ikfk.limb_ik_2_fk()
 
 """   FK  to  IK   """
 #from importlib import reload
-#import ik_fk_switch_biped as ikfk
+#import area_tools.anim.ik_fk_switch_biped as ikfk
 #reload(ikfk)
 #ikfk.limb_fk_2_ik()
 

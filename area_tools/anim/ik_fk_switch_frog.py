@@ -1,14 +1,14 @@
-""" Run the lines below for launch switch processing ( take out character)"""
+""" Run the lines below for launch switch processing ( take out the hashtag chars )"""
 """avoid_auto_read"""
 """   IK  to FK   """
 #from importlib import reload
-#import ik_fk_switch_frog as ikfk
+#import area_tools.anim.ik_fk_switch_frog as ikfk
 #reload(ikfk)
 #ikfk.limb_ik_2_fk()
 
 """   FK  to  IK   """
 #from importlib import reload
-#import ik_fk_switch_frog as ikfk
+#import area_tools.anim.ik_fk_switch_frog as ikfk
 #reload(ikfk)
 #ikfk.limb_fk_2_ik()
 
