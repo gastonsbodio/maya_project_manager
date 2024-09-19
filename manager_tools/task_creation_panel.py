@@ -55,8 +55,8 @@ class TaskCreationPanel(QMainWindow):
         super(TaskCreationPanel, self).__init__( )
         global LAUNCHED_BY
         LAUNCHED_BY = launched_by
-        if loader == None:
-            loader = QUiLoader()
+        #if ev.ENVIROMENT  == 'Windows':# loader == None:
+        #    loader = QUiLoader()
         uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/'+ de.TASK_CREATION_UI)
         uifile.open(QtCore.QFile.ReadOnly)
         if parent == None:
@@ -77,9 +77,10 @@ class TaskCreationPanel(QMainWindow):
         self.load_area_combo()
         self.load_asset_type_combo()
         self.get_google_asset_and_anims()
-        self.load_combo_item_na( self.asset_tracked_ls_diccs, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim )
+        characters_ls = self.get_chars_from_track ( )
+        self.load_combo_item_na( characters_ls, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim )
         self.load_combo_item_na( self.asset_tracked_ls_diccs, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_item_names )
-        self.load_combo_item_na( self.asset_tracked_ls_diccs, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim_tag )
+        self.load_combo_item_na( characters_ls, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim_tag )
         self.ui.radioBut_choose.clicked.connect(lambda:  self.radio_but_clic_action() )
         self.ui.radioBut_create.clicked.connect(lambda: self.radio_but_clic_action() )
         self.default_radio_states()
@@ -90,9 +91,16 @@ class TaskCreationPanel(QMainWindow):
         self.ui.pushBut_create_one_issue.clicked.connect( lambda: self.create_full_task() )
         self.ui.pushBut_tag_issue.clicked.connect( lambda: self.tag_issue() )
         self.ui.pushBut_create_file_template.clicked.connect( lambda: self.create_template_but_action() )
-        self.ui.comboB_item_area.currentIndexChanged.connect(lambda: self.issue_type_combo_change_action() )
+        self.ui.comboB_item_area.currentIndexChanged.connect(lambda: self.item_type_combo_change_action() )
         self.ui.comboB_item_area_tag.currentIndexChanged.connect(lambda: self.item_area_tag_combo_change_action() )
         self.ui.actionTrack_Sheet_View.triggered.connect( lambda:  self.get_track_sheet( )  )
+
+    def get_chars_from_track ( self ):
+        char_ls = []
+        for asset in self.asset_tracked_ls_diccs:
+            if self.PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] in asset[de.GOOGLE_SH_CREAT_PATH]:
+                char_ls.append( asset )
+        return char_ls
 
     def get_track_sheet(self):
         """Browse help for get jira api token
@@ -102,16 +110,24 @@ class TaskCreationPanel(QMainWindow):
 
     def item_area_tag_combo_change_action(self):
         selection = str(self.ui.comboB_item_area_tag.currentText())
-        if selection == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
+        if selection == self.PROJ_SETTINGS ['KEYW']['item_types']['anim']:
             self.load_combo_item_na( self.anim_tracked_ls_diccs, de.GOOGLE_SH_ANI_NA_COL, self.ui.comboB_item_names )
+            self.load_asset_type_combo()
             self.ui.comboB_asset_on_anim_tag.setEnabled( True )
             self.ui.lab_asset_anim_tag.setEnabled( True )
         else:
+            self.load_asset_type_combo()
             self.load_combo_item_na( self.asset_tracked_ls_diccs, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_item_names )
             self.set_deault_state_combo_anim_asset_tag( )
 
-
-
+    def item_type_combo_change_action(self):
+        if str(self.ui.comboB_item_area.currentText()) == self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] :
+            self.load_asset_type_combo()
+            self.ui.comboB_asset_on_anim.setEnabled( True )
+            self.ui.lab_asset_anim.setEnabled( True )
+        else:
+            self.load_asset_type_combo()
+            self.set_defualt_state_combo_anim_asset()
 
 
     def set_deault_state_combo_anim_asset_tag( self ):
@@ -122,13 +138,6 @@ class TaskCreationPanel(QMainWindow):
         self.ui.comboB_asset_on_anim.setEnabled( False )
         self.ui.lab_asset_anim.setEnabled( False )
 
-    def issue_type_combo_change_action(self):
-        if str(self.ui.comboB_item_area.currentText()) == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] :
-            self.ui.comboB_asset_on_anim.setEnabled( True )
-            self.ui.lab_asset_anim.setEnabled( True )
-        else:
-            self.set_defualt_state_combo_anim_asset()
-        
     def load_assign_user_combo(self):
         """populate assignable users combob.
         """
@@ -157,8 +166,7 @@ class TaskCreationPanel(QMainWindow):
         """populate area combob.
         """
         if self.PROJ_SETTINGS != None: 
-            list_ = [     self.PROJ_SETTINGS ['KEYW']['areaAssets']['mod']   ,    self.PROJ_SETTINGS ['KEYW']['areaAssets']['rig']    ,
-                        self.PROJ_SETTINGS ['KEYW']['areaAssets']['text']    ,  self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']   ]
+            list_ =  list( self.PROJ_SETTINGS['KEYW']['areaAssets'].values() ) + [ self.PROJ_SETTINGS ['KEYW']['item_types']['anim']   ]
             self.ui.comboB_item_area_tag.clear()
             self.ui.comboB_item_area.clear()
             for item in list_:
@@ -169,7 +177,7 @@ class TaskCreationPanel(QMainWindow):
         """populate area combob.
         """
         area = str(self.ui.comboB_item_area.currentText())
-        if area == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
+        if area == self.PROJ_SETTINGS ['KEYW']['item_types']['anim']:
             item_types_ls = list( self.PROJ_SETTINGS['KEYW']['areaAnim'].values() )
         else:
             item_types_ls = list( self.PROJ_SETTINGS['KEYW']['assets_types'].values() )
@@ -196,16 +204,16 @@ class TaskCreationPanel(QMainWindow):
         """Creates a issue/task on jira  associated with the given arguments on the tool and creates local templates
         on this task.
         """
-        area = str(self.ui.comboB_item_area.currentText())
+        area = str(self.ui.comboB_asset_type.currentText())
         item_na = str(self.ui.lineEd_asset_na.text() )
         key_permission , area_done_dicc , row_idx , path_ls ,row_idx_crea_templa = hlp_manager.check_created_task( self, QMessageBox, 
                                                                                                         gs ,area, item_na )
         if key_permission:
             assign_name = str(self.ui.comboBuser_4_assign.currentText())
             anim_asset = str(self.ui.comboB_asset_on_anim.currentText())
-            assetType = str(self.ui.comboB_asset_type.currentText())
+            assetType = str(self.ui.comboB_item_area.currentText())
             assign_user_id = self.dicc_users_id [ assign_name ]
-            if str( self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) != str( area ):
+            if str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] ) != str( assetType ):
                 goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox ,de.issue_type_task, 
                                                                     assign_user_id , item_na , area , area_done_dicc ,
                                                                     path_ls , anim_asset, assetType )
@@ -230,7 +238,7 @@ class TaskCreationPanel(QMainWindow):
     def tag_issue(self):
         issue_key = str( self.ui.lineEd_issue_key.text() )
         item_na, area = self.get_asset_na_and_area()
-        if area == self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
+        if area == self.PROJ_SETTINGS ['KEYW']['item_types']['anim']:
             anim_char = str(self.ui.comboB_asset_on_anim_tag.currentText())
         else:
             anim_char = ''
@@ -239,7 +247,8 @@ class TaskCreationPanel(QMainWindow):
         if key_permission:
             if ' ' not in issue_key:
                 area_done_dicc[ area ] = issue_key
-                label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( self, area , str(self.ui.comboB_asset_on_anim_tag.currentText()), item_na  , area_done_dicc , path_ls)
+                label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( self, area ,
+                                 str(self.ui.comboB_asset_on_anim_tag.currentText()), item_na  , area_done_dicc , path_ls)
                 hlp_ji.set_issue_label( self,  QMessageBox ,label_ls, issue_key , self.jira_m )
                 hlp_manager.set_new_values_on_sheet(  self , gs, QMessageBox ,area, goo_colum , value_ls, row_idx  )
                 QMessageBox.information(self, u'Done', 'Issue:  '+ issue_key +'   tagged. ' )
@@ -264,10 +273,10 @@ class TaskCreationPanel(QMainWindow):
         self.ui.lineEd_new_asset_na.setEnabled( False )
 
     def create_template_and_submit( self, item_na , area , anim_asset , row_idx ):
-        assetType = str( self.ui.comboB_asset_type.currentText() )
+        itemType = str( self.ui.comboB_item_area.currentText() )
         type, anim_ass_fullpath, template_full_path, item_area_full_path , item_depot_path = hlp_manager.item_path_builder(
-                                self, item_na , area , anim_asset , assetType )
-        if str( self.PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) != str( area ):
+                                self, item_na , area , anim_asset , itemType )
+        if str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] ) != str( itemType ):
             perf = pr.PerforceRequests()
             hlp_manager.copy_and_submit( self, self.PROJ_SETTINGS, QMessageBox , perf ,  template_full_path , item_area_full_path , area ,
                                 item_na  , type , anim_ass_fullpath )
@@ -283,12 +292,15 @@ class TaskCreationPanel(QMainWindow):
         if item_area_full_path != None:
             QMessageBox.information( self, u'Done', item_area_full_path + '   template created!'  )
         
-    def execute_anim_sub_path( self , anim_na , area , anim_asset , signal, row_idx, path_ls, area_done_dicc , assign_user_id = None  ):
+    def execute_anim_sub_path( self , anim_na , area , anim_asset , signal,
+                              row_idx, path_ls, area_done_dicc , assign_user_id = None  ):
         issue_key = str(self.ui.lineEd_issue_key.text())
+        item_type = str(self.ui.comboB_item_area.currentText())
         loader = QUiLoader()
         widget = asp.AnimSubPath( loader = loader, anim_na = anim_na , area = area , anim_asset = anim_asset ,
                                  signal = signal, row_idx = row_idx ,assign_user_id = assign_user_id , 
-                                 path_ls = path_ls,  area_done_dicc = area_done_dicc, issue_key = issue_key)
+                                 path_ls = path_ls,  area_done_dicc = area_done_dicc, issue_key = issue_key , 
+                                 item_type = item_type )
         widget.ui.show()
         
 if ev.ENVIROMENT == 'Windows':

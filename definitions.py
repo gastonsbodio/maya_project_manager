@@ -46,6 +46,7 @@ JIRA_MANAGE_FOL = 'jira_manager'
 SCRIPT_MANAG_FOL = USER_DOC + "\\"+COMPANY_TOOLS_FOL+"\\"+JIRA_MANAGE_FOL
 OPEN_DEFINI_YAML = 'open_definitions.yaml'
 HELP_YAML_NA = '__help__.yaml' 
+ANIM_FOL_FILES = '/area_tools/anim/'
 
 DEFIN_DICC = get_yaml_fil_data( SCRIPT_MANAG_FOL +'\\' + OPEN_DEFINI_YAML )
 HELP_DICC = get_yaml_fil_data( SCRIPT_MANAG_FOL +'\\' + HELP_YAML_NA )
@@ -82,6 +83,14 @@ FORBIDDEN_CHARS = [" ","-","_","@","%", "$","?", "!", "|","*",".",",",";"]
 ###########
 #MASTER_USER = ""
 #MASTER_API_KEY = ""
+
+########
+### company vars
+COMPANY_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['COMPANY_MENU_NA']
+TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['TOOLS_MENU_NA']
+ANIM_TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['ANIM_TOOLS_MENU_NA']
+RIG_TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['RIG_TOOLS_MENU_NA']
+SKIP_AUTO_READ_PHRASE = DEFIN_DICC['KEYW']['COMPANY']['SKIP_AUTO_READ_PHRASE']
 
 #### Googles vars
 STU_LIB_FOL_NA = DEFIN_DICC['KEYW']['STU_LIB_FOL_NA']

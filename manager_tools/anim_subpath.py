@@ -47,11 +47,12 @@ reload(hlp_perf)
 reload(hlp_manager)
 
 class AnimSubPath( QMainWindow ):
-    def __init__( self, loader = None ,anim_na = '' , area = '' , anim_asset = '' , signal= '', row_idx = None, 
-                    assign_user_id = '' ,  path_ls = [] , area_done_dicc = {} ,  issue_key = ''  ):
+    def __init__( self, loader = None , anim_na = '' , area = '' , anim_asset = '' , signal= '',
+                  row_idx = None,  assign_user_id = '' ,  path_ls = [] , area_done_dicc = {} , 
+                  issue_key = ''  , item_type = '' ):
         super(AnimSubPath, self).__init__( )
-        if loader == None:
-            loader = QUiLoader()
+        #if loader == None:
+        #    loader = QUiLoader()
         uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') + '/manager_tools/' + de.ANIM_PATH_TREE_UI)
         uifile.open(QtCore.QFile.ReadOnly)
         self.ui = loader.load( uifile, ev.getWindow( QWidget ) )
@@ -64,6 +65,7 @@ class AnimSubPath( QMainWindow ):
         self.path_ls = path_ls
         self.area_done_dicc = area_done_dicc
         self.issue_key = issue_key
+        self.item_type = item_type
         self.initialize()
 
     def initialize(self):
@@ -74,7 +76,7 @@ class AnimSubPath( QMainWindow ):
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        dicc_ = { 'keywordAnim': self.PROJ_SETTINGS['KEYW']['areaAnim']  , 'itemType':'' }
+        dicc_ = { 'aniType': self.area , 'itemType': self.item_type }#self.PROJ_SETTINGS['KEYW']['areaAnim'] }
         self.anim_root = hlp_manager.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc_ )
         self.ui.lineEdit_anim_root.setText( self.anim_root )
         self.load_qwlist(  self.ui.listWid_lavel1, 0 )
@@ -88,7 +90,8 @@ class AnimSubPath( QMainWindow ):
     def load_qwlist(self, target_list_widget , signal):
         subpaths = self.generate_subpaths( signal )
         perf = pr.PerforceRequests()
-        dicc = perf.get_fol_fi_on_folder( 'dirs' , self.anim_root+subpaths , True, self.PERF_SERVER , self.PERF_USER , self.PERF_WORKSPACE )
+        dicc = perf.get_fol_fi_on_folder( 'dirs' , self.anim_root+subpaths , True, self.PERF_SERVER ,
+                                         self.PERF_USER , self.PERF_WORKSPACE , self.PERF_PASS )
         if dicc[de.key_errors] == '[]':
             folder_ls = dicc[de.ls_result]
             for item in folder_ls:
@@ -131,9 +134,10 @@ class AnimSubPath( QMainWindow ):
         return subpaths
 
     def get_final_path (self, subpaths , anim_na):
+        #itemType = self.PROJ_SETTINGS['KEYW']['item_types']['anim']
         dicc = { 'subpath': subpaths ,'anim_na': anim_na ,
-                'keywordAnim': self.PROJ_SETTINGS['KEYW']['areaAnim'] }
-        
+                'aniType':  self.area ,
+                'itemType' : self.item_type }
         anim_full_path_fileroot = hlp_manager.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,
                                                 self.PROJ_SETTINGS , dicc_ = dicc)
         self.ui.lab_final_anim_path.setText( anim_full_path_fileroot )
@@ -170,18 +174,26 @@ class AnimSubPath( QMainWindow ):
         elif self.signal == 'create_full_task':
             if path not in self.path_ls:
                 self.path_ls.append( path)
-            goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox , de.issue_type_task  , self.assign_user_id , item_na , area , self.area_done_dicc , self.path_ls , self.anim_asset )
+            itemType = self.PROJ_SETTINGS['KEYW']['item_types']['anim']
+            goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox , de.issue_type_task  ,
+                                                                   self.assign_user_id , item_na , area ,
+                                                                   self.area_done_dicc , self.path_ls ,
+                                                                   self.anim_asset , itemType )
             hlp_manager.set_new_values_on_sheet( self , gs , QMessageBox , area, goo_colum , value_ls, self.row_idx  )
         return True
         
     def done( self ):
         item_area_full_path_depot = str( self.ui.lab_final_anim_path.text() )
         item_area_full_path = str( self.ui.lab_final_anim_path.text() )
-        item_area_full_path = hlp_perf.transform_given_path( item_area_full_path, 'local' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
+        item_area_full_path = hlp_manager.transform_given_path( item_area_full_path, 'local' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
         type = de.issue_type_anim
-        dicc = { 'ass_na' : self.anim_asset }
+        char_type = str( self.PROJ_SETTINGS ['KEYW']['assets_types']['characters'] )
+        item_type = str( self.PROJ_SETTINGS ['KEYW']['item_types']['asset'] )
+        areaRig = str( self.PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] )
+        dicc = {  'ass_na' : self.anim_asset  ,  'itemType': item_type ,
+                 'areaAssRig': areaRig , 'assType' :  char_type }
         anim_asset_fullpath = hlp_manager.solve_path( 'local', 'Rig_Ass_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
-        template_full_path = hlp_manager.solve_path( 'local', 'AnimRigPath_template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS )
+        template_full_path = hlp_manager.solve_path( 'local', 'AnimRigPath_template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         perf = pr.PerforceRequests()
         key = self.signal_action(  self.area, item_area_full_path_depot, self.anim_na )
         if key :
@@ -190,12 +202,12 @@ class AnimSubPath( QMainWindow ):
         self.ui.close()
         QMessageBox.information( self, u'Done', item_area_full_path + '   created!'  )
         
-if ev.ENVIROMENT == 'Windows':
-    if __name__ == '__main__':
-        loader = QUiLoader()
-        app = QApplication(sys.argv)
-        widget = AnimSubPath( loader )
-        widget.ui.show()
-        sys.exit(app.exec())
+#if ev.ENVIROMENT == 'Windows':
+#    if __name__ == '__main__':
+#        loader = QUiLoader()
+#        app = QApplication(sys.argv)
+#        widget = AnimSubPath( loader )
+#        widget.ui.show()
+#        sys.exit(app.exec())
         
         

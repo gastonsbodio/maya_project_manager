@@ -77,31 +77,6 @@ def format_path(path):
         path = path + '/'
     return path
 
-
-def go_2_perf_root_path( path, proj_settings , depot_root ):
-    real_dp_fol_root = proj_settings['KEYW']['real_depot_fol_root']
-    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYW']['local_fol_root']
-    path_ = path.replace(    '/'+local_fol_root+'/'  ,    '/'+mapped_dp_fol_root+'/'   )
-    new_root = depot_root.split( '/'+real_dp_fol_root )[0]
-    path_ = new_root+'/'+mapped_dp_fol_root+'/'+ path_.split( '/'+mapped_dp_fol_root+'/' )[-1]
-    return path_
-
-def go_2_local_root_path( path, proj_settings , local_root ):
-    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYW']['local_fol_root']
-    path_ = path.replace(    '/'+mapped_dp_fol_root+'/'     ,   '/'+local_fol_root+'/'    )
-    path_ = local_root+'/'+local_fol_root+'/'+ path_.split( '/'+local_fol_root+'/' )[-1]
-    return path_
-
-def fix_perf_mapped_root_path( path, proj_settings ):
-    real_dp_fol_root = proj_settings['KEYW']['real_depot_fol_root']
-    mapped_dp_fol_root = proj_settings['KEYW']['maped_depot_fol_root']
-    local_fol_root = proj_settings['KEYW']['local_fol_root']
-    path_ = path.replace(    real_dp_fol_root+'/'+local_fol_root     ,   mapped_dp_fol_root    )
-    return path_
-
-
 def only_name_out_extention( file_path , with_prefix = True, prefix = '' ):
     path, name = separate_path_and_na( file_path )
     file = name.split('.')[0]
@@ -146,9 +121,18 @@ def get_matching_key( dicc, value ):
         if dicc[key] == value:
             return key
         
-
-
-
-
+def change_patther_reading_file( full_file_path_2_replace , dicc_pattern_change ):
+    with open( full_file_path_2_replace , 'r') as fi:
+        fiLinesLsStrings = fi.readlines()
+        fi.close()
+    edited_file_ls = []
+    for line in fiLinesLsStrings:
+        for key in dicc_pattern_change:
+            if key in line :
+                line = line.replace( key , dicc_pattern_change[key] )
+        edited_file_ls.append( line )
+    with open( full_file_path_2_replace, "w") as fileFa:
+        fileFa. writelines(edited_file_ls)
+        fileFa.close()
 
 

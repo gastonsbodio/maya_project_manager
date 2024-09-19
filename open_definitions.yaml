@@ -1,4 +1,10 @@
 KEYW:
+    COMPANY:
+      COMPANY_MENU_NA: "Stray Kite"
+      TOOLS_MENU_NA: "Tools"
+      ANIM_TOOLS_MENU_NA: "Animation"
+      RIG_TOOLS_MENU_NA: "Rigging"
+      SKIP_AUTO_READ_PHRASE: "avoid_auto_read"
     WEB_LINKS:
         JI_SERVER: "https://gastonsbodio.atlassian.net/" #"https://straykitestudios.atlassian.net"
         TRACK_SHEET_ITEMS: 'https://docs.google.com/spreadsheets/d/1sy7NgFtjADYhvmU45rqlgfl4qznpW2adECWv892Ua-Q/edit?usp=sharing'
@@ -35,6 +41,5 @@ KEYW:
       do_thumb: 'do thumbnail'
       snip_thumb: 'sniping thumbnail'
       get_thumb: 'get thumbnail from depot'
-
     STU_LIB_FOL_NA: "studiolibrary-2.9.11"
 

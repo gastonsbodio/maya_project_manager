@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>winTransferenceTool</class>
+ <widget class="QMainWindow" name="winTransferenceTool">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>576</width>
+    <height>560</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Animation Transference Tool</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWid_app">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>571</width>
+      <height>521</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Transference Anim</string>
+     </attribute>
+     <widget class="QPushButton" name="pushBut_generateSkell">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>110</y>
+        <width>331</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Generate Skeleton File</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_skelPath">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>140</y>
+        <width>491</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_characterSteps">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>30</y>
+        <width>371</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>___________Just 1 Time per Character Steps___________</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_anim_rig_exported">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>200</y>
+        <width>491</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_launchAnimationTransference">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>300</y>
+        <width>361</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>___________Launch Animations Transference____________</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_createAssembly">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>180</y>
+        <width>501</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Create UnrealSkeleton - SetUp Assembly File</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_animFolder">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>330</y>
+        <width>141</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Source Anim Folder</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_runAnimTransf">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>430</y>
+        <width>501</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Run Animations Transference</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_skelPath_2">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>270</y>
+        <width>451</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEd_amimFolder">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>340</y>
+        <width>351</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEd_setUpPath">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>70</y>
+        <width>361</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBFKIK_matcher">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>390</y>
+        <width>131</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Match IK to FK</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_setupPAth">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>70</y>
+        <width>111</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set SetUp Path</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_switch">
+     <attribute name="title">
+      <string>Switch Anim</string>
+     </attribute>
+     <widget class="QPushButton" name="pushBut_fk_ik">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>400</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Switch FK to IK</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_ik_fk">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>400</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Switch IK to FK</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButt_fulll_timeline">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>60</y>
+        <width>131</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Full Time Line Range</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButt_set_timeline">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>110</y>
+        <width>121</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Time Line Range</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEd_start_f">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>120</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEd_end_f">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>120</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_start">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>100</y>
+        <width>31</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Start</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_end">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>100</y>
+        <width>31</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>End</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_underscore">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>120</y>
+        <width>16</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboB_ik_ctl">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>220</y>
+        <width>121</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_choose_all">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>240</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Choose All Limbs ctl  &gt;&gt;</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_choose_sel">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>280</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Choose Selected  &gt;&gt;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lab_ik_ctls">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>200</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>limbs controls</string>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="listV_ik_ctl">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>210</y>
+        <width>101</width>
+        <height>101</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushBut_clear_qw">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>320</y>
+        <width>81</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Clear</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>576</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

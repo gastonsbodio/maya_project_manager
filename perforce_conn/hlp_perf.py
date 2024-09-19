@@ -8,11 +8,12 @@ import subprocess
 si = subprocess.STARTUPINFO()
 import definitions as de
 import helper as hlp
-
+import manager_tools.hlp_manager as hlp_manager
 from importlib import reload
 
 reload(de)
 reload(hlp)
+reload(hlp_manager)
 
 sys.path.append( de.PY_PACKAGES)
 import yaml as yaml
@@ -92,14 +93,6 @@ def perf_task_submit( app, QMessageBox , perf , item_na, area, asset_rig_full_pa
         print('Submmition Done')
     else:
         QMessageBox.information( app, u'submittion perf error.', str( dicc[de.key_errors] )  )
-
-
-def transform_given_path( path, way_key , proj_settings , local_root , depot_root ):
-    if way_key == 'local':
-        path = hlp.go_2_local_root_path( path, proj_settings ,local_root )
-    elif way_key == 'depot':
-        path = hlp.go_2_perf_root_path( path, proj_settings ,depot_root )
-    return path
 
 def check_template_exists(  app, QMessageBox, source_path , source_name , perf ):
     dicc = perf.pull_file_2_local( source_path + source_name , True , app.PERF_SERVER, app.PERF_USER, 

@@ -2,7 +2,7 @@
 KEYW:
     item_types:
         asset: 'Assets'
-        anim: 'Animation'
+        anim: 'Anim'
     assets_types:
         props: Props
         characters: Characters
@@ -14,23 +14,23 @@ KEYW:
         anim: Animation
         lay: Layout
         fx: VFX
-    asset_rig_template: genericMale_Rig_Starter
-    asset_name_template: genericMale
-    bindPose_pattern: _Bindpose
+    genericChar_na: genericChar
+
     item_thumbn_sufix: '_thumbnail.jpg'
-    real_depot_fol_root: core-content-art-source
-    maped_depot_fol_root: source
-    local_fol_root: ContentSource
+    real_depot_fol_root: ''
+    maped_depot_fol_root: ''
+    local_fol_root: ''
 Paths:
     Rig_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{ass_na}_{areaAssRig}.ma
-    Mod_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{ass_na}_{areaAssMod}.ma
+    Mod_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{ass_na}_{areaAssRig}.ma
     Ass_Thumb_Path:      /{itemType}/{assType}/{ass_na}/{ass_na}_thumbnail.jpg
     
-    RigTemplateMalePath:  /{itemType}/{assType}/genericMale/Maya/genericMale_Rig_Starter.ma
-    AnimRigPath:          /{itemType}/{assType}/{anim_char}/Maya/{anim_char}_Bindpose.ma
-    AnimRigPath_template: /{itemType}/{assType}/genericMale/Maya/genericMale_Bindpose.ma
-    ModTemplateMalePath:  /{itemType}/{assType}/genericMale/Maya/genericMale_Model_Starter.ma
-    Anim_Path:            /{itemType}/{keywordAnim}/{subpath}{anim_na}_v000.ma
-    Anim_Root:            /{itemType}/{keywordAnim}/
+    RigTemplatePath:  /{itemType}/{assType}/{genericChar_na}/Maya/{genericChar_na}_{areaAssRig}.ma
+    #AnimRigPath:          /{itemType}/{assType}/{anim_char}/Maya/{anim_char}_.ma
+    ModTemplatePath:  /{itemType}/{assType}/{genericChar_na}/Maya/{genericChar_na}_{areaAssRig}.ma
+
+    Anim_Template:            /{itemType}/{aniType}/animTemplate/animTemplate.ma
+    Anim_Path:            /{itemType}/{aniType}/{subpath}{anim_na}/{anim_na}_v000.ma
+    Anim_Root:            /{itemType}/{aniType}/
     #Unreal_Anim_Root:     /{itemType}/Content/Sim/Characters/Generic/Art/Anim/
 

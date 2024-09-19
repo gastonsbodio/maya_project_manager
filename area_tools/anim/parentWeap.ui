@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>winWeaTool</class>
+ <widget class="QMainWindow" name="winWeaTool">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>547</width>
+    <height>684</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Weapon Parent Tool</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QComboBox" name="comboB_choose_weap">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>60</y>
+      <width>181</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lab_choose_weapon">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>60</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose Weapon</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lab_file_2_ref">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>100</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>File to reference:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEd_file_ref">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>100</y>
+      <width>281</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_ref_weap">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>160</y>
+      <width>391</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reference Weapon</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_constrain_weap">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>210</y>
+      <width>181</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Constraint Weapon to Char Driver</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_r_hand_constr">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>210</y>
+      <width>191</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Constraint R Hand to weapon Driver</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_l_hand_constr">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>240</y>
+      <width>191</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Constraint L Hand to weapon Driver</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_r_h_driver_l_attach">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>380</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>R Hand Driver /
+ L Hand Attached</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_r_h_driver_l_free">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>430</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string> R Hand Driver /
+ L Hand Free</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_l_h_driver_r_attach">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>480</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>L Hand Driver /
+ R Hand Attached</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_l_h_driver_r_free">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>530</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string> L Hand Driver /
+ R Hand Free</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_weap_driver_hands_attach">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>380</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Weapon Driver /
+ L and R Hands Attached</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_weap_driver_l_hand_attach">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>430</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Weapon Driver /
+ only L Hand Attached</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_weap_driver_r_hand_attach">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>480</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Weapon Driver /
+ only R Hand Attached</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lab_chars_drivers_presets">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>360</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Char Driver Presets</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lab_weapon_drivers_presets">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>360</y>
+      <width>121</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Weapon Driver Presets</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_break_wea_constr">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>270</y>
+      <width>181</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Break Weapon Constraint</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_break_r_h_const">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>280</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Break R Hand
+ Constraint</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_break_l_h_const">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>280</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Break L Hand
+ Constraint</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushBut_ressete_all_attr">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>590</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Resete All Attributes
+ and Constraints</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboB_choose_project">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>20</y>
+      <width>181</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lab_choose_project">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>20</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose  Project</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>547</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

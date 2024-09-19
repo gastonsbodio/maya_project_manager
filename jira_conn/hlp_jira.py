@@ -124,8 +124,8 @@ def set_issue_label( app, QMessageBox , label_ls, issue_key, jira_m):
             return False
     return True
 
-def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , item_na , area , area_done_dicc , 
-                             path_ls , anim_asset , assetType):
+def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , item_na , area ,
+                             area_done_dicc , path_ls , anim_asset , itemType):
     description = 'Jira Manager Tool'
     summary = area + '  task  for: '+ item_na
     dicc = app.jira_m.create_issue( app.USER, de.JI_SERVER, app.APIKEY, app.PROJECT_KEY , summary ,
@@ -133,13 +133,14 @@ def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , ite
     if dicc[ de.key_errors ] != '[]':
         QMessageBox.information( app, u'Jira  creating issue Error.', str( dicc[de.key_errors] )  )
     else:
-        issue_key = dicc [ de.ls_ji_result ]
+        issue_key =     hlp.byte_string2string(  dicc [ de.ls_ji_result ]  )
     area_done_dicc [ area ] =  issue_key
     dicc = app.jira_m.assign_2_user ( issue_key, assign_user_id, app.USER ,de.JI_SERVER , app.APIKEY )
-    if dicc[ de.key_errors ] != []:
+    if dicc[ de.key_errors ] != "[]":
         QMessageBox.information( app, u'Jira  assigning user Error.', str( dicc[de.key_errors] )  )
     else:
-        label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( app, area , anim_asset , item_na , area_done_dicc , path_ls , assetType)
+        label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( app, area , anim_asset , item_na , 
+                                                                            area_done_dicc , path_ls , itemType )
         key = set_issue_label( app,  QMessageBox ,label_ls, issue_key  , app.jira_m)
         if key:
             return  goo_colum , value_ls

@@ -68,14 +68,14 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>140</x>
+        <x>130</x>
         <y>330</y>
-        <width>61</width>
+        <width>81</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>Issue Type</string>
+       <string>Jira Issue Type</string>
       </property>
      </widget>
      <widget class="QPushButton" name="pushBut_create_one_issue">
@@ -144,7 +144,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>task Area</string>
+       <string>Task Area</string>
       </property>
      </widget>
      <widget class="QComboBox" name="comboB_asset_on_anim">
