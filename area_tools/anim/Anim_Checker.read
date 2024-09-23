@@ -1,0 +1,5 @@
+#from importlib import reload
+#import area_tools.anim.anim_checker as anc
+#reload(anc)
+#widget = anc.AnimCheckerApp()
+#widget.ui.show()

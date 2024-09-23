@@ -1,0 +1,4 @@
+#from importlib import reload
+#import area_tools.anim.WeaponConstraint_sk as wc
+#reload(wc)
+#widget = wc.parentWeapon()

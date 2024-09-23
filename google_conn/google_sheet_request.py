@@ -209,14 +209,17 @@ class GoogleDriveQuery():
                 os.makedirs( folder )
             except Exception:
                 pass
+        self.dowloading_ls( credentials, google_fol, folder , tool_fi_ls )
+
+    def dowloading_ls(self, credentials, google_fol, folder , tool_fi_ls):
         for goo_fi in tool_fi_ls:
             goo_path_name = self.buildPathGooD( credentials, [ goo_fi ] )[0]
             if not goo_path_name.startswith('/'):
                 goo_path_name = '/'+goo_path_name
-            print ( goo_path_name )
             end_path_name = goo_path_name.split('/'+google_fol+'/')[-1]
-            print (end_path_name)
-            full_path_name = folder + '/'+end_path_name
+            full_path_name = folder + '/'+end_path_name.replace('__pycache__/', '')
+            if '.cpython' in full_path_name:
+                full_path_name = full_path_name.split( '.cpython')[0] + '.pyc'
             self.dowload_fi ( goo_fi, full_path_name  )
             print ( ' downloading:      ' + full_path_name )
 
