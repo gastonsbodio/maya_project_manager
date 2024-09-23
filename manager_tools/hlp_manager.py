@@ -162,15 +162,24 @@ def copy_local_asset_template(  target_path, source_path, target_name , source_n
     shutil.copy2( os.path.join( source_path , source_name  ),
                         os.path.join( target_path , target_name ) )
     
-def change_reference( PROJ_SETTINGS, full_file_path_2_replace , new_asset_file_rig_name):
-    #rig = str( PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] )
+def change_reference( PROJ_SETTINGS, template_2_edit , full_file_path_rig_asset, app):
     generic_asset_na = str( PROJ_SETTINGS ['KEYW']['genericChar_na'] )
-    new_asset_name = new_asset_file_rig_name.split(   '_'+str( PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] )  )[0]
-    hlp.make_read_writeable( full_file_path_2_replace  )
-    dicc_pattern_change = {   '/'+generic_asset_na+'/' :'/'+new_asset_name+'/' ,
-                              generic_asset_na : new_asset_file_rig_name  }
+    areaRig = str( PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] ) 
+    itemTypeAss = PROJ_SETTINGS['KEYW']['item_types']['asset']
+    char_type = PROJ_SETTINGS ['KEYW']['assets_types']['characters']
+    dicc = {  'itemType': itemTypeAss , 'genericChar_na': generic_asset_na,
+             'areaAssRig': areaRig , 'assType' :  char_type , 'areaAss': areaRig }
+    generic_rig_full_path = solve_path( 'local', 'RigTemplatePath' , app.LOCAL_ROOT ,  
+                                       '', '' , PROJ_SETTINGS , dicc_ = dicc )
+
+    new_asset_name = full_file_path_rig_asset.split( '_'+areaRig  )[0].split('/')[-1]
+    generic_path = generic_rig_full_path.split( app.LOCAL_ROOT )[-1]
+    char_anim_path = full_file_path_rig_asset.split( app.LOCAL_ROOT )[-1]
+    hlp.make_read_writeable( template_2_edit  )
+    dicc_pattern_change = {  generic_path : char_anim_path ,  
+                           generic_asset_na : new_asset_name }
     
-    hlp.change_patther_reading_file( full_file_path_2_replace , dicc_pattern_change )
+    hlp.change_patther_reading_file( template_2_edit , dicc_pattern_change )
         
 
 def copy_and_submit( app, PROJ_SETTINGS, QMessageBox , perf ,template_full_path , item_area_full_path 
@@ -188,7 +197,7 @@ def copy_and_submit( app, PROJ_SETTINGS, QMessageBox , perf ,template_full_path 
     perf_hlp.check_template_exists(  app , QMessageBox , source_path , source_name , perf )
     copy_local_asset_template(  target_path, source_path, target_name , source_name )
     if str( PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) == str( area ):
-        change_reference(  PROJ_SETTINGS, item_area_full_path , anim_asset_na )
+        change_reference(  PROJ_SETTINGS, item_area_full_path , anim_asset_path+anim_asset_na , app )
     perf_hlp.perf_task_submit( app, QMessageBox, perf, item_na, area, target_path+target_name , app.PERF_SERVER,
                      app.PERF_USER, app.PERF_WORKSPACE , app.PERF_PASS )
 
@@ -244,36 +253,37 @@ def item_path_builder( app, item_na , area , anim_asset  , assetType , *arg ):
     projsett = app.PROJ_SETTINGS
     localr = app.LOCAL_ROOT
     itemTypeAss = projsett['KEYW']['item_types']['asset']
-    dicc = { 'ass_na' : item_na , 'assType' : assetType ,'itemType': itemTypeAss }
+    genericChar_na = projsett['KEYW']['genericChar_na']
+    dicc = { 'ass_na' : item_na , 'assType' : area ,'itemType': itemTypeAss ,
+            'genericChar_na': genericChar_na }
     animed_char_fullpath = ''
-    if str( projsett ['KEYW']['areaAssets']['rig'] ) == str( area ):
+    if str( projsett ['KEYW']['areaAssets']['rig'] ) == str( assetType ):
         type = de.issue_type_asset
-        if assetType == projsett ['KEYW']['assets_types']['characters']:
+        if area == projsett ['KEYW']['assets_types']['characters']:
             dicc['areaAssRig'] = projsett ['KEYW']['areaAssets']['rig']
+            dicc['areaAss'] = assetType
             template_full_path = solve_path( 'local', 'RigTemplatePath' , localr,  '', '' ,  projsett, dicc_ = dicc )
         item_area_full_path = solve_path( 'local' , 'Rig_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc)
         item_depot_path = solve_path( 'depot' , 'Rig_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc)
 
-    elif str( projsett ['KEYW']['areaAssets']['mod'] ) == str( area ):
+    elif str( projsett ['KEYW']['areaAssets']['mod'] ) == str( assetType ):
         type = de.issue_type_asset
         dicc['areaAssMod'] = projsett ['KEYW']['areaAssets']['mod']
         template_full_path = solve_path( 'local', 'ModTemplatePath' , localr,  '', '' ,  projsett , dicc_ = dicc )
         item_area_full_path = solve_path( 'local' , 'Mod_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc )
         item_depot_path = solve_path( 'depot' , 'Mod_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc )
 
-    elif str( projsett ['KEYW']['areaAnim']['anim'] ) == str( area ):
+    elif str( projsett ['KEYW']['areaAnim']['anim'] ) == str( assetType ):
         type = de.issue_type_anim
         character = projsett ['KEYW']['assets_types']['characters']
         itemTypeAni = projsett['KEYW']['item_types']['anim']
         areaAni = projsett['KEYW']['areaAnim']['anim']
         rig = projsett ['KEYW']['areaAssets']['rig']
         dicc = { 'ass_na' : anim_asset , 'assType' : character ,
-                 'itemType': itemTypeAni , 'areaAssRig' : rig }
-        #Rig_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{ass_na}_{areaAssRig}.ma
-        animed_char_fullpath = solve_path( 'local', 'AnimRigPath' , localr ,  '', '' ,  projsett , dicc_ = dicc)
+                 'itemType': itemTypeAni , 'areaAssRig' : rig , 'aniType': area}
+        animed_char_fullpath = solve_path( 'local', 'Rig_Ass_Path' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         template_full_path = solve_path( 'local', 'Anim_Template' , localr ,  '', '' ,  projsett , dicc_ = dicc )
         dicc = { 'aniType' : area, 'itemType': itemTypeAni}
-        #Anim_Template:            /{itemType}/{aniType}/animTemplate/animTemplate.ma
         item_area_full_path = solve_path( 'local' , 'Anim_Root' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         item_depot_path = solve_path( 'depot' , 'Anim_Root' , localr ,  app.DEPOT_ROOT, '' ,  projsett , dicc_ = dicc)
     return type, animed_char_fullpath, template_full_path, item_area_full_path, item_depot_path

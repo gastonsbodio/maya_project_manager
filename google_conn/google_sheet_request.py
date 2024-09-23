@@ -191,15 +191,18 @@ class GoogleDriveQuery():
             pathTuple.append(pathh)
         return pathTuple
 
-    def update_tools (self):
+    def update_tools (self, google_fol, folder ):
         """log in list tool files and download them to local.
         """
-        credentials = self.login()
-        goo_obj_tool_fol = self.find_goo_tools_fol( credentials , de.GOOG_CONTENT_TOOLS_FOL)
-        tool_fi_ls = self.listContentFold(  credentials , goo_obj_tool_fol['id'] )
-        if not os.path.exists( de.SCRIPT_MANAG_FOL.replace('\\','/') ):
+        if 'dict' not in str(type( google_fol )):
+            credentials = self.login()
+            id_fol = self.find_goo_tools_fol( credentials , google_fol)['id']
+        else:
+            id_fol = google_fol.values()[0]
+        tool_fi_ls = self.listContentFold(  credentials , id_fol )
+        if not os.path.exists( folder ):
             try:
-                os.makedirs( de.SCRIPT_MANAG_FOL.replace('\\','/') )
+                os.makedirs( folder )
             except Exception:
                 pass
         for goo_fi in tool_fi_ls:
@@ -207,9 +210,9 @@ class GoogleDriveQuery():
             if not goo_path_name.startswith('/'):
                 goo_path_name = '/'+goo_path_name
             print ( goo_path_name )
-            end_path_name = goo_path_name.split('/'+de.GOOG_CONTENT_TOOLS_FOL+'/')[-1]
+            end_path_name = goo_path_name.split('/'+google_fol+'/')[-1]
             print (end_path_name)
-            full_path_name = de.SCRIPT_MANAG_FOL.replace('\\','/') + '/'+end_path_name
+            full_path_name = folder + '/'+end_path_name
             self.dowload_fi ( goo_fi, full_path_name  )
             print ( ' downloading:      ' + full_path_name )
 

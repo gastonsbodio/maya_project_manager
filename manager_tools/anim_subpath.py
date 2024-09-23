@@ -157,6 +157,7 @@ class AnimSubPath( QMainWindow ):
             QMessageBox.information(self, u'No radio button checked', 'Choose one radio button first. '  )
 
     def signal_action( self, area, path, item_na ):
+        itemType = self.PROJ_SETTINGS['KEYW']['areaAnim']['anim']
         if self.signal == 'create_temp':
             area_done_dicc = self.area_done_dicc
             if 'unknown' == self.row_idx :
@@ -167,14 +168,15 @@ class AnimSubPath( QMainWindow ):
                 self.row_idx = row_idx_crea_templa
             hlp_manager.set_new_values_on_sheet(  self , gs ,QMessageBox , area,   [ de.GOOGLE_SH_ANI_NA_COL, de.GOOGLE_SH_CREAT_PATH ] ,
                                         [ item_na,    str( path_ls ) ] ,     self.row_idx  )
-            label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( self, area , self.anim_asset , item_na , area_done_dicc , path_ls )
+            label_ls , goo_colum , value_ls = hlp_manager.define_main_item_vars( self, area , self.anim_asset ,
+                                                            item_na , area_done_dicc , path_ls , itemType )
             label_ls = [ de.item_path+'_'+path ]
             key = hlp_ji.set_issue_label(  self, QMessageBox , label_ls,  self.issue_key  , self.jira_m  )
             return key
         elif self.signal == 'create_full_task':
             if path not in self.path_ls:
                 self.path_ls.append( path)
-            itemType = self.PROJ_SETTINGS['KEYW']['item_types']['anim']
+            #itemType = self.PROJ_SETTINGS['KEYW']['item_types']['anim']
             goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox , de.issue_type_task  ,
                                                                    self.assign_user_id , item_na , area ,
                                                                    self.area_done_dicc , self.path_ls ,
@@ -190,10 +192,12 @@ class AnimSubPath( QMainWindow ):
         char_type = str( self.PROJ_SETTINGS ['KEYW']['assets_types']['characters'] )
         item_type = str( self.PROJ_SETTINGS ['KEYW']['item_types']['asset'] )
         areaRig = str( self.PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] )
-        dicc = {  'ass_na' : self.anim_asset  ,  'itemType': item_type ,
-                 'areaAssRig': areaRig , 'assType' :  char_type }
+        genericChar_na = str( self.PROJ_SETTINGS ['KEYW']['genericChar_na'] )
+        dicc = {  'ass_na' : self.anim_asset  ,  'itemType': item_type , 'genericChar_na': genericChar_na,
+                 'areaAssRig': areaRig , 'assType' :  char_type , 'areaAss': areaRig , 'aniType' : self.area}
         anim_asset_fullpath = hlp_manager.solve_path( 'local', 'Rig_Ass_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
-        template_full_path = hlp_manager.solve_path( 'local', 'AnimRigPath_template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
+        dicc ['itemType'] = str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] )
+        template_full_path = hlp_manager.solve_path( 'local', 'Anim_Template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         perf = pr.PerforceRequests()
         key = self.signal_action(  self.area, item_area_full_path_depot, self.anim_na )
         if key :
