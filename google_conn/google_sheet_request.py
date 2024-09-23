@@ -1,5 +1,6 @@
 import sys
 import os
+import ast
 import definitions as de
 import helper as hlp
 import google_conn.hlp_goo as hlp_goo
@@ -194,11 +195,14 @@ class GoogleDriveQuery():
     def update_tools (self, google_fol, folder ):
         """log in list tool files and download them to local.
         """
-        if 'dict' not in str(type( google_fol )):
-            credentials = self.login()
+        credentials = self.login()
+        if '{' not in google_fol :
             id_fol = self.find_goo_tools_fol( credentials , google_fol)['id']
         else:
-            id_fol = google_fol.values()[0]
+            dicc = ast.literal_eval( google_fol )
+            for key in dicc:
+                id_fol = dicc[key]
+                google_fol = key
         tool_fi_ls = self.listContentFold(  credentials , id_fol )
         if not os.path.exists( folder ):
             try:
