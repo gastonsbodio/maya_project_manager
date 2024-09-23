@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>560</height>
+    <width>784</width>
+    <height>564</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -190,7 +190,7 @@
      <widget class="QCheckBox" name="checkBFKIK_matcher">
       <property name="geometry">
        <rect>
-        <x>70</x>
+        <x>130</x>
         <y>390</y>
         <width>131</width>
         <height>21</height>
@@ -213,6 +213,19 @@
        <string>Set SetUp Path</string>
       </property>
      </widget>
+     <widget class="QCheckBox" name="checkBFbatchmode">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>390</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>batch mode</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_switch">
      <attribute name="title">
@@ -221,8 +234,8 @@
      <widget class="QPushButton" name="pushBut_fk_ik">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>400</y>
+        <x>90</x>
+        <y>420</y>
         <width>141</width>
         <height>23</height>
        </rect>
@@ -234,8 +247,8 @@
      <widget class="QPushButton" name="pushBut_ik_fk">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>400</y>
+        <x>330</x>
+        <y>420</y>
         <width>141</width>
         <height>23</height>
        </rect>
@@ -247,8 +260,8 @@
      <widget class="QRadioButton" name="radioButt_fulll_timeline">
       <property name="geometry">
        <rect>
-        <x>80</x>
-        <y>60</y>
+        <x>70</x>
+        <y>50</y>
         <width>131</width>
         <height>17</height>
        </rect>
@@ -260,8 +273,8 @@
      <widget class="QRadioButton" name="radioButt_set_timeline">
       <property name="geometry">
        <rect>
-        <x>80</x>
-        <y>110</y>
+        <x>70</x>
+        <y>100</y>
         <width>121</width>
         <height>17</height>
        </rect>
@@ -273,8 +286,8 @@
      <widget class="QLineEdit" name="lineEd_start_f">
       <property name="geometry">
        <rect>
-        <x>230</x>
-        <y>120</y>
+        <x>220</x>
+        <y>110</y>
         <width>41</width>
         <height>20</height>
        </rect>
@@ -283,8 +296,8 @@
      <widget class="QLineEdit" name="lineEd_end_f">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>120</y>
+        <x>300</x>
+        <y>110</y>
         <width>41</width>
         <height>20</height>
        </rect>
@@ -293,8 +306,8 @@
      <widget class="QLabel" name="lab_start">
       <property name="geometry">
        <rect>
-        <x>240</x>
-        <y>100</y>
+        <x>230</x>
+        <y>90</y>
         <width>31</width>
         <height>16</height>
        </rect>
@@ -306,8 +319,8 @@
      <widget class="QLabel" name="lab_end">
       <property name="geometry">
        <rect>
-        <x>320</x>
-        <y>100</y>
+        <x>310</x>
+        <y>90</y>
         <width>31</width>
         <height>16</height>
        </rect>
@@ -319,8 +332,8 @@
      <widget class="QLabel" name="lab_underscore">
       <property name="geometry">
        <rect>
-        <x>290</x>
-        <y>120</y>
+        <x>280</x>
+        <y>110</y>
         <width>16</width>
         <height>16</height>
        </rect>
@@ -332,8 +345,8 @@
      <widget class="QComboBox" name="comboB_ik_ctl">
       <property name="geometry">
        <rect>
-        <x>70</x>
-        <y>220</y>
+        <x>60</x>
+        <y>210</y>
         <width>121</width>
         <height>22</height>
        </rect>
@@ -342,8 +355,8 @@
      <widget class="QPushButton" name="pushBut_choose_all">
       <property name="geometry">
        <rect>
-        <x>230</x>
-        <y>240</y>
+        <x>220</x>
+        <y>230</y>
         <width>141</width>
         <height>23</height>
        </rect>
@@ -355,8 +368,8 @@
      <widget class="QPushButton" name="pushBut_choose_sel">
       <property name="geometry">
        <rect>
-        <x>230</x>
-        <y>280</y>
+        <x>220</x>
+        <y>270</y>
         <width>131</width>
         <height>23</height>
        </rect>
@@ -368,8 +381,8 @@
      <widget class="QLabel" name="lab_ik_ctls">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>200</y>
+        <x>90</x>
+        <y>190</y>
         <width>81</width>
         <height>16</height>
        </rect>
@@ -381,8 +394,8 @@
      <widget class="QListWidget" name="listV_ik_ctl">
       <property name="geometry">
        <rect>
-        <x>410</x>
-        <y>210</y>
+        <x>400</x>
+        <y>200</y>
         <width>101</width>
         <height>101</height>
        </rect>
@@ -391,8 +404,8 @@
      <widget class="QPushButton" name="pushBut_clear_qw">
       <property name="geometry">
        <rect>
-        <x>420</x>
-        <y>320</y>
+        <x>410</x>
+        <y>310</y>
         <width>81</width>
         <height>23</height>
        </rect>
@@ -403,13 +416,36 @@
      </widget>
     </widget>
    </widget>
+   <widget class="QComboBox" name="comboB_switch_template">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>270</y>
+      <width>151</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lab_ik_ctls_2">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>240</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>switcher preset</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>576</width>
+     <width>784</width>
      <height>21</height>
     </rect>
    </property>
