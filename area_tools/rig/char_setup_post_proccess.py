@@ -49,20 +49,17 @@
 #cspp.set_color_controls( True )
 
 from importlib import reload
-import parent_to_tool as p2t
-reload( p2t )
-
-import default_rot_value_script as drvs
-reload( drvs )
-
 import maya.cmds as cmds
 import maya.mel as mel
 
-import spaceSwitch as ss
+import definitions as de
+reload(de)
+import area_tools.rig.parent_to_tool as p2t
+reload( p2t )
+import area_tools.rig.default_rot_value_script as drvs
+reload( drvs )
+import area_tools.rig.spaceSwitch as ss
 reload(ss)
-
-import spaceCreator as sc
-reload( sc )
 
 ROOT = 'root'
 ROOTX_M = 'RootX_M'
@@ -70,9 +67,9 @@ FKROOT_ARROW = 'FKroot_M' ## arrow control
 MoveAll2 = 'MoveAll2'
 MoveAll1 = 'MoveAll1'
 HIP = 'HipSwinger_M'
-PATH_ARROW = 'C:/Users/gasco/Documents/maya/2023/scripts/arrow_shape.ma'
-PATH_CAMERA_CHAR = 'C:/dev/carbon/ContentSource/Chars_props/camera_char/camera_joint.ma'
-PATH_CONTROL_SH = 'C:/Users/gasco/Downloads/AdvancedSkeleton/AdvancedSkeletonFiles/div/asGallery.ma'
+PATH_ARROW = de.SCRIPT_MANAG_FOL.replace('\\','/')+ de.RIG_FOL_FILES + 'rig_micelane/arrow_shape.ma'
+PATH_CAMERA_CHAR = de.SCRIPT_MANAG_FOL.replace('\\','/')+ de.RIG_FOL_FILES +'rig_micelane/camera_joint.ma'
+PATH_CONTROL_SH = de.SCRIPT_MANAG_FOL.replace('\\','/')+ de.RIG_FOL_FILES +'AdvancedSkeleton/AdvancedSkeletonFiles/div/asGallery.ma'
 CAM_OFFS_CONST = 'camera_cnt_offset1'
 CAM_OFFS_CONST2 = 'camera_cnt_offset2'
 CAM_SETTINGS_GRP= 'camera_setting'
@@ -271,12 +268,6 @@ def attrb_set_defaul_ik( ik_orig ):
     cmds.setAttr( multiple_divide+'.input1Z', valueZ)
     create_node_default_rot( ik_orig )
 
-
-
-
-
-
-
 def freeze_ik_control(  IK_wrist_original , IK_wrist_new_oriented , fk_cnt):
     offset_fk = cmds.listRelatives ( fk_cnt, p=True )[0] 
     offset_fk_dupli = cmds.duplicate(  offset_fk , rc=True)[0]
@@ -304,7 +295,6 @@ def freeze_ik_control(  IK_wrist_original , IK_wrist_new_oriented , fk_cnt):
             else:
                 value = value * 1#-1
         cmds.setAttr( IK_wrist_original + '.rotateAxis' + axe , value )
-        
         
         #value2 = cmds.getAttr ( offset_fk_dupli + ".rotate" + axe )
         value2 = cmds.getAttr ( loc + ".rotate" + axe )
@@ -714,28 +704,20 @@ def create_hand_object_joint( is_checked ):
                 X_value = value * 0.5
                 cmds.setAttr ( offset + ".translateY", Z_value )
                 cmds.setAttr ( offset + ".translateX", X_value )
-                
                 cmds.parent( offset , 'Group' )
-                
-                #cmds.parentConstraint ( wrist_patt+side  , offset , mo = True )
-                
                 control = mel.eval( "spaceLocator -p 0 0 0;" )[0]
                 shape_loc = cmds.listRelatives( control, c=True, s=True )
                 cmds.delete( shape_loc )
                 control = cmds.rename( control, side+hand_obj_patt ) 
                 
                 cmds.sets ( control , edit=True , forceElement  = 'ControlSet' )
-                
                 joint = WEAPON_PREFIX_JNT +side.lower()
                 cmds.parentConstraint ( control  , joint , mo = False )
 
                 cmds.parent( control  , offset )
                 resetTransf( control )
-                sc.create_offset( [ offset] + [wrist_patt+side] )
-                sc.IKSpaceCreator( offset, [wrist_patt+side] )
-
+                cmds.parentConstraint ( wrist_patt+side  , offset , mo = True )
                 shape_nurb ,delete_dupl = edit_shape( ik_arm , dupli= True)
-                
                 cmds.parent(  shape_nurb   ,  control  , s=1 , r=1)
                 cmds.delete( delete_dupl )
                     
@@ -866,10 +848,6 @@ def get_setLs( method ):
         set_ls = [ [ 'IKArm_R', GUN_FOLLOW%'r', 'L'+HAND_OBJ ], # , '_offset_parentToIKArm_R' idx1
                    [ 'IKArm_L', GUN_FOLLOW%'l', 'R'+HAND_OBJ ], # , '_offset_parentToIKArm_L'  idx1
                    [ WEAPON_DRIVER ,'L_Hand_Object', 'R_Hand_Object' ]]#,  ##   , OFFSET_NA %(WEAPON_DRIVER)  idx1
-    elif method == 'spaceCreator':
-        set_ls = [ [ 'IKArm_R', '_offset_parentToIKArm_R', GUN_FOLLOW%'r', 'L'+HAND_OBJ ] ,#  idx1
-                   [ 'IKArm_L', '_offset_parentToIKArm_L', GUN_FOLLOW%'l', 'R'+HAND_OBJ ] ,#   idx1
-                   [ WEAPON_DRIVER, OFFSET_NA %(WEAPON_DRIVER) ,'L'+HAND_OBJ , 'R'+HAND_OBJ ]]#,  ##     idx1 
         
     elif method == 'spaceSwitch' :
         set_ls = [ [ '_offset_parentToIKArm_R', GUN_FOLLOW%'r', 'L'+HAND_OBJ,  'IKArm_R',  ] ,
@@ -886,12 +864,7 @@ def do_gun_space( is_checked , method = 'spaceSwitch'):
                 unlock_transf( item, transf= ['t', 'r', 's'] )
             cmds.select( list )
             control_ls = cmds.ls( sl=True )
-            if method == 'spaceCreator':
-                target = control_ls[0]
-                sources = [ obj for obj in control_ls  if obj != target ]
-                sc.create_offset( [ target ] + sources )
-                sc.IKSpaceCreator( target, sources )
-            elif method == 'parent_tool':
+            if method == 'parent_tool':
                 cmds.select( list )
                 disconn_ls = []
                 p2t.do_parenting_thing('gun_space', disconn_ls, with_scriptjob = False,

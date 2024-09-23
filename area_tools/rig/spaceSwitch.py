@@ -55,9 +55,7 @@ def switchedParentMatrix(trans = None, rot = None, scale = None, switchControl =
 	mc.connectAttr('{0}.matrixSum'.format(multMatrix), '{0}.inputMatrix'.format(decompMatrix))
 	mc.connectAttr('{0}.output'.format(choiceOMatrix), '{0}.matrixIn[0]'.format(multMatrix))
 	mc.connectAttr('{0}.output'.format(choicePMatrix),'{0}.matrixIn[1]'.format(multMatrix))
-	print  (poc)
-	print(' blooooooo ') 
-	print ( multMatrix )
+
 	mc.connectAttr('{0}.worldInverseMatrix[0]'.format(poc),'{0}.matrixIn[2]'.format(multMatrix))
 	mc.connectAttr(storeAttr, '{0}.selector'.format(choiceOMatrix))
 	mc.connectAttr(storeAttr, '{0}.selector'.format(choicePMatrix))

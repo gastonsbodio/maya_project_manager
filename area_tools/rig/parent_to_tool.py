@@ -115,7 +115,7 @@ def script_job_matcher( cnt ):
 
 def create_script_node( cnt_na ):
     script =          "from importlib import reload;"
-    script = script + "import parent_to_tool as p2t;"
+    script = script + "import area_tools.rig.parent_to_tool as p2t;"
     script = script + "reload(p2t);"
     script = script + "p2t.script_job_matcher( '%s' )" %cnt_na
     nodeName = cmds.scriptNode( st=2, bs= 'python( "%s" );'%script , n = cnt_na+'matcher')
