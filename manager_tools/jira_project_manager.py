@@ -104,7 +104,7 @@ class table_features( ):#QWidget ):
         if HEADER_LS [de.ITEM_NA_IDX ] == de.asset_na:
             asset_type = hlp_manager.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
             item_type = hlp_manager.item_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
-            dicc = { 'ass_na' : task[ de.asset_na ], 'assType': asset_type  , 'itemType': item_type }
+            dicc = { 'ass_na' : task[ de.asset_na ], 'taskType': asset_type  , 'itemType': item_type }
             item_thumb_path = hlp_manager.solve_path( 'local', 'Ass_Thumb_Path' , self.LOCAL_ROOT , 
                                         self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc )
         elif HEADER_LS [de.ITEM_NA_IDX ] == de.ani_na:
@@ -313,16 +313,9 @@ class table_features( ):#QWidget ):
         """
         if type == de.asset_na:
             asset_type = self.get_text_item_colum( self.table_assetsTasks, de.ITEMTYPE_IDX)
-            item_path = hlp_manager.get_path_from_task_ls ( item_na, asset_type, self.tasks_ls_ass_diccs )
-            itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
-            key_area = hlp.get_matching_key( self.PROJ_SETTINGS['KEYW']['areaAssets'], area )
-            area_ass = self.PROJ_SETTINGS['KEYW']['areaAssets'][key_area]
-            dicc = { 'ass_na': item_na , 'itemType': itemt_type  , 'assType': asset_type ,
-                    'areaAss'+area: area_ass}
-            local_full_path = hlp_manager.solve_path( 'local' , area+'_Ass_Path', self.LOCAL_ROOT,
-                                                self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc )
-            depot_full_path = hlp_manager.solve_path( 'depot', area+'_Ass_Path', self.LOCAL_ROOT,
-                                                self.DEPOT_ROOT, '' , self.PROJ_SETTINGS , dicc_ = dicc)
+            depot_full_path = hlp_manager.get_path_from_task_ls ( item_na, asset_type, self.tasks_ls_ass_diccs )
+            local_full_path = hlp_manager.transform_given_path( depot_full_path, 'local' ,
+                                                     self.PROJ_SETTINGS , self.LOCAL_ROOT , self.DEPOT_ROOT )
         if type == de.ani_na:
             anim_type = self.get_text_item_colum( self.table_animTasks, de.ITEMTYPE_IDX)
             item_path = hlp_manager.get_path_from_task_ls ( item_na, anim_type, self.tasks_ls_ani_diccs )
@@ -357,14 +350,17 @@ class table_features( ):#QWidget ):
             position ([qposition]): [don t need to be instanced]
         """
         item_na = self.get_text_item_colum( table, de.ITEM_NA_IDX)
-        asset_type = self.get_text_item_colum( table, de.ITEMTYPE_IDX)
-        item_path = hlp_manager.get_path_from_task_ls ( item_na, asset_type, self.tasks_ls_ass_diccs )
-        itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
+        assAni_type = self.get_text_item_colum( table, de.ITEMTYPE_IDX)
         if 'asset' in table.objectName():
-            dicc = {'ass_na':item_na, 'assType': asset_type, 'itemType' : itemt_type}
+            item_path = hlp_manager.get_path_from_task_ls ( item_na, assAni_type, self.tasks_ls_ass_diccs )
+            itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
+            assetType = hlp_manager.asset_type_extraction ( item_path , self.PROJ_SETTINGS )
+            dicc = {'ass_na': item_na, 'taskType': assetType, 'itemType' : itemt_type}
             thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'local', 'Ass_Thumb_Path', self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS , dicc_ = dicc ))
             thumbDepotPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'depot', 'Ass_Thumb_Path' , self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc ))
         elif 'anim' in table.objectName():
+            item_path = hlp_manager.get_path_from_task_ls ( item_na, assAni_type, self.tasks_ls_ani_diccs )
+            itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
             item_thumb_path = self.thumb_local_path_item(  { de.ani_na : item_na } , de.HEADER_ANI_LS )
             thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na( item_thumb_path )
             thumbDepotPath = hlp_manager.transform_given_path( thumbLocalPath, 'depot' , self.PROJ_SETTINGS , self.LOCAL_ROOT, self.DEPOT_ROOT )
@@ -609,6 +605,11 @@ class MyMainWindow(QMainWindow):
         self.ui.menuPipeline_Tools.addAction(  action )#, triggered = self.launch_task_creation_panel )
         receiver = lambda: self.launch_task_creation_panel() 
         self.ui.connect( action,   QtCore.SIGNAL('triggered()') , receiver)
+        
+        action2 = QAction( de.TASK_TRACKER_SHEET , self.ui  )
+        self.ui.menuPipeline_Tools.addAction(  action2 )#, triggered = self.launch_task_creation_panel )
+        receiver = lambda: self.get_help_link( de.GOOGLE_SH_TASK_TRACKER  )
+        self.ui.connect( action2,   QtCore.SIGNAL('triggered()') , receiver)
 
     def launch_task_creation_panel( self ):
         import manager_tools.task_creation_panel as task

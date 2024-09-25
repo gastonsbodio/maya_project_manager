@@ -10,6 +10,10 @@
 import maya.cmds as cmds
 import maya.mel as mel
 
+from importlib import reload
+import definitions as de
+reload(de)
+
 ##   1     import unreal skeleton template
 #pbp.run_all_preskeleton_code()
 
@@ -31,11 +35,7 @@ import maya.mel as mel
 
 
 
-
-
-
-PATH_FOOT_HELP = 'C:/dev/rig_micelane/generic_skeleton.ma'
-
+PATH_FOOT_HELP = de.SCRIPT_MANAG_FOL.replace('\\','/')+ de.RIG_FOL_FILES + 'rig_micelane/generic_skeleton.ma'
 
 def delete_namespaces( is_checked ):
     if is_checked:

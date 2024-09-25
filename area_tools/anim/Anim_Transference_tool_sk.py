@@ -180,7 +180,7 @@ def getWindow():
 
 
 class animTransference(QDialog):
-    def __init__( self, *args ,parent=getWindow() ): #QApplication.activeWindow()):
+    def __init__( self, *args ,parent=getWindow() ):
         super(animTransference, self).__init__(parent)
         loader = QUiLoader()
         self.centralLayout = QVBoxLayout(self)
@@ -473,7 +473,6 @@ class animTransference(QDialog):
         line = line + "import sys\n"
         line = line + "import os\n"
         line = line + "cmds.loadPlugin('fbxmaya', quiet=True)\n"
-        #cmds.loadPlugin('AbcExport', quiet=True)
         for spath in UI_ANIM_FOL:
             line = line + "sys.path.append( '" + spath + "' )\n"
         line = line + "import Anim_Transference_tool_sk as att\n"
@@ -527,9 +526,6 @@ class transfer_anim_():
         self.linEStart = linEStart
         self.lineEEnd =  lineEEnd
 
-        
-        
-        
     def transfer_anim( self ):
         dicc = json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
         rig_path = dicc ['rig_path']

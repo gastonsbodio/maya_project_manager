@@ -6,6 +6,15 @@ import json
 
 from importlib import reload
 
+import ctypes
+from ctypes.wintypes import MAX_PATH
+dll = ctypes.windll.shell32
+buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+	USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append(SCRIPT_FOL)
+
 import definitions as de
 import helper as hlp
 import jira_conn.hlp_jira as hlp_ji
@@ -68,25 +77,27 @@ class JiraQueries():
                 labels_ls = issue.fields.labels
                 if labels_ls != []:
                     main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
-                    main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
                     item_path = self.dicc_label_value( labels_ls, de.item_path )
                     main_args_issue_dicc[ de.item_path ] = item_path
-                    if main_args_issue_dicc[ de.area ] != PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
+                    if main_args_issue_dicc[ de.area ] in list ( PROJ_SETTINGS ['KEYW']['assets_types'].values() ):
                         main_args_issue_dicc[ de.asset_na ] = self.dicc_label_value( labels_ls, de.asset_na )
-                        main_args_issue_dicc[ de.assType ] = hlp_manager.asset_type_extraction( item_path , PROJ_SETTINGS )
+                        main_args_issue_dicc[ de.taskType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
                         main_args_issue_dicc[ de.itemType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
-                    elif main_args_issue_dicc[ de.area ] == PROJ_SETTINGS ['KEYW']['areaAnim']['anim']:
+                        main_args_issue_dicc[ de.areaAss ] = hlp_manager.area_asset_extraction( item_path , PROJ_SETTINGS )
+                    elif main_args_issue_dicc[ de.area ] in list ( PROJ_SETTINGS ['KEYW']['areaAnim'].values() ):
                         main_args_issue_dicc[ de.ani_na ] = self.dicc_label_value( labels_ls, de.ani_na )
-                        main_args_issue_dicc[ de.aniType ] = hlp_manager.asset_type_extraction( item_path , PROJ_SETTINGS )
+                        main_args_issue_dicc[ de.taskType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
                         main_args_issue_dicc[ de.itemType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
+                        main_args_issue_dicc[ de.areaAss ] =  ''
                 else:
                     main_args_issue_dicc[de.area] = ''
                     main_args_issue_dicc[de.asset_na] = '' 
                     main_args_issue_dicc[de.ani_na] = ''
                     main_args_issue_dicc[ de.item_path ] = ''
-                    main_args_issue_dicc[ de.assType ] = ''
-                    main_args_issue_dicc[ de.aniType ] = ''
+                    main_args_issue_dicc[ de.taskType ] = ''
+                    main_args_issue_dicc[ de.taskType ] = ''
                     main_args_issue_dicc[ de.itemType ] = ''
+                    main_args_issue_dicc[ de.areaAss ] = ''
                 assignee = issue.fields.assignee
                 if assignee != None:
                     main_args_issue_dicc[de.assignee] = assignee.displayName#.encode('utf-8')
@@ -308,8 +319,11 @@ class JiraQueries():
             hlp.create_python_file ('get_projects', file_content)
             hlp.run_py_stand_alone( 'get_projects' )
             dicc = hlp.json2dicc_load( de.PY_PATH  + 'jira_request.json')#[de.ls_ji_result]
-            os.remove ( de.PY_PATH  + 'jira_request.json' )
-            os.remove ( de.PY_PATH  + 'get_projects.py' )
+            try:
+                os.remove ( de.PY_PATH  + 'jira_request.json' )
+                os.remove ( de.PY_PATH  + 'get_projects.py' )
+            except Exception:
+                pass
             return dicc
 
 

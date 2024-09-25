@@ -158,7 +158,7 @@ def get_self_tasks( app , QMessageBox , area_ls ):
                 QMessageBox.information(app.main_widg, u'getting user task errors', str( dicc[de.key_errors] )  )
         filtered_tasks_ls = []
         for task_dicc in dicc[de.ls_ji_result]:
-            if task_dicc[ de.area ] in area_ls:
+            if task_dicc[ de.area ] in area_ls or task_dicc[ de.areaAss ] in area_ls:
                 filtered_tasks_ls.append( task_dicc )
         return  filtered_tasks_ls
     else:

@@ -2,7 +2,7 @@
 KEYW:
     item_types:
         asset: 'Assets'
-        anim: 'Anim'
+        anim: 'Action'
     assets_types:
         characters: Characters
         props: Props
@@ -21,15 +21,15 @@ KEYW:
     maped_depot_fol_root: ''
     local_fol_root: ''
 Paths:
-    Rig_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{areaAssRig}/{ass_na}_{areaAssRig}.ma
-    Mod_Ass_Path:        /{itemType}/{assType}/{ass_na}/Maya/{areaAssMod}/{ass_na}_{areaAssMod}.ma
-    Ass_Thumb_Path:      /{itemType}/{assType}/{ass_na}/{ass_na}_thumbnail.jpg
+    Rig_Ass_Path:        /{itemType}/{taskType}/{ass_na}/Maya/{areaAssRig}/{ass_na}_{areaAssRig}.ma
+    Mod_Ass_Path:        /{itemType}/{taskType}/{ass_na}/Maya/{areaAssMod}/{ass_na}_{areaAssMod}.ma
+    Ass_Thumb_Path:      /{itemType}/{taskType}/{ass_na}/{ass_na}_thumbnail.jpg
     
-    RigTemplatePath:  /{itemType}/{assType}/{genericChar_na}/Maya/{areaAssRig}/{genericChar_na}_{areaAssRig}.ma
-    ModTemplatePath:  /{itemType}/{assType}/{genericChar_na}/Maya/{areaAssMod}/{genericChar_na}_{areaAssMod}.ma
+    RigTemplatePath:  /{itemType}/{taskType}/{genericChar_na}/Maya/{areaAssRig}/{genericChar_na}_{areaAssRig}.ma
+    ModTemplatePath:  /{itemType}/{taskType}/{genericChar_na}/Maya/{areaAssMod}/{genericChar_na}_{areaAssMod}.ma
 
-    Anim_Template:            /{itemType}/{aniType}/animTemplate/animTemplate.ma
-    Anim_Path:            /{itemType}/{aniType}/{subpath}{anim_na}/{anim_na}_v000.ma
-    Anim_Root:            /{itemType}/{aniType}/
+    Anim_Template:            /{itemType}/{taskType}/animTemplate/animTemplate.ma
+    Anim_Path:            /{itemType}/{taskType}/{subpath}{anim_na}/{anim_na}_v000.ma
+    Anim_Root:            /{itemType}/{taskType}/
     #Unreal_Anim_Root:     /{itemType}/Content/Sim/Characters/Generic/Art/Anim/
 

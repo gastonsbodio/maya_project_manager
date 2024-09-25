@@ -168,7 +168,7 @@ def change_reference( PROJ_SETTINGS, template_2_edit , full_file_path_rig_asset,
     itemTypeAss = PROJ_SETTINGS['KEYW']['item_types']['asset']
     char_type = PROJ_SETTINGS ['KEYW']['assets_types']['characters']
     dicc = {  'itemType': itemTypeAss , 'genericChar_na': generic_asset_na,
-             'areaAssRig': areaRig , 'assType' :  char_type , 'areaAss': areaRig }
+             'areaAssRig': areaRig , 'taskType' :  char_type , 'areaAss': areaRig }
     generic_rig_full_path = solve_path( 'local', 'RigTemplatePath' , app.LOCAL_ROOT ,  
                                        '', '' , PROJ_SETTINGS , dicc_ = dicc )
 
@@ -190,14 +190,14 @@ def copy_and_submit( app, PROJ_SETTINGS, QMessageBox , perf ,template_full_path 
     elif type == de.issue_type_anim:
         source_path , source_name = hlp.separate_path_and_na( template_full_path )
         target_path , target_name = hlp.separate_path_and_na( item_area_full_path )
-        anim_asset_path , anim_asset_name = hlp.separate_path_and_na( anim_asset_fullpath )
-        anim_asset_na = anim_asset_name.split('.')[0]
+        anim_asset_path , anim_asset_fi_name = hlp.separate_path_and_na( anim_asset_fullpath )
+        #anim_asset_na = anim_asset_name.split('.')[0]
     if os.path.isfile( os.path.join(  target_path , target_name ) ):
         hlp.make_read_writeable( target_path + target_name  )
     perf_hlp.check_template_exists(  app , QMessageBox , source_path , source_name , perf )
     copy_local_asset_template(  target_path, source_path, target_name , source_name )
     if str( PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) == str( area ):
-        change_reference(  PROJ_SETTINGS, item_area_full_path , anim_asset_path+anim_asset_na , app )
+        change_reference(  PROJ_SETTINGS, item_area_full_path , anim_asset_path+anim_asset_fi_name , app )
     perf_hlp.perf_task_submit( app, QMessageBox, perf, item_na, area, target_path+target_name , app.PERF_SERVER,
                      app.PERF_USER, app.PERF_WORKSPACE , app.PERF_PASS )
 
@@ -254,7 +254,7 @@ def item_path_builder( app, item_na , area , anim_asset  , assetType , *arg ):
     localr = app.LOCAL_ROOT
     itemTypeAss = projsett['KEYW']['item_types']['asset']
     genericChar_na = projsett['KEYW']['genericChar_na']
-    dicc = { 'ass_na' : item_na , 'assType' : area ,'itemType': itemTypeAss ,
+    dicc = { 'ass_na' : item_na , 'taskType' : area ,'itemType': itemTypeAss ,
             'genericChar_na': genericChar_na }
     animed_char_fullpath = ''
     if str( projsett ['KEYW']['areaAssets']['rig'] ) == str( assetType ):
@@ -279,11 +279,11 @@ def item_path_builder( app, item_na , area , anim_asset  , assetType , *arg ):
         itemTypeAni = projsett['KEYW']['item_types']['anim']
         areaAni = projsett['KEYW']['areaAnim']['anim']
         rig = projsett ['KEYW']['areaAssets']['rig']
-        dicc = { 'ass_na' : anim_asset , 'assType' : character ,
-                 'itemType': itemTypeAni , 'areaAssRig' : rig , 'aniType': area}
+        dicc = { 'ass_na' : anim_asset , 'taskType' : character ,
+                 'itemType': itemTypeAni , 'areaAssRig' : rig , 'taskType': area}
         animed_char_fullpath = solve_path( 'local', 'Rig_Ass_Path' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         template_full_path = solve_path( 'local', 'Anim_Template' , localr ,  '', '' ,  projsett , dicc_ = dicc )
-        dicc = { 'aniType' : area, 'itemType': itemTypeAni}
+        dicc = { 'taskType' : area, 'itemType': itemTypeAni}
         item_area_full_path = solve_path( 'local' , 'Anim_Root' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         item_depot_path = solve_path( 'depot' , 'Anim_Root' , localr ,  app.DEPOT_ROOT, '' ,  projsett , dicc_ = dicc)
     return type, animed_char_fullpath, template_full_path, item_area_full_path, item_depot_path
@@ -327,6 +327,13 @@ def asset_type_extraction( path , proj_sett ):
         if '/' + type + '/' in path:
             return type
 
+def area_asset_extraction( path , proj_sett ):
+    area_assets_ls = list( proj_sett['KEYW']['areaAssets'].values() )
+    for areaass in area_assets_ls:
+        if '/' + areaass + '/' in path:
+            return areaass
+
+
 def item_type_extraction( path , proj_sett ):
     item_types_ls = list( proj_sett['KEYW']['item_types'].values() )
     for type in item_types_ls:
@@ -335,8 +342,14 @@ def item_type_extraction( path , proj_sett ):
         
 def get_path_from_task_ls(name, as_ani_type, task_ls_dicc):
     for task in task_ls_dicc:
-        if task[de.asset_na] == name :
-            if task[de.assType] == as_ani_type or task[de.aniType] == as_ani_type:
+        try:
+            task_na = task[de.asset_na]
+            task_type = task[de.taskType] 
+        except Exception:
+            task_na = task[de.ani_na]
+            task_type = task[de.taskType] 
+        if task_na == name :
+            if task_type == as_ani_type :
                 return task[de.item_path]
             
 def line_4_snipping( thumb_full_path , h , w , bucle_fil_na):

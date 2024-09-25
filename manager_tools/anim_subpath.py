@@ -76,16 +76,19 @@ class AnimSubPath( QMainWindow ):
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        dicc_ = { 'aniType': self.area , 'itemType': self.item_type }#self.PROJ_SETTINGS['KEYW']['areaAnim'] }
+        dicc_ = { 'taskType': self.area , 'itemType': self.item_type }#self.PROJ_SETTINGS['KEYW']['areaAnim'] }
         self.anim_root = hlp_manager.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc_ )
         self.ui.lineEdit_anim_root.setText( self.anim_root )
+        self.ui.listWid_lavel1.addItem('')
         self.load_qwlist(  self.ui.listWid_lavel1, 0 )
-        self.ui.listWid_lavel1.currentItemChanged.connect( lambda: self.    load_qwlist( self.ui.listWid_lavel2 , 1 ))
-        self.ui.listWid_lavel2.currentItemChanged.connect( lambda: self.    load_qwlist( self.ui.listWid_lavel3 , 2 ))
-        self.ui.listWid_lavel3.currentItemChanged.connect( lambda: self.    load_qwlist( self.ui.listWid_lavel4 , 3 ))
-        self.ui.listWid_lavel4.currentItemChanged.connect( lambda: self.    load_qwlist( self.ui.listWid_lavel4 , 4 ))
+        self.ui.listWid_lavel1.currentItemChanged.connect( lambda: self.load_qwlist( self.ui.listWid_lavel2 , 1 ))
+        self.ui.listWid_lavel2.currentItemChanged.connect( lambda: self.load_qwlist( self.ui.listWid_lavel3 , 2 ))
+        self.ui.listWid_lavel3.currentItemChanged.connect( lambda: self.load_qwlist( self.ui.listWid_lavel4 , 3 ))
+        self.ui.listWid_lavel4.currentItemChanged.connect( lambda: self.load_qwlist( self.ui.listWid_lavel4 , 4 ))
         self.ui.pushBut_create_new_folder.clicked.connect( lambda: self.pushBut_create_new_folder_action() )
+        self.ui.pushBut_clean_path.clicked.connect( lambda: self.get_final_path ( '' , self.anim_na))
         self.ui.pushBut_set_this_path.clicked.connect( lambda: self.done())
+
         
     def load_qwlist(self, target_list_widget , signal):
         subpaths = self.generate_subpaths( signal )
@@ -136,7 +139,7 @@ class AnimSubPath( QMainWindow ):
     def get_final_path (self, subpaths , anim_na):
         #itemType = self.PROJ_SETTINGS['KEYW']['item_types']['anim']
         dicc = { 'subpath': subpaths ,'anim_na': anim_na ,
-                'aniType':  self.area ,
+                'taskType':  self.area ,
                 'itemType' : self.item_type }
         anim_full_path_fileroot = hlp_manager.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,
                                                 self.PROJ_SETTINGS , dicc_ = dicc)
@@ -194,7 +197,7 @@ class AnimSubPath( QMainWindow ):
         areaRig = str( self.PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] )
         genericChar_na = str( self.PROJ_SETTINGS ['KEYW']['genericChar_na'] )
         dicc = {  'ass_na' : self.anim_asset  ,  'itemType': item_type , 'genericChar_na': genericChar_na,
-                 'areaAssRig': areaRig , 'assType' :  char_type , 'areaAss': areaRig , 'aniType' : self.area}
+                 'areaAssRig': areaRig , 'taskType' :  char_type , 'areaAss': areaRig , 'taskType' : self.area}
         anim_asset_fullpath = hlp_manager.solve_path( 'local', 'Rig_Ass_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         dicc ['itemType'] = str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] )
         template_full_path = hlp_manager.solve_path( 'local', 'Anim_Template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
