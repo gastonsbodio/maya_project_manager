@@ -26,8 +26,6 @@ except exception:
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
 
-from importlib import reload
-
 import ctypes
 from ctypes.wintypes import MAX_PATH
 dll = ctypes.windll.shell32
@@ -37,27 +35,20 @@ if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 sys.path.append(SCRIPT_FOL)
 
-import perforce_conn.perforce_requests as pr
-import google_conn.google_sheet_request as gs
-import jira_conn.jira_queries as jq
-import definitions as de
-import helper as hlp
-import jira_conn.hlp_jira as hlp_ji
-import perforce_conn.hlp_perf as hlp_perf
-import manager_tools.hlp_manager as hlp_manager
-import google_conn.hlp_goo as hlp_goo
-import enviroment as ev
 
-reload(pr)
-reload(gs)
-reload(jq)
-reload(de)
-reload(hlp)
-reload(hlp_ji)
-reload(hlp_perf)
-reload(hlp_manager)
-reload(hlp_goo)
-reload(ev)
+from importlib import reload
+import importing_modules as  im
+reload(im )
+de = im.inmporting_modules( 'definitions' )
+gs = im.inmporting_modules( 'google_conn.google_sheet_request' )
+jq = im.inmporting_modules(  'jira_conn.jira_queries' )
+hlp = im.inmporting_modules(  'helper' )
+hlp_ji = im.inmporting_modules(  'jira_conn.hlp_jira' )
+hlp_perf = im.inmporting_modules(  'perforce_conn.hlp_perf' )
+hlp_manager = im.inmporting_modules( 'manager_tools.hlp_manager' )
+pr = im.inmporting_modules( 'perforce_conn.perforce_requests' )
+hlp_goo = im.inmporting_modules( 'google_conn.hlp_goo' )
+ev = im.inmporting_modules( 'enviroment' )
 
 ANIM_FOL_FILES = de.ANIM_FOL_FILES
 class AnimCheckerApp( QMainWindow ):

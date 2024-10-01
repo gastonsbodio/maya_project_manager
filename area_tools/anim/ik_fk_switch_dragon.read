@@ -2,12 +2,17 @@
 
 """   IK  to FK   """
 #from importlib import reload
-#import area_tools.anim.ik_fk_switch_dragon as ikfk
-#reload(ikfk)
+#import importing_modules as im
+#importlib.reload(im)
+#ikfk = im.inmporting_modules( 'area_tools.anim.ik_fk_switch_dragon' )
 #ikfk.limb_ik_2_fk()
 
 """   FK  to  IK   """
+
+
 #from importlib import reload
-#import area_tools.anim.ik_fk_switch_dragon as ikfk
-#reload(ikfk)
+#import importing_modules as im
+#importlib.reload(im)
+#ikfk = im.inmporting_modules( 'area_tools.anim.ik_fk_switch_dragon' )
 #ikfk.limb_fk_2_ik()
+

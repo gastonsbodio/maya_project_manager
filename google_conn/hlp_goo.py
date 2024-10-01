@@ -77,14 +77,13 @@ def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHEET_DOC_NA
     file_content =                'import sys\n'
     file_content = file_content + 'import json\n'
     file_content = file_content + 'sys.path.append( r"%s")\n' %de.SCRIPT_MANAG_FOL
-    file_content = file_content +'for path in sys.path:\n'
-    file_content = file_content +'    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:\n'
-    file_content = file_content +'        sys.path.remove(path)\n'
-    file_content = file_content + 'import definitions as de\n'
+    file_content = file_content + 'for path in sys.path:\n'
+    file_content = file_content + '    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:\n'
+    file_content = file_content + '        sys.path.remove(path)\n'
+    file_content = file_content + 'import importing_modules as im\n'
+    file_content = file_content + 'de = im.inmporting_modules( "definitions" )\n'
     file_content = file_content + hlp.ADDITIONAL_LINE_PY3
-    file_content = file_content + 'reload( de )\n'
     file_content = file_content + 'sys.path.append( de.PY_PACK_MOD )\n'
-    file_content = file_content + 'sys.path.append( de.PY3_PACKAGES )\n'
     if '\n' == hlp.ADDITIONAL_LINE_PY3:
         file_content = file_content + 'import py2.oauth2client.service_account as ServiceAcc\n'
     else:
@@ -133,7 +132,10 @@ def write_googld_func( func_na, result_fi_na, if_result):
     file_content = file_content + 'error_ls = []\n'
     file_content = file_content + '%s = []\n' %de.ls_result
     file_content = file_content + 'try:\n'
-    file_content = file_content + '    import google_conn.google_sheet_request as gs\n'
+    
+    file_content = file_content + '    import importing_modules as im\n'
+    file_content = file_content + '    gs = im.inmporting_modules( "google_conn.google_sheet_request" )\n'
+    
     file_content = file_content + '    ' + hlp.ADDITIONAL_LINE_PY3
     file_content = file_content + '    reload( gs )\n'
     file_content = file_content + '    goo_dri = gs.GoogleDriveQuery()\n'

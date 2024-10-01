@@ -11,8 +11,6 @@ except Exception as err:
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
 
-from importlib import reload
-
 import jira_conn.jira_queries as jq
 import definitions as de
 import helper as hlp
@@ -21,13 +19,19 @@ import perforce_conn.hlp_perf as hlp_perf
 import manager_tools.hlp_manager as hlp_manager
 import enviroment as ev
 
-reload(jq)
-reload(de)
-reload(hlp)
-reload(hlp_ji)
-reload(hlp_perf)
-reload(hlp_manager)
-reload(ev)
+
+
+
+from importlib import reload
+import importing_modules as  im
+reload(im )
+de = im.inmporting_modules( 'definitions' )
+jq = im.inmporting_modules(  'jira_conn.jira_queries' )
+hlp = im.inmporting_modules(  'helper' )
+hlp_ji = im.inmporting_modules(  'jira_conn.hlp_jira' )
+hlp_perf = im.inmporting_modules(  'perforce_conn.hlp_perf' )
+hlp_manager = im.inmporting_modules( 'manager_tools.hlp_manager' )
+ev = im.inmporting_modules( 'enviroment' )
 
 class CommentsApp( QMainWindow ):
     def __init__( self, mainApp = ev.getWindow( QWidget )  ,issue_key = '' , dicc_comment_ls = [] , area_ls = [] ,
@@ -45,6 +49,7 @@ class CommentsApp( QMainWindow ):
         dicc_comment_ls = self.get_refreshes_comment_dicc(  area_ls )
         self.load_old_comments( dicc_comment_ls )
         self.ui.pushBut_refresh.clicked.connect( lambda: self.get_task_values( self.area_ls ) )
+        self.ui.pushButt_add_cooment.clicked.connect ( lambda: self.add_comment( self.issue_key ))
 
     def initialize(self):
         """Initializing functions, var and features.
@@ -71,7 +76,7 @@ class CommentsApp( QMainWindow ):
         item_na_label = hlp_manager.get_item_na_label(  self.area , self.PROJ_SETTINGS )
         tasks_ls_diccs = hlp_ji.get_self_tasks( self, QMessageBox , area_ls )
         for task in tasks_ls_diccs:
-            if task[ de.area ] == self.area and task[ item_na_label ] == self.item_na :
+            if task[ de.area ] == self.area.split('_')[0] and task[ item_na_label ] == self.item_na :
                 dicc_comment_ls = task[ de.comments ]
                 break
         return dicc_comment_ls 
@@ -84,6 +89,7 @@ class CommentsApp( QMainWindow ):
         comment_body = str(  self.ui.textEd_new_comment.toPlainText())
         if comment_body != '':
             self.jira_m.add_comment( de.JI_SERVER , self.USER, self.APIKEY, issue_key , comment_body )
+            self.get_task_values( self.area_ls ) 
 
 
 if ev.ENVIROMENT == 'Windows':

@@ -6,13 +6,10 @@ import os
 import stat
 import subprocess
 si = subprocess.STARTUPINFO()
-import definitions as de
-
-from importlib import reload
-reload(de)
+import importing_modules as im
+de = im.inmporting_modules( 'definitions' )
 
 sys.path.append( de.PY_PACKAGES)
-#import yaml as yaml
 import shutil
 
 ADDITIONAL_LINE_PY3 = 'from importlib import reload\n'  #'\n'#

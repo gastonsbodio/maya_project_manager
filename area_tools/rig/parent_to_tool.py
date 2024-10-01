@@ -17,6 +17,14 @@ from functools import partial
 import maya.cmds as cmds
 from maya import OpenMayaAnim as oma
 
+import ctypes
+from ctypes.wintypes import MAX_PATH
+dll = ctypes.windll.shell32
+buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+	USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+
 PARENT_PREFIX = '_offset_'
 ATTR_NA = "parentTo"
 BRIDGE = '_bridge_control'
@@ -114,9 +122,9 @@ def script_job_matcher( cnt ):
     cmds.scriptJob( attributeChange=[ control+'.'+ATTR_NA , partial( match_control, control  ) ] )
 
 def create_script_node( cnt_na ):
-    script =          "from importlib import reload;"
-    script = script + "import area_tools.rig.parent_to_tool as p2t;"
-    script = script + "reload(p2t);"
+    script =          "sys.path.append( '" + SCRIPT_FOL + "' );"
+    script = script + "import importing_modules as im;"
+    script = script + "p2t = im.inmporting_modules( 'area_tools.rig.parent_to_tool' );"  
     script = script + "p2t.script_job_matcher( '%s' )" %cnt_na
     nodeName = cmds.scriptNode( st=2, bs= 'python( "%s" );'%script , n = cnt_na+'matcher')
 

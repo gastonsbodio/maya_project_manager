@@ -52,9 +52,9 @@ def write_perforce_command_file ( line, if_result, result_fi_na, perf_server, pe
     file_content = file_content + 'sys.path.append( r"%s" )\n' %de.PY_PACKAGES 
     file_content = file_content + 'from P4 import P4,P4Exception \n' 
     file_content = file_content + 'import json\n'  
-    file_content = file_content + 'import perforce_conn.perforce_requests as pr\n' 
-    file_content = file_content +  hlp.ADDITIONAL_LINE_PY3      
-    file_content = file_content + 'reload (pr)\n'
+    file_content = file_content + 'import importing_modules as im\n'
+    file_content = file_content + 'pr = im.inmporting_modules( "perforce_conn.perforce_requests" )\n'    
+    file_content = file_content +  hlp.ADDITIONAL_LINE_PY3
     file_content = file_content + 'p4 = P4() \n'
     file_content = file_content + 'p4.port = "%s"   \np4.user = "%s"   \np4.client = "%s"   \n'%(perf_server, perf_user, workspace)
     file_content = file_content + 'p4.password = "%s"   \n'%(perf_pass)

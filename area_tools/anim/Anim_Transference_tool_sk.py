@@ -29,7 +29,6 @@ import maya.cmds as cmds
 import maya.OpenMayaUI as mui
 from shiboken2 import wrapInstance
 
-
 try:
     from PySide  import QtCore
     from PySide.QtGui import *
@@ -40,8 +39,6 @@ except Exception as err:
     from PySide2.QtGui import *
     from PySide2.QtWidgets import *
 
-from importlib import reload
-
 import ctypes
 from ctypes.wintypes import MAX_PATH
 dll = ctypes.windll.shell32
@@ -50,8 +47,9 @@ if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 	USER_DOC = buf.value
 SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 sys.path.append(SCRIPT_FOL)
-import definitions as de
-reload( de )
+import importing_modules as im
+de = im.inmporting_modules( 'definitions' )
+
 MAYA_FOL = USER_DOC + "\\maya"
 MAYA_FOL = MAYA_FOL.replace('\\','/')
 for path in sys.path:
@@ -473,9 +471,13 @@ class animTransference(QDialog):
         line = line + "import sys\n"
         line = line + "import os\n"
         line = line + "cmds.loadPlugin('fbxmaya', quiet=True)\n"
+        line = line + "sys.path.append( '" + SCRIPT_FOL + "' )\n"
         for spath in UI_ANIM_FOL:
             line = line + "sys.path.append( '" + spath + "' )\n"
-        line = line + "import Anim_Transference_tool_sk as att\n"
+
+        line = line + "import importing_modules as im\n"
+        line = line + "as = im.inmporting_modules( 'Anim_Transference_tool_sk' )\n"   
+ 
         line = line + "toolcommand = att.transfer_anim_( key_checkBFKIK_matcher = %s ,\n"%str(bool_value)
         line = line + " selected_switcher = '%s' )\n" %selection
         line = line + "toolcommand.transfer_anim( )\n"

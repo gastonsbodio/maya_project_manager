@@ -55,8 +55,6 @@ class TaskCreationPanel(QMainWindow):
         super(TaskCreationPanel, self).__init__( )
         global LAUNCHED_BY
         LAUNCHED_BY = launched_by
-        #if ev.ENVIROMENT  == 'Windows':# loader == None:
-        #    loader = QUiLoader()
         uifile = QtCore.QFile( de.SCRIPT_MANAG_FOL.replace('\\','/') +'/manager_tools/'+ de.TASK_CREATION_UI)
         uifile.open(QtCore.QFile.ReadOnly)
         if parent == None:

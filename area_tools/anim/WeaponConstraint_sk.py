@@ -38,8 +38,9 @@ if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 	USER_DOC = buf.value
 SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 sys.path.append(SCRIPT_FOL)
-import definitions as de
-reload(de)
+import importing_modules as im
+de = im.inmporting_modules( 'definitions' )
+
 MAYA_SCRIPT_FOL = USER_DOC + "\\maya"
 for path in sys.path:
     if "Maya2020" in path :

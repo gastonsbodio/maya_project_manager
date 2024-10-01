@@ -1,22 +1,16 @@
 import sys
 import os
 import ast
-import definitions as de
-import helper as hlp
-import google_conn.hlp_goo as hlp_goo
 import time
 
 from importlib import reload
-
-reload( de )
-reload( hlp )
-reload(hlp_goo)
+import importing_modules as  im
+de = im.inmporting_modules( 'definitions' )
+hlp = im.inmporting_modules(  'helper' )
+hlp_goo = im.inmporting_modules(  'google_conn.hlp_goo' )
 
 if de.PY_PACK_MOD not in sys.path:
     sys.path.append( de.PY_PACK_MOD.replace('/','\\') + '\\' )
-#if de.PY3_PACKAGES not in sys.path:
-#    print ( 'bla bla ')
-#    sys.path.append( de.PY3_PACKAGES )
 PYTHON_VERSION_PATH = de.PY3_PACKAGES
 try:
     from py3.pydrive2 import auth
@@ -453,21 +447,27 @@ class GoogleDriveQuery():
             print('try warning listing children')
         return files_good_children_ls
 
-    def upload_custom_files (self, tuplaPaths, projRootName, stulib_local_root_fol):
+    def delete_goo_fi( self, credenciales, file ):
+        file.delete()
+
+    def upload_custom_files (self, tuplaPaths, projRootName, local_root_fol):
         projName = projRootName.split('/')[-1]
         uploadMessLs = []
         credenciales = self.login()
         for file in tuplaPaths:
             fi_local = file
-            fi = file.replace( stulib_local_root_fol+'/', projRootName+'/')
+            fi = file.replace( local_root_fol+'/', projRootName+'/')
             name =str(fi.split('/')[-1])
             doneLlist = []
             name=fi.split('/')[-1]
-            pathAlone= self.pathOnlyBuilt(fi)
-            onlyPath = self.strip_bar( pathAlone )
-            tuplas = self.builtPathSinceRoot ( onlyPath, projName, credenciales)
+            #pathAlone= self.pathOnlyBuilt(fi)
+            #onlyPath = self.strip_bar( pathAlone )
+            tuplas = self.builtPathSinceRoot ( fi, projName, credenciales)
+            #tuplas = self.builtPathSinceRoot ( onlyPath, projName, credenciales)
             if tuplas != False:
-                files_good_children_ls = self.get_childrens (credenciales, name, tuplas[1] )
+                file_id = tuplas[1].split('/')[-1] 
+                father_id_path = tuplas[1].split( '/'+file_id )[0] 
+                files_good_children_ls = self.get_childrens (credenciales, name, father_id_path )
             else:
                 files_good_children_ls = []
             if files_good_children_ls != [] :

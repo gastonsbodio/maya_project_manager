@@ -49,11 +49,11 @@ def write_jira_command_file( line, if_result, result_fi_na , user , server, apik
     """
     file_content =                   'import sys\n'
     file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
-    file_content = file_content +    'import definitions as de\n'
-    file_content = file_content +    'import jira_conn.jira_queries as jq\n'
+    
+    file_content = file_content +    'import importing_modules as im\n'
+    file_content = file_content +    'de = im.inmporting_modules( "definitions" )\n'
+    file_content = file_content +    'jq = im.inmporting_modules( "jira_conn.jira_queries" )\n'    
     file_content = file_content +    hlp.ADDITIONAL_LINE_PY3   
-    file_content = file_content +    'reload(de)\n'
-    file_content = file_content +    'reload(jq)\n'
     file_content = file_content +    'sys.path.append( de.PY3_PACKAGES )\n'
     file_content = file_content +    'from jira import JIRA\n'
     file_content = file_content +    'import requests\n'
@@ -95,9 +95,9 @@ def write_request_jira_file( line, if_result, result_fi_na ):#
     """
     file_content =                   'import sys\n'
     file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
-    file_content = file_content +    'import definitions as de\n'
+    file_content = file_content +    'import importing_modules as im\n'
+    file_content = file_content +    'de = im.inmporting_modules( "definitions" )\n'
     file_content = file_content +    hlp.ADDITIONAL_LINE_PY3
-    file_content = file_content +    'reload(de)\n'
     file_content = file_content +    'sys.path.append( de.PY3_PACKAGES )\n'
     file_content = file_content +    'import requests\n'
     file_content = file_content +    'from requests.auth import HTTPBasicAuth\n'

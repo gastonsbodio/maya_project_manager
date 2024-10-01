@@ -6,17 +6,14 @@ import os
 import stat
 import subprocess
 si = subprocess.STARTUPINFO()
-import definitions as de
-import helper as hlp
-import perforce_conn.hlp_perf as perf_hlp
-import google_conn.hlp_goo as goo_hlp
 
 from importlib import reload
-
-reload(de)
-reload(hlp)
-reload(perf_hlp)
-reload(goo_hlp)
+import importing_modules as  im
+reload(im )
+de = im.inmporting_modules( 'definitions' )
+hlp = im.inmporting_modules(  'helper' )
+hlp_perf = im.inmporting_modules(  'perforce_conn.hlp_perf' )
+hlp_goo = im.inmporting_modules(  'google_conn.hlp_goo' )
 
 sys.path.append( de.PY_PACKAGES)
 import yaml as yaml
@@ -138,7 +135,7 @@ def transform_given_path( path, way_key , proj_settings , local_root , depot_roo
     return path
 
 def get_item_na_label(  area , PROJ_SETTINGS ):
-    if area in list(    PROJ_SETTINGS['KEYW']['areaAssets'].values()    ):
+    if area.split('_')[-1] in list(    PROJ_SETTINGS['KEYW']['areaAssets'].values()    ):
         item_na = de.asset_na
     elif area  in list(    PROJ_SETTINGS['KEYW']['areaAnim'].values()    ):  
         item_na = de.ani_na
@@ -206,7 +203,7 @@ def set_new_values_on_sheet( app, gs , QMessageBox , area , column_ls , value_ls
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_anim
     else:
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_asset
-    goo_hlp.edit_google_sheet_cell( app, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA , sheet_num,
+    hlp_goo.edit_google_sheet_cell( app, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA , sheet_num,
                                                 column_ls , value_ls , row_idx )
     
 def check_forbiden_char( app, full_word_2_analize, QMessageBox):
@@ -225,7 +222,7 @@ def check_created_task( app , QMessageBox , gs, area, item_na ):
     else:
         item_na_colum  = de.GOOGLE_SH_ASS_NA_COL
         sheet_num = app.PROJECT_KEY+'_'+de.issue_type_asset
-    item_tracked_ls_diccs = goo_hlp.get_google_doc_data( app, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA , sheet_num )
+    item_tracked_ls_diccs = hlp_goo.get_google_doc_data( app, QMessageBox , gs , de.GOOGLE_SHEET_DOC_NA , sheet_num )
     area_done_dicc = {} 
     path_ls = []
     item_created_ls = [ item[ item_na_colum ] for item in item_tracked_ls_diccs ]
@@ -386,7 +383,8 @@ def snipping_tool_launch( line, if_result, result_fi_na ):#
     #file_content = file_content +    'reload(de)\n'
     file_content = file_content +    'sys.path.append( r"%s" )\n'%de.PY3_PACKAGES
     file_content = file_content +    'from PySide6.QtWidgets import *\n'
-    file_content = file_content +    'import manager_tools.snipping_tool as st\n'
+    file_content = file_content +    'import importing_modules as im\n'
+    file_content = file_content +    'st = im.inmporting_modules( "manager_tools.snipping_tool" )\n'
     file_content = file_content +    'import json\n'
     file_content = file_content +    '%s = []\n' %de.ls_ji_result
     file_content = file_content +    'error_ls = []\n'

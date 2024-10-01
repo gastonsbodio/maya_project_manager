@@ -170,18 +170,6 @@ class JiraQueries():
         result = self.get_request_jira_templ( server, proj_key , user, apikey,  
                                                 url_line, 'get_status_ls' , pyStAl = True )
         return result
-        
-        #if pyStAl == False:
-        #    jira = self.jira_connection( user, server, apikey )
-        #    status_type = jira.statuses()
-        #    return status_type
-        #else:
-        #    line = 'result = jira.statuses()\n'
-        #    line = line + '    %s = [str(st) for st in result]\n' %de.ls_ji_result 
-        #    file_content = hlp_ji.write_jira_command_file ( line , True, 'status_request.json', user, server, apikey)
-        #    hlp.create_python_file ('get_status_types', file_content)
-        #    hlp.run_py_stand_alone( 'get_status_types' )
-        #    return hlp.json2dicc_load( de.PY_PATH  + 'status_request.json')#[de.ls_ji_result]
     
     def change_issue_status(self, issue_key, user, server, apikey, new_status, pyStAl= True):
         """
@@ -223,7 +211,6 @@ class JiraQueries():
         r = requests.post( url, json=body,auth = HTTPBasicAuth( 'gastonsbodio@gmail.com', passw ), headers = headers )
 
 
-  
     def get_request_jira_templ( self, server, proj_key , user, api_key,
                                 url_line , py_fi_na, pyStAl= True ):
         """Make a Get Request on Jira Api.
@@ -336,7 +323,7 @@ class JiraQueries():
             line = 'jira.add_comment( "%s" , "%s" )' %( hlp.byte_string2string( str(issue_key) ) , comment_body )
             file_content = hlp_ji.write_jira_command_file ( line , True, 'add_comment.json', MASTER_USER, server, MASTER_API_KEY )
             hlp.create_python_file ('add_comment', file_content)
-            hlp.run_py_stand_alone( 'add_commentin' )
+            hlp.run_py_stand_alone( 'add_comment' )
             dicc = hlp.json2dicc_load( de.PY_PATH  + 'add_comment.json')
             return dicc
 

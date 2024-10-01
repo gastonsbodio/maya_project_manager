@@ -2,25 +2,6 @@
 """ use the bellow code with hashtag for running manager
 """
 
-###          maya launch      ####
-####import sys
-####import ctypes
-####from ctypes.wintypes import MAX_PATH
-####dll = ctypes.windll.shell32
-####buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-####if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-####    USER_DOC = buf.value
-####SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
-####sys.path.append(SCRIPT_FOL)
-####
-####from importlib import reload
-####import manager_tools.jira_project_manager as jiraM
-####
-####reload( jiraM )
-#####loader = QUiLoader()
-####widget = jiraM.MyMainWindow( loader = loader )
-####widget.ui.show()
-
 import sys
 import webbrowser
 import os
@@ -47,29 +28,21 @@ except Exception:
         USER_DOC = buf.value
     SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
     sys.path.append(SCRIPT_FOL)
-    
 from importlib import reload
+import importing_modules as  im
+reload(im )
+de = im.inmporting_modules( 'definitions' )
+gs = im.inmporting_modules( 'google_conn.google_sheet_request' )
+jq = im.inmporting_modules(  'jira_conn.jira_queries' )
+hlp = im.inmporting_modules(  'helper' )
+hlp_ji = im.inmporting_modules(  'jira_conn.hlp_jira' )
+hlp_perf = im.inmporting_modules(  'perforce_conn.hlp_perf' )
+hlp_manager = im.inmporting_modules( 'manager_tools.hlp_manager' )
+pr = im.inmporting_modules( 'perforce_conn.perforce_requests' )
+ev = im.inmporting_modules( 'enviroment' )
+comm = im.inmporting_modules( 'manager_tools.comments_app' )
+task = im.inmporting_modules( 'manager_tools.task_creation_panel' )
 
-import google_conn.google_sheet_request as gs
-import jira_conn.jira_queries as jq
-import definitions as de
-import helper as hlp
-import jira_conn.hlp_jira as hlp_ji
-import perforce_conn.hlp_perf as hlp_perf
-import manager_tools.hlp_manager as hlp_manager
-import perforce_conn.perforce_requests as pr
-import enviroment as ev
-import manager_tools.comments_app as comm
-reload(gs)
-reload(jq)
-reload(de)
-reload(hlp)
-reload(hlp_ji)
-reload(hlp_perf)
-reload(hlp_manager)
-reload(pr)
-reload(ev)
-reload(comm)
 
 class getThumbnClass(QLabel):
     def __init__(self, parent=None, path=None, size=(0,0)):
@@ -110,7 +83,6 @@ class table_features( ):#QWidget ):
         elif HEADER_LS [de.ITEM_NA_IDX ] == de.ani_na:
             local_full_path, depot_full_path = self.get_anim_path(  task[ de.ani_na ], self.tasks_ls_ani_diccs )
             item_path , item_file = hlp.separate_path_and_na( local_full_path )
-            #item_type = hlp_manager.item_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
             thumb_sufix = self.PROJ_SETTINGS['KEYW']['item_thumbn_sufix']
             item_thumb_path = item_path + task[ de.ani_na ] + thumb_sufix
         return item_thumb_path
@@ -125,21 +97,15 @@ class table_features( ):#QWidget ):
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
         table.clear()
-        if True :#try:
-            tasks_ls_diccs = hlp_ji.get_self_tasks( self, QMessageBox , area_ls )
-            if self.PROJ_SETTINGS['KEYW']['areaAnim']['anim'] in area_ls:
-                self.tasks_ls_ani_diccs = tasks_ls_diccs
-            elif self.PROJ_SETTINGS['KEYW']['areaAssets']['rig'] in area_ls:
-                self.tasks_ls_ass_diccs = tasks_ls_diccs
-        #except Exception as err:
-        #    print ( err )
-        #    print ( 'try warning error getting tasks')
-        #    tasks_ls_diccs = []
+        tasks_ls_diccs = hlp_ji.get_self_tasks( self, QMessageBox , area_ls )
+        if self.PROJ_SETTINGS['KEYW']['areaAnim']['anim'] in area_ls:
+            self.tasks_ls_ani_diccs = tasks_ls_diccs
+        elif self.PROJ_SETTINGS['KEYW']['areaAssets']['rig'] in area_ls:
+            self.tasks_ls_ass_diccs = tasks_ls_diccs
         for i, header in enumerate ( HEADER_LS ):
             locals()["item"+ str(i)] = QTableWidgetItem(header)
             locals()["item"+ str(i)].setBackground(QColor(180, 75, 65))
             table.setHorizontalHeaderItem( i,locals()["item"+ str(i)] )
-            #self.tablaWidgShots.horizontalHeader().setFixedHeight(40)
         table.setColumnWidth( de.THUMB_IDX , de.width_as_thum )
         id_rows = self.populate_loop( table ,tasks_ls_diccs ,HEADER_LS )
         return id_rows
@@ -149,7 +115,6 @@ class table_features( ):#QWidget ):
         for i, task in enumerate( tasks_ls_diccs ):
             per_row_ls = []
             table.setRowHeight(i, de.height_as_thum )
-            #id_rows[ str(i) ]   =   [ task['Id'] ]
             per_row_ls.append(  task['Id'] )
             item_thumb_path = self.thumb_local_path_item(  task, HEADER_LS )
             thumbMediaPath, thumb_fi_na = hlp.separate_path_and_na( item_thumb_path )
@@ -172,6 +137,11 @@ class table_features( ):#QWidget ):
                     label_comment = getThumbnClass( None,  de.COMMENT_ICON_PATH,  ( de.width_as_thum , de.height_as_thum )   )
                     table.setCellWidget( i , de.COMMENT_IDX, label_comment )
                     per_row_ls.append( task[column] )
+                elif idx ==  de.AREA_IDX:
+                    if task[ de.itemType ] == self.PROJ_SETTINGS['KEYW']['item_types']['asset']:
+                        item = self.create_table_item( table , str( task[column] ) + '_'+ task[de.areaAss] , idx, i ) 
+                    
+                    
                 id_rows[ str(i) ]   =   per_row_ls
         if 'asset' in table.objectName():
             self.id_rows_ass = id_rows
@@ -493,9 +463,6 @@ class table_features( ):#QWidget ):
         if actionStatus != None:
             status_na = actionStatus.text()
             for dicc in self.dicc_status_trans_ls:
-                print ( dicc[ "name" ] )
-
-            for dicc in self.dicc_status_trans_ls:
                 if status_na == dicc[ "name" ]:
                     status_transit_id = dicc[ "id" ]
             dicc = self.jira_m.change_issue_status( issue_key, self.USER, de.JI_SERVER, self.APIKEY, status_transit_id )
@@ -612,8 +579,6 @@ class MyMainWindow(QMainWindow):
         self.ui.connect( action2,   QtCore.SIGNAL('triggered()') , receiver)
 
     def launch_task_creation_panel( self ):
-        import manager_tools.task_creation_panel as task
-        reload( task )
         loader = QUiLoader()
         widget = task.TaskCreationPanel( loader = loader, parent = self.ui ,launched_by = 'manager')
         widget.ui.show()   
@@ -650,7 +615,6 @@ class MyMainWindow(QMainWindow):
         for proj in self.worksp_ls:
             try:
                 if str(proj['client']) == self.PERF_WORKSPACE:
-                    print ( proj )
                     self.LOCAL_ROOT = str(proj['Root']).replace('\\','/')
                     dicc['local_root'] = self.LOCAL_ROOT
                     self.DEPOT_ROOT = str(proj['Stream']).replace('\\','/')
@@ -747,10 +711,10 @@ class MyMainWindow(QMainWindow):
 
 if ev.ENVIROMENT == 'Windows':
     ###   manager launch  ####
-    import manager_tools.jira_project_manager as jiraM
+    #import manager_tools.jira_project_manager as jiraM
     loader = QUiLoader()
     app = QApplication(sys.argv)
-    widget = jiraM.MyMainWindow( loader = loader)
+    widget = MyMainWindow( loader = loader)
     widget.ui.show()
     sys.exit(app.exec())
 
