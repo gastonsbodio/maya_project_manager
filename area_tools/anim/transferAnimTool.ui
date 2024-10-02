@@ -419,9 +419,9 @@
    <widget class="QComboBox" name="comboB_switch_template">
     <property name="geometry">
      <rect>
-      <x>600</x>
+      <x>580</x>
       <y>270</y>
-      <width>151</width>
+      <width>191</width>
       <height>22</height>
      </rect>
     </property>

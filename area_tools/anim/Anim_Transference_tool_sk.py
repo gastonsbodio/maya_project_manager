@@ -469,13 +469,13 @@ class animTransference(QDialog):
         line = line + "cmds.loadPlugin('fbxmaya', quiet=True)\n"
         line = line + "sys.path.append( r'" + SCRIPT_FOL + "' )\n"
         for spath in UI_ANIM_FOL:
-            line = line + "sys.path.append( r'" + spath + "' )\n"
+            line = line + "sys.path.append( r'" + spath.replace('/','\\') + "' )\n"
 
         line = line + "import importing_modules as im\n"
-        line = line + "as = im.importing_modules( 'Anim_Transference_tool_sk' )\n"   
+        line = line + "att = im.importing_modules( 'Anim_Transference_tool_sk' )\n"   
  
-        line = line + "toolcommand = att.transfer_anim_( key_checkBFKIK_matcher = %s ,\n"%str(bool_value)
-        line = line + " selected_switcher = '%s' )\n" %selection
+        line = line + "toolcommand = att.transfer_anim_( key_checkBFKIK_matcher = %s ,"%str(bool_value)
+        line = line + "selected_switcher = '%s' )\n" %selection
         line = line + "toolcommand.transfer_anim( )\n"
         return line
 
