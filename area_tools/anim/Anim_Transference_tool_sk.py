@@ -469,7 +469,7 @@ class animTransference(QDialog):
         line = line + "cmds.loadPlugin('fbxmaya', quiet=True)\n"
         line = line + "sys.path.append( r'" + SCRIPT_FOL + "' )\n"
         for spath in UI_ANIM_FOL:
-            line = line + "sys.path.append( r'" + spath.replace('/','\\') + "' )\n"
+            line = line + "sys.path.append( r'" + spath + "' )\n"
 
         line = line + "import importing_modules as im\n"
         line = line + "att = im.importing_modules( 'Anim_Transference_tool_sk' )\n"   
