@@ -95,6 +95,6 @@ def script_job( cnt , MULT_DIV_ROT_VALUE, attribname):
 def create_script_node( cnt_na, MULT_DIV_ROT_VALUE , attribname = ""):
     script =          "sys.path.append( '" + SCRIPT_FOL + "' );"
     script = script + "import importing_modules as im;"
-    script = script + "drv = im.inmporting_modules( 'area_tools.rig.default_rot_value_script' );"  
+    script = script + "drv = im.importing_modules( 'area_tools.rig.default_rot_value_script' );"  
     script = script + "drv.script_job( '%s', '%s' , '%s') ;" %( cnt_na, MULT_DIV_ROT_VALUE , attribname )
     nodeName = cmds.scriptNode( st=2, bs= 'python( "%s" );'%script , n = 'script_rot_defa_'+cnt_na+'_value')

@@ -24,31 +24,24 @@ except Exception as err:
     sys.path.append(SCRIPT_FOL)
     
 import shutil
+
 from importlib import reload
+import importing_modules as  im
+reload(im )
+de = im.importing_modules( 'definitions' )
+gs = im.importing_modules( 'google_conn.google_sheet_request' )
+jq = im.importing_modules(  'jira_conn.jira_queries' )
+hlp = im.importing_modules(  'helper' )
+hlp_ji = im.importing_modules(  'jira_conn.hlp_jira' )
+hlp_perf = im.importing_modules(  'perforce_conn.hlp_perf' )
+hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )
+pr = im.importing_modules( 'perforce_conn.perforce_requests' )
+ev = im.importing_modules( 'enviroment' )
+asp = im.importing_modules( 'manager_tools.anim_subpath' )
+hlp_goo = im.importing_modules( 'google_conn.hlp_goo' )
 
-import google_conn.google_sheet_request as gs
-import jira_conn.jira_queries as jq
-import definitions as de
-import helper as hlp
-import jira_conn.hlp_jira as hlp_ji
-import perforce_conn.hlp_perf as hlp_perf
-import manager_tools.hlp_manager as hlp_manager
-import google_conn.hlp_goo as hlp_goo
-import enviroment as ev
-import perforce_conn.perforce_requests as pr
-import manager_tools.anim_subpath as asp
 
-reload(gs)
-reload(jq)
-reload(de)
-reload(hlp)
-reload(ev)
-reload(pr)
-reload(asp)
-reload(hlp_ji)
-reload(hlp_perf)
-reload(hlp_manager)
-reload(hlp_goo)
+
 LAUNCHED_BY = None
 class TaskCreationPanel(QMainWindow):
     def __init__(self, loader = None , launched_by = None, parent = None):

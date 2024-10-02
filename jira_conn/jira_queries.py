@@ -4,8 +4,6 @@ import sys
 import os
 import json
 
-from importlib import reload
-
 import ctypes
 from ctypes.wintypes import MAX_PATH
 dll = ctypes.windll.shell32
@@ -20,10 +18,13 @@ import helper as hlp
 import jira_conn.hlp_jira as hlp_ji
 import manager_tools.hlp_manager as hlp_manager
 
-reload(de)
-reload(hlp)
-reload(hlp_ji)
-reload(hlp_manager)
+from importlib import reload
+import importing_modules as  im
+reload(im )
+de = im.importing_modules( 'definitions' )
+hlp = im.importing_modules(  'helper' )
+hlp_ji = im.importing_modules(  'jira_conn.hlp_jira' )
+hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )
 
 if de.PY_PACKAGES not in sys.path:
     sys.path.append( de.PY_PACKAGES )

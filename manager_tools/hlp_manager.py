@@ -10,10 +10,10 @@ si = subprocess.STARTUPINFO()
 from importlib import reload
 import importing_modules as  im
 reload(im )
-de = im.inmporting_modules( 'definitions' )
-hlp = im.inmporting_modules(  'helper' )
-hlp_perf = im.inmporting_modules(  'perforce_conn.hlp_perf' )
-hlp_goo = im.inmporting_modules(  'google_conn.hlp_goo' )
+de = im.importing_modules( 'definitions' )
+hlp = im.importing_modules(  'helper' )
+hlp_perf = im.importing_modules(  'perforce_conn.hlp_perf' )
+hlp_goo = im.importing_modules(  'google_conn.hlp_goo' )
 
 sys.path.append( de.PY_PACKAGES)
 import yaml as yaml
@@ -384,7 +384,7 @@ def snipping_tool_launch( line, if_result, result_fi_na ):#
     file_content = file_content +    'sys.path.append( r"%s" )\n'%de.PY3_PACKAGES
     file_content = file_content +    'from PySide6.QtWidgets import *\n'
     file_content = file_content +    'import importing_modules as im\n'
-    file_content = file_content +    'st = im.inmporting_modules( "manager_tools.snipping_tool" )\n'
+    file_content = file_content +    'st = im.importing_modules( "manager_tools.snipping_tool" )\n'
     file_content = file_content +    'import json\n'
     file_content = file_content +    '%s = []\n' %de.ls_ji_result
     file_content = file_content +    'error_ls = []\n'

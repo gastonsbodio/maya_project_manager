@@ -6,14 +6,18 @@ import os
 import stat
 import subprocess
 si = subprocess.STARTUPINFO()
+
+from importlib import reload
+import importing_modules as  im
+reload(im )
+
 import definitions as de
 import helper as hlp
 import manager_tools.hlp_manager as hlp_manager
-from importlib import reload
 
-reload(de)
-reload(hlp)
-reload(hlp_manager)
+de = im.importing_modules( 'definitions' )
+hlp = im.importing_modules(  'helper' )
+hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )
 
 sys.path.append( de.PY_PACKAGES)
 import yaml as yaml
@@ -53,7 +57,7 @@ def write_perforce_command_file ( line, if_result, result_fi_na, perf_server, pe
     file_content = file_content + 'from P4 import P4,P4Exception \n' 
     file_content = file_content + 'import json\n'  
     file_content = file_content + 'import importing_modules as im\n'
-    file_content = file_content + 'pr = im.inmporting_modules( "perforce_conn.perforce_requests" )\n'    
+    file_content = file_content + 'pr = im.importing_modules( "perforce_conn.perforce_requests" )\n'    
     file_content = file_content +  hlp.ADDITIONAL_LINE_PY3
     file_content = file_content + 'p4 = P4() \n'
     file_content = file_content + 'p4.port = "%s"   \np4.user = "%s"   \np4.client = "%s"   \n'%(perf_server, perf_user, workspace)

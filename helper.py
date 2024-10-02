@@ -7,7 +7,7 @@ import stat
 import subprocess
 si = subprocess.STARTUPINFO()
 import importing_modules as im
-de = im.inmporting_modules( 'definitions' )
+de = im.importing_modules( 'definitions' )
 
 sys.path.append( de.PY_PACKAGES)
 import shutil

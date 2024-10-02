@@ -5,9 +5,9 @@ import time
 
 from importlib import reload
 import importing_modules as  im
-de = im.inmporting_modules( 'definitions' )
-hlp = im.inmporting_modules(  'helper' )
-hlp_goo = im.inmporting_modules(  'google_conn.hlp_goo' )
+de = im.importing_modules( 'definitions' )
+hlp = im.importing_modules(  'helper' )
+hlp_goo = im.importing_modules(  'google_conn.hlp_goo' )
 
 if de.PY_PACK_MOD not in sys.path:
     sys.path.append( de.PY_PACK_MOD.replace('/','\\') + '\\' )
@@ -283,28 +283,15 @@ class GoogleDriveQuery():
         except Exception as err:
             print (err)
 
-    def builtPathSinceRoot (self, pathh, projRootNa, credenciales):
+    def builtPathSinceRoot (self, file_full_pathh, projRootNa, credenciales):
         projName = projRootNa.split('/')[-1]
-        filePath, fileName= hlp.separate_path_and_na(pathh)
+        filePath, fileName= hlp.separate_path_and_na(file_full_pathh)
         if fileName == '':
-            fileName = pathh.split('/')[-2]
-        pathOnly = self.pathOnlyBuilt(pathh)
+            fileName = file_full_pathh.split('/')[-2]
+        pathOnly = self.pathOnlyBuilt(file_full_pathh)
         pathOnly = pathOnly.split(projName)[-1]
         partsPathNa = pathOnly.split('/')
-        keyOneFol = False
-        keyProjFol = False
-        if pathOnly == '/' :
-            keyOneFol = True
-            pathOnly = '/'+fileName
-            partsPathNa = [fileName]
-        else:
-            if pathOnly.endswith(':/'):
-                keyProjFol = True
-                pathOnly = '/'+fileName
-                partsPathNa = [fileName]
-            else:
-                pass
-                #print (' ')
+        partsPathNa =  partsPathNa + [ fileName ]
         try:
             partsPathNa.remove('')
         except Exception:
@@ -313,57 +300,34 @@ class GoogleDriveQuery():
             partsPathNa.remove('')
         except Exception:
             pass
-        cantFolLev = len(partsPathNa)
         dicFileGooD = credenciales.ListFile({'q': "title = '%s' and trashed = false and mimeType  contains 'folder'" %projName}).GetList()
+        project_root_g_obj = dicFileGooD[0]
+        id_path = '/'+project_root_g_obj['id']
         pathInGooglId = ''
         pathInGoogl = ''
-        objGooLast = ''
+        objGooLast = []
         if dicFileGooD != []:
-            for idx, fol in enumerate(partsPathNa):
-                if fol != '':
-                    for gooObj in dicFileGooD: #la primera vez soon los gooObj con nombre Proyecto
-                        id = gooObj['id']
-                        if keyProjFol:
-                            pathInGooglId = '/'+gooObj['id']
-                            pathInGoogl = '/'+gooObj['title']
-                            objGooLast = gooObj
-                            keyLast = True
+            key_exist = False
+            cantFolLev = len(partsPathNa)
+            for idx, fol in enumerate( partsPathNa ):
+                if key_exist:
+                    break
+                children_obj_ls = self.get_childrens ( credenciales, fol, id_path )
+                for gooObj in children_obj_ls: 
+                    print ( gooObj['title'] )
+                    if gooObj['title'] == fol:
+                        id_path = '/'+gooObj['id']
+                        pathInGooglId = pathInGooglId + '/' + gooObj['id']
+                        pathInGoogl = pathInGoogl + '/' + gooObj['title']
+                        objGooLast = objGooLast + [gooObj]
+                        if gooObj['title'] == fileName:
+                            key_exist = True
                             break
-                        else:
-                            childrenLs_list = self.get_childrens (credenciales, partsPathNa[idx], '/'+id )
-                            if childrenLs_list !=[]:
-                                key = True
-                                keyLast = False
-                                for chil in childrenLs_list:
-                                    if chil['title']==fol:
-                                        for i, f in enumerate(partsPathNa) :
-                                            if fol == f:
-                                                chName = partsPathNa[i]
-                                        dicFileGooD = [chil]
-                                        pathInGooglId , pathInGoogl ,objGooLast = self.get_multi_format_child( pathInGooglId, pathInGoogl, gooObj)
-                                        id = chil['id']
-                                        if keyOneFol == False:
-                                            if cantFolLev-1== idx:
-                                                childrenLs_list = self.get_childrens (credenciales, fileName, '/'+id )
-                                                for chil in childrenLs_list:
-                                                    if chil['title']==fileName:
-                                                        pathInGooglId , pathInGoogl ,objGooLast = self.get_multi_format_child( pathInGooglId, pathInGoogl, chil)
-                                                        keyLast = True
-                                                        break
-                                            else:
-                                                childrenLs_list = self.get_childrens (credenciales, chName, '/'+id )
-                                        else:
-                                            pathInGooglId , pathInGoogl ,objGooLast = self.get_multi_format_child( pathInGooglId, pathInGoogl, chil)
-                                            keyLast = True
-                                            break
-                            else:
-                                return False
+                            
+        if key_exist :
+            return ( pathInGoogl , pathInGooglId ,objGooLast )
         else:
-            return False
-        if pathInGoogl.endswith(fileName):
-            return ( pathInGoogl, pathInGooglId , objGooLast)
-        else:
-            return False
+            return False 
 
     def get_multi_format_child(self, pathInGooglId, pathInGoogl,chil):
         if not pathInGooglId.endswith('/'):
@@ -463,11 +427,14 @@ class GoogleDriveQuery():
             #pathAlone= self.pathOnlyBuilt(fi)
             #onlyPath = self.strip_bar( pathAlone )
             tuplas = self.builtPathSinceRoot ( fi, projName, credenciales)
-            #tuplas = self.builtPathSinceRoot ( onlyPath, projName, credenciales)
+
             if tuplas != False:
-                file_id = tuplas[1].split('/')[-1] 
-                father_id_path = tuplas[1].split( '/'+file_id )[0] 
-                files_good_children_ls = self.get_childrens (credenciales, name, father_id_path )
+                if  tuplas[2][-1]['mimeType'] == 'application/vnd.google-apps.folder':
+                    file_id = tuplas[1].split('/')[-1] 
+                    father_id_path = tuplas[1].split( '/'+file_id )[0] 
+                    files_good_children_ls = self.get_childrens (credenciales, name, father_id_path )
+                else:
+                    files_good_children_ls = [ tuplas[2][-1] ]
             else:
                 files_good_children_ls = []
             if files_good_children_ls != [] :
@@ -487,6 +454,7 @@ class GoogleDriveQuery():
                 else:
                     if fi not in uploadMessLs:
                         uploadMessLs.append(fi)
+
 
     def loop_upload(self, fi ,fi_local ,filesGoo_ls, doneLlist, uploadMessLs, keyFind ,credenciales, projRootName):
         for gooObj in filesGoo_ls:

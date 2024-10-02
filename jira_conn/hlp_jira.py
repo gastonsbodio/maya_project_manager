@@ -6,20 +6,18 @@ import os
 import stat
 import subprocess
 si = subprocess.STARTUPINFO()
-import definitions as de
-import helper as hlp
-import manager_tools.hlp_manager as hlp_manager
-from importlib import reload
 
-reload(de)
-reload(hlp)
-reload(hlp_manager)
+from importlib import reload
+import importing_modules as  im
+reload(im )
+de = im.importing_modules( 'definitions' )
+hlp = im.importing_modules(  'helper' )
+hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )
 
 sys.path.append( de.PY_PACKAGES)
 import yaml as yaml
 import shutil
 
- 
 def load_jira_vars():
     """instancing loging vars for make it run Jira queries.
     """
@@ -51,8 +49,8 @@ def write_jira_command_file( line, if_result, result_fi_na , user , server, apik
     file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
     
     file_content = file_content +    'import importing_modules as im\n'
-    file_content = file_content +    'de = im.inmporting_modules( "definitions" )\n'
-    file_content = file_content +    'jq = im.inmporting_modules( "jira_conn.jira_queries" )\n'    
+    file_content = file_content +    'de = im.importing_modules( "definitions" )\n'
+    file_content = file_content +    'jq = im.importing_modules( "jira_conn.jira_queries" )\n'    
     file_content = file_content +    hlp.ADDITIONAL_LINE_PY3   
     file_content = file_content +    'sys.path.append( de.PY3_PACKAGES )\n'
     file_content = file_content +    'from jira import JIRA\n'
@@ -96,7 +94,7 @@ def write_request_jira_file( line, if_result, result_fi_na ):#
     file_content =                   'import sys\n'
     file_content = file_content +    'sys.path.append( r"{path}" )\n'.format( path = de.SCRIPT_MANAG_FOL )
     file_content = file_content +    'import importing_modules as im\n'
-    file_content = file_content +    'de = im.inmporting_modules( "definitions" )\n'
+    file_content = file_content +    'de = im.importing_modules( "definitions" )\n'
     file_content = file_content +    hlp.ADDITIONAL_LINE_PY3
     file_content = file_content +    'sys.path.append( de.PY3_PACKAGES )\n'
     file_content = file_content +    'import requests\n'

@@ -3,7 +3,6 @@ import traceback
 import time
 import ast
 
-
 try:
 	from PySide  import QtCore
 	from PySide.QtGui import *

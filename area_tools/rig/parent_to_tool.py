@@ -124,7 +124,7 @@ def script_job_matcher( cnt ):
 def create_script_node( cnt_na ):
     script =          "sys.path.append( '" + SCRIPT_FOL + "' );"
     script = script + "import importing_modules as im;"
-    script = script + "p2t = im.inmporting_modules( 'area_tools.rig.parent_to_tool' );"  
+    script = script + "p2t = im.importing_modules( 'area_tools.rig.parent_to_tool' );"  
     script = script + "p2t.script_job_matcher( '%s' )" %cnt_na
     nodeName = cmds.scriptNode( st=2, bs= 'python( "%s" );'%script , n = cnt_na+'matcher')
 

@@ -11,27 +11,17 @@ except Exception as err:
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
 
-import jira_conn.jira_queries as jq
-import definitions as de
-import helper as hlp
-import jira_conn.hlp_jira as hlp_ji
-import perforce_conn.hlp_perf as hlp_perf
-import manager_tools.hlp_manager as hlp_manager
-import enviroment as ev
-
-
-
 
 from importlib import reload
 import importing_modules as  im
 reload(im )
-de = im.inmporting_modules( 'definitions' )
-jq = im.inmporting_modules(  'jira_conn.jira_queries' )
-hlp = im.inmporting_modules(  'helper' )
-hlp_ji = im.inmporting_modules(  'jira_conn.hlp_jira' )
-hlp_perf = im.inmporting_modules(  'perforce_conn.hlp_perf' )
-hlp_manager = im.inmporting_modules( 'manager_tools.hlp_manager' )
-ev = im.inmporting_modules( 'enviroment' )
+de = im.importing_modules( 'definitions' )
+jq = im.importing_modules(  'jira_conn.jira_queries' )
+hlp = im.importing_modules(  'helper' )
+hlp_ji = im.importing_modules(  'jira_conn.hlp_jira' )
+hlp_perf = im.importing_modules(  'perforce_conn.hlp_perf' )
+hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )
+ev = im.importing_modules( 'enviroment' )
 
 class CommentsApp( QMainWindow ):
     def __init__( self, mainApp = ev.getWindow( QWidget )  ,issue_key = '' , dicc_comment_ls = [] , area_ls = [] ,

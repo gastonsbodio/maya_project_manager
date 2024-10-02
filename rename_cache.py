@@ -12,8 +12,8 @@ SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 sys.path.append(SCRIPT_FOL)
 import importing_modules as  im
 reload(im )
-hlp_goo = im.inmporting_modules( 'google_conn.hlp_goo' )
-hlp = im.inmporting_modules(  'helper' )
+hlp_goo = im.importing_modules( 'google_conn.hlp_goo' )
+hlp = im.importing_modules(  'helper' )
 
 py_cache_fol = '/__pycache__/'
 file_path = os.path.realpath( __file__ )

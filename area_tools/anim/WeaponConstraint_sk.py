@@ -17,15 +17,10 @@ import maya.OpenMayaUI as mui
 from shiboken2 import wrapInstance
 #from pymel import core as pm
 
-try:
-    from PySide  import QtCore
-    from PySide.QtGui import *
-    from PySide.QtUiTools import QUiLoader
-except Exception as err:
-    from PySide2.QtUiTools import QUiLoader
-    from PySide2 import QtCore
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+from PySide2.QtUiTools import QUiLoader
+from PySide2 import QtCore
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 from importlib import reload
 
@@ -39,7 +34,7 @@ if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 sys.path.append(SCRIPT_FOL)
 import importing_modules as im
-de = im.inmporting_modules( 'definitions' )
+de = im.importing_modules( 'definitions' )
 
 MAYA_SCRIPT_FOL = USER_DOC + "\\maya"
 for path in sys.path:

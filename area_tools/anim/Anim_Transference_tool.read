@@ -1,5 +1,5 @@
 #from importlib import reload
 #import importing_modules as im
 #importlib.reload(im)
-#att = im.inmporting_modules( 'area_tools.anim.Anim_Transference_tool_sk' )
+#att = im.importing_modules( 'area_tools.anim.Anim_Transference_tool_sk' )
 #widget = att.animTransference()

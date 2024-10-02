@@ -19,7 +19,7 @@ for path in sys.path:
         break
 
 if ENVIROMENT == 'Maya': 
-    com = im.inmporting_modules( 'maya_conn.maya_custom_cmd' )
+    com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
     ENV_SCRIPT_FOL = com.get_script_fol()
     def current_scene ():
         return com.get_current_sc()

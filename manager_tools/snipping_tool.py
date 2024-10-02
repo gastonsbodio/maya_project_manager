@@ -1,16 +1,15 @@
 import sys, os
-import definitions as de
+
 from importlib import reload
-reload(de)
+import importing_modules as  im
+reload(im )
+de = im.importing_modules( 'definitions' )
+
 if de.SCRIPT_MANAG_FOL not in sys.path:
     sys.path.append( de.SCRIPT_MANAG_FOL )
 if de.PY3_PACKAGES not in sys.path:
     sys.path.append(de.PY3_PACKAGES)
-#try:
-#    from PySide2 import QtCore
-#    from PySide2.QtGui import *
-#    from PySide2.QtWidgets import *
-#except Exception:
+
 from PySide6 import QtCore
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *

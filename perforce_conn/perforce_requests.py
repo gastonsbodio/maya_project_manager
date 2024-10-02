@@ -3,14 +3,14 @@
 
 import sys
 from subprocess import call
-from importlib import reload
-import definitions as de
-import helper as hlp
-import perforce_conn.hlp_perf as hlp_perf
 
-reload(de)
-reload(hlp)
-reload(hlp_perf)
+from importlib import reload
+import importing_modules as  im
+reload(im )
+de = im.importing_modules( 'definitions' )
+hlp = im.importing_modules(  'helper' )
+hlp_perf = im.importing_modules(  'perforce_conn.hlp_perf' )
+
 
 if de.PY_PACKAGES not in sys.path:
     sys.path.append( de.PY_PACKAGES )

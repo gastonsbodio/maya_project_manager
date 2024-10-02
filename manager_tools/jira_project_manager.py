@@ -31,17 +31,17 @@ except Exception:
 from importlib import reload
 import importing_modules as  im
 reload(im )
-de = im.inmporting_modules( 'definitions' )
-gs = im.inmporting_modules( 'google_conn.google_sheet_request' )
-jq = im.inmporting_modules(  'jira_conn.jira_queries' )
-hlp = im.inmporting_modules(  'helper' )
-hlp_ji = im.inmporting_modules(  'jira_conn.hlp_jira' )
-hlp_perf = im.inmporting_modules(  'perforce_conn.hlp_perf' )
-hlp_manager = im.inmporting_modules( 'manager_tools.hlp_manager' )
-pr = im.inmporting_modules( 'perforce_conn.perforce_requests' )
-ev = im.inmporting_modules( 'enviroment' )
-comm = im.inmporting_modules( 'manager_tools.comments_app' )
-task = im.inmporting_modules( 'manager_tools.task_creation_panel' )
+de = im.importing_modules( 'definitions' )
+gs = im.importing_modules( 'google_conn.google_sheet_request' )
+jq = im.importing_modules(  'jira_conn.jira_queries' )
+hlp = im.importing_modules(  'helper' )
+hlp_ji = im.importing_modules(  'jira_conn.hlp_jira' )
+hlp_perf = im.importing_modules(  'perforce_conn.hlp_perf' )
+hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )
+pr = im.importing_modules( 'perforce_conn.perforce_requests' )
+ev = im.importing_modules( 'enviroment' )
+comm = im.importing_modules( 'manager_tools.comments_app' )
+task = im.importing_modules( 'manager_tools.task_creation_panel' )
 
 
 class getThumbnClass(QLabel):
