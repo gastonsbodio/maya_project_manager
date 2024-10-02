@@ -122,7 +122,7 @@ def script_job_matcher( cnt ):
     cmds.scriptJob( attributeChange=[ control+'.'+ATTR_NA , partial( match_control, control  ) ] )
 
 def create_script_node( cnt_na ):
-    script =          "sys.path.append( '" + SCRIPT_FOL + "' );"
+    script =          "sys.path.append( r'" + SCRIPT_FOL + "' );"
     script = script + "import importing_modules as im;"
     script = script + "p2t = im.importing_modules( 'area_tools.rig.parent_to_tool' );"  
     script = script + "p2t.script_job_matcher( '%s' )" %cnt_na

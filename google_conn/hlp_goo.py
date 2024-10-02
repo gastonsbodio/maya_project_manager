@@ -90,7 +90,8 @@ def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHEET_DOC_NA
         file_content = file_content + 'import py3.oauth2client.service_account as ServiceAcc\n'
     file_content = file_content + 'import gspread\n'
     file_content = file_content + 'scope = [ "https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets" ,\n'
-    file_content = file_content + '    "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"  ]\n'
+    #file_content = file_content + '    "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"  ]\n'
+    file_content = file_content + '    "https://www.googleapis.com/auth/drive.file"  ]\n'
     file_content = file_content + 'creds = ServiceAcc.ServiceAccountCredentials.from_json_keyfile_name( de.PY3_PACKAGES.replace("\\\\","/") + "/creds/creds.json" , scope)\n'
     file_content = file_content + 'error_ls = []\n'
     file_content = file_content + '%s = []\n' %de.ls_result

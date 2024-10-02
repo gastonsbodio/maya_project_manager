@@ -251,7 +251,8 @@ class animTransference(QDialog):
             files_ls = os.listdir( path_ )
             for filee in files_ls:   
                 if filee.startswith('ik_fk_switch_'):
-                    templates_fi.append( filee.split('.py')[0] )
+                    if filee.endswith('.py') or filee.endswith('.pyc'):
+                        templates_fi.append( filee.split('.py')[0] )
         return templates_fi
 
     def clear_list_widg( self ):
@@ -466,9 +467,9 @@ class animTransference(QDialog):
         line = line + "import sys\n"
         line = line + "import os\n"
         line = line + "cmds.loadPlugin('fbxmaya', quiet=True)\n"
-        line = line + "sys.path.append( '" + SCRIPT_FOL + "' )\n"
+        line = line + "sys.path.append( r'" + SCRIPT_FOL + "' )\n"
         for spath in UI_ANIM_FOL:
-            line = line + "sys.path.append( '" + spath + "' )\n"
+            line = line + "sys.path.append( r'" + spath + "' )\n"
 
         line = line + "import importing_modules as im\n"
         line = line + "as = im.importing_modules( 'Anim_Transference_tool_sk' )\n"   

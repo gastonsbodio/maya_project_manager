@@ -11,10 +11,6 @@ from importlib import reload
 import importing_modules as  im
 reload(im )
 
-import definitions as de
-import helper as hlp
-import manager_tools.hlp_manager as hlp_manager
-
 de = im.importing_modules( 'definitions' )
 hlp = im.importing_modules(  'helper' )
 hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )

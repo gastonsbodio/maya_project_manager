@@ -13,11 +13,6 @@ if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
 SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 sys.path.append(SCRIPT_FOL)
 
-import definitions as de
-import helper as hlp
-import jira_conn.hlp_jira as hlp_ji
-import manager_tools.hlp_manager as hlp_manager
-
 from importlib import reload
 import importing_modules as  im
 reload(im )

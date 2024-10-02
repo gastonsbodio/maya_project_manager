@@ -191,11 +191,11 @@ def copy_and_submit( app, PROJ_SETTINGS, QMessageBox , perf ,template_full_path 
         #anim_asset_na = anim_asset_name.split('.')[0]
     if os.path.isfile( os.path.join(  target_path , target_name ) ):
         hlp.make_read_writeable( target_path + target_name  )
-    perf_hlp.check_template_exists(  app , QMessageBox , source_path , source_name , perf )
+    hlp_perf.check_template_exists(  app , QMessageBox , source_path , source_name , perf )
     copy_local_asset_template(  target_path, source_path, target_name , source_name )
     if str( PROJ_SETTINGS ['KEYW']['areaAnim']['anim'] ) == str( area ):
         change_reference(  PROJ_SETTINGS, item_area_full_path , anim_asset_path+anim_asset_fi_name , app )
-    perf_hlp.perf_task_submit( app, QMessageBox, perf, item_na, area, target_path+target_name , app.PERF_SERVER,
+    hlp_perf.perf_task_submit( app, QMessageBox, perf, item_na, area, target_path+target_name , app.PERF_SERVER,
                      app.PERF_USER, app.PERF_WORKSPACE , app.PERF_PASS )
 
 def set_new_values_on_sheet( app, gs , QMessageBox , area , column_ls , value_ls , row_idx ):
