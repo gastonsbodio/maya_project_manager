@@ -186,39 +186,24 @@ class GoogleDriveQuery():
             pathTuple.append(pathh)
         return pathTuple
 
-    def update_tools (self, google_fol_id, folder ):
+    def update_tools (self, google_fol_dicc, folder ):
         """log in list tool files and download them to local.
         """
+        google_fol_id = list( ast.literal_eval(google_fol_dicc).values() )[0]
+        google_fol_na = list(ast.literal_eval(google_fol_dicc).keys() )[0]
         credentials = self.login()
-        if '{' not in google_fol :
-            print ( ' credentials ')
-            print ( credentials )
-            print ( google_fol )
-            #goo_obj = self.find_goo_tools_fol( credentials , google_fol_id)
-            
-            goo_obj = credenciales.ListFile({
-            'q': "'%s' in parents" %google_fol_id,
-            'supportsAllDrives': True,  # Modified
-            'includeItemsFromAllDrives': True,  # Added
-            }).GetList()
-            
-            
-            if goo_obj != None:
-                id_fol = goo_obj['id']
-            else:
-                id_fol = ''
-        else:
-            dicc = ast.literal_eval( google_fol )
-            for key in dicc:
-                id_fol = dicc[key]
-                google_fol = key
-        tool_fi_ls = self.listContentFold(  credentials , id_fol )
+        tool_fi_ls = credentials.ListFile({
+                                            'q': "'%s' in parents" %google_fol_id,
+                                            'supportsAllDrives': True, 
+                                            'includeItemsFromAllDrives': True,
+                                            }).GetList()
+        #tool_fi_ls = self.listContentFold(  credentials , id_fol )
         if not os.path.exists( folder ):
             try:
                 os.makedirs( folder )
             except Exception:
                 pass
-        self.dowloading_ls( credentials, google_fol, folder , tool_fi_ls )
+        self.dowloading_ls( credentials, google_fol_na, folder , tool_fi_ls )
 
     def dowloading_ls(self, credentials, google_fol, folder , tool_fi_ls):
         for goo_fi in tool_fi_ls:
