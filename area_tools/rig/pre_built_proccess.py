@@ -385,14 +385,14 @@ def shapes_control_source_target():
 
 
 ########  skeleton pose #######
-
-joints_ls = cmds.listRelatives( '*:FitSkeleton' , type = 'joint' , ad = True )
-nameSpa = cmds.ls ( '*:FitSkeleton')[0].split(':')[0]
-#setTransf( nameSpa+':FitSkeleton', 'FitSkeleton', transf=['s'])
-for joint in joints_ls:
-    try:
-        cmds.parentConstraint( joint, joint.split(':')[-1] , mo = False)
-    except Exception:
-        pass
-for joint in joints_ls:
-    break_connection( joint.split(':')[-1]  , ['x','y','z'] ,transf_ls = ['t','r'])
+def match_skeleton_with_skeleton_reference():
+    joints_ls = cmds.listRelatives( '*:FitSkeleton' , type = 'joint' , ad = True )
+    nameSpa = cmds.ls ( '*:FitSkeleton')[0].split(':')[0]
+    #setTransf( nameSpa+':FitSkeleton', 'FitSkeleton', transf=['s'])
+    for joint in joints_ls:
+        try:
+            cmds.parentConstraint( joint, joint.split(':')[-1] , mo = False)
+        except Exception:
+            pass
+    for joint in joints_ls:
+        break_connection( joint.split(':')[-1]  , ['x','y','z'] ,transf_ls = ['t','r'])

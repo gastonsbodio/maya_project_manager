@@ -353,36 +353,7 @@ def orient_IK ( is_checked ,templa_skelet_type ):
 def cog_creation( is_checked ,templa_skelet_type):
     cmds.rename( ROOTX_M, COG_)
     
-def cog_creation___________out_of_using( is_checked ,templa_skelet_type):
-    if is_checked:
-        father_offset = cmds.listRelatives( ROOTX_M, p = True, type = 'transform')[0]
-        offset_dupli = cmds.duplicate( father_offset )[0]
-        cog = cmds.listRelatives( offset_dupli, c = True, type = 'transform', f = True)[0]
-        cmds.rename( cog , COG_ )
-        cmds.parent( offset_dupli, "FKSpine1_M" )
-        resetTransf( offset_dupli )
-        offset_offset = cmds.listRelatives ( father_offset , p = True, type = 'transform')[0]
-        cmds.parent( offset_dupli, offset_offset )
-        setTransf( father_offset, offset_dupli , transf=['t'])
-        fix_rotation ( offset_dupli )
-        contrain = cmds.parentConstraint ( COG_  , ROOTX_M , mo = True )[0]
-        cmds.setAttr( ROOTX_M+'.visibility', 0 )
-        mel.eval("joint -p -0 0 -0 ;")
-        joint = cmds.ls( sl=True )[0]
-        contrain2 = cmds.parentConstraint ( COG_  , joint , mo = False )[0]
-        cmds.delete( contrain2 )
-        cmds.select( joint , COG_ )
-        mel.eval('SmoothBindSkin;')
-        if templa_skelet_type == 'biped':
-            cmds.setAttr ( joint + ".rotateZ", -90 )
-        elif templa_skelet_type == 'quadruped':
-            cmds.setAttr ( joint + ".rotateZ", -180 )
-        cmds.select( COG_ )
-        mel.eval('DeleteHistory;')
-        cmds.delete( joint)
-        unlock_transf( COG_ , transf = ['t','r'])
-        cmds.sets ( COG_ , edit=True , forceElement  = 'ControlSet' )
-        cmds.sets( [ ROOTX_M, father_offset], rm = 'ControlSet'  )
+
     
 def creating_pole_vectors_ref( is_checked ):
     if is_checked:
@@ -476,18 +447,11 @@ def hip_translation( is_checked , templa_skelet_type ):
         cmds.parent( HIP , 'offset_'+ HIP )
         resetTransf( offset )
         offset_cog = cmds.listRelatives( COG_ , p = True , type='transform')[0]
-        if templa_skelet_type == 'biped':
+        if templa_skelet_type == 'biped' or templa_skelet_type == 'quadruped':
             cmds.connectAttr( HIP+'.translateX', offset_cog+'.translateX' )
             cmds.connectAttr( HIP+'.translateZ', offset_cog+'.translateZ' )
             cmds.connectAttr( HIP+'.translateY', offset_cog+'.translateY' )
-        #if templa_skelet_type == 'quadruped':
-        #    multiple_div = mel.eval ( 'createRenderNodeCB -asUtility "" multiplyDivide "";' )
-        #    cmds.connectAttr( HIP+'.translateZ', offset_cog+'.translateX' )
-        #    cmds.connectAttr( HIP+'.translateY', multiple_div+'.input1Y' )
-        #    cmds.setAttr( multiple_div+'.input2Y', -1)
-        #    cmds.connectAttr( multiple_div+'.outputY' , offset_cog+'.translateY' )
-        #    cmds.connectAttr( HIP+'.translateX', offset_cog+'.translateZ' )
-            
+
         multiple_divide = mel.eval ( 'createRenderNodeCB -asUtility "" multiplyDivide "";' )
 
         cmds.connectAttr( HIP+'.translateX', multiple_divide+'.input1X' ) 
@@ -538,91 +502,6 @@ def hip_translation( is_checked , templa_skelet_type ):
             cmds.connectAttr(  multiple_divide2+'.outputY' , 'offset_'+Spine1+'.translateY' )
             cmds.connectAttr(  multiple_divide2+'.outputZ' , 'offset_'+Spine1+'.translateZ' )
 
-        #if templa_skelet_type == 'quadruped':
-        #    cmds.connectAttr(  HIP+'.translateX', 'offset_'+Spine1+'.translateY' )
-        #    cmds.connectAttr(  multiple_divide2+'.outputY' , 'offset_'+Spine1+'.translateX' )
-        #    cmds.connectAttr(  multiple_divide2+'.outputZ' , 'offset_'+Spine1+'.translateZ' )
-
-
-def hip_translation__________________old( is_checked , templa_skelet_type ):
-    if is_checked:
-        for axe in ['X','Y','Z']: 
-            cmds.setAttr ( HIP+'.translate'+axe, k = True )
-            cmds.setAttr ( HIP+'.translate'+axe, l = False )
-        offset = cmds.listRelatives ( HIP, p =True, type = 'transform')[0]
-        dupli_hip = cmds.duplicate( HIP )
-        cmds.rename( dupli_hip , 'offset_'+HIP )
-        children = cmds.listRelatives( 'offset_'+HIP , ad = True )
-        cmds.delete( children )
-        cmds.parent( HIP , 'offset_'+ HIP )
-        resetTransf( offset )
-        offset_cog = cmds.listRelatives( COG_ , p = True , type='transform')[0]
-        if templa_skelet_type == 'biped':
-            cmds.connectAttr( HIP+'.translateZ', offset_cog+'.translateX' )
-            cmds.connectAttr( HIP+'.translateY', offset_cog+'.translateZ' )
-            cmds.connectAttr( HIP+'.translateX', offset_cog+'.translateY' )
-        if templa_skelet_type == 'quadruped':
-            multiple_div = mel.eval ( 'createRenderNodeCB -asUtility "" multiplyDivide "";' )
-            cmds.connectAttr( HIP+'.translateZ', offset_cog+'.translateX' )
-            cmds.connectAttr( HIP+'.translateY', multiple_div+'.input1Y' )
-            cmds.setAttr( multiple_div+'.input2Y', -1)
-            cmds.connectAttr( multiple_div+'.outputY' , offset_cog+'.translateY' )
-            cmds.connectAttr( HIP+'.translateX', offset_cog+'.translateZ' )
-            
-        multiple_divide = mel.eval ( 'createRenderNodeCB -asUtility "" multiplyDivide "";' )
-
-        cmds.connectAttr( HIP+'.translateX', multiple_divide+'.input1X' ) 
-        cmds.connectAttr( HIP+'.translateY', multiple_divide+'.input1Y' )       
-        cmds.connectAttr( HIP+'.translateZ', multiple_divide+'.input1Z' )
-        
-        cmds.setAttr( multiple_divide+'.input2X', -1)
-        cmds.setAttr( multiple_divide+'.input2Y', -1)
-        cmds.setAttr( multiple_divide+'.input2Z', -1)
-        
-        cmds.connectAttr(  multiple_divide+'.outputX', 'offset_'+ HIP+'.translateX' )
-        cmds.connectAttr( multiple_divide+'.outputY' , 'offset_'+ HIP+'.translateY' )
-        cmds.connectAttr( multiple_divide+'.outputZ' , 'offset_'+ HIP+'.translateZ' )
-        
-        mel.eval( 'CreateLocator;' )
-        loc = cmds.ls( sl = True)[0]
-        cmds.parent( loc , HIP )
-        resetTransf( loc )
-
-        offset_spine1 = cmds.listRelatives ( Spine1, p =True, type = 'transform')[0]
-        offset2lev_spine1 = cmds.listRelatives ( offset_spine1, p =True, type = 'transform')[0]
-        cmds.parent( loc , offset2lev_spine1 )
-        resetTransf( loc , axe_enable = ['t'] )
-        value = cmds.getAttr('FKOffsetRoot_M.rotateY' )
-        value2 = cmds.getAttr( loc+'.rotateZ' )
-        new_value = value2 + value
-        cmds.setAttr( loc+'.rotateZ' , new_value )
-        cmds.rename(loc, 'offset_'+Spine1)
-        shapesLoc = cmds.listRelatives( 'offset_'+Spine1 , ad = True)
-        cmds.delete( shapesLoc  )
-        cmds.duplicate( 'offset_'+Spine1 , n = 'offset2_'+Spine1 )
-        cmds.parent( 'offset_'+Spine1 , 'offset2_'+Spine1 )
-        cmds.parent( offset_spine1, 'offset_'+Spine1  )
-        
-        multiple_divide2 = mel.eval ( 'createRenderNodeCB -asUtility "" multiplyDivide "";' )
-        
-        cmds.connectAttr( HIP+'.translateX', multiple_divide2+'.input1X' )
-        cmds.connectAttr( HIP+'.translateY', multiple_divide2+'.input1Y' )
-        cmds.connectAttr( HIP+'.translateZ', multiple_divide2+'.input1Z' )
-        
-        cmds.setAttr( multiple_divide2+'.input2X', -1)
-        cmds.setAttr( multiple_divide2+'.input2Y', -1)
-        cmds.setAttr( multiple_divide2+'.input2Z', -1)
-        
-        if templa_skelet_type == 'biped':
-        
-            cmds.connectAttr(  multiple_divide2+'.outputX', 'offset_'+Spine1+'.translateX' )
-            cmds.connectAttr(  multiple_divide2+'.outputY' , 'offset_'+Spine1+'.translateY' )
-            cmds.connectAttr(  multiple_divide2+'.outputZ' , 'offset_'+Spine1+'.translateZ' )
-
-        if templa_skelet_type == 'quadruped':
-            cmds.connectAttr(  HIP+'.translateX', 'offset_'+Spine1+'.translateY' )
-            cmds.connectAttr(  multiple_divide2+'.outputY' , 'offset_'+Spine1+'.translateX' )
-            cmds.connectAttr(  multiple_divide2+'.outputZ' , 'offset_'+Spine1+'.translateZ' )
 
 def worldZero_creation( is_checked ):
     if is_checked:
@@ -895,7 +774,7 @@ def camera_importing( is_checked ):
             contrain = cmds.pointConstraint ( 'FKChest_M'  , CAM_OFFS_CONST , mo = False )[0]
             contrain = cmds.orientConstraint ( 'FKChest_M'  , CAM_OFFS_CONST , mo = True )[0]
             cmds.parent( CAM_SETTINGS_GRP, 'Group')
-            cmds.parent ( 'Camera' , 'root')
+            cmds.parent ( 'Camera' , ROOT)
         except Exception:
             pass
         point_c = cmds.pointConstraint( 'FKHead_M' , CAM_OFFS_CONST2 , mo = False )
@@ -910,13 +789,13 @@ def set_export_creation( is_checked ):
             transf = cmds.listRelatives (shape, p=True, type='transform', f = True )
             if transf not in final_geo_ls:
                 final_geo_ls.append(transf)
-        joint_ls = cmds.listRelatives ('root', ad=True, type='joint' , f = True)
+        joint_ls = cmds.listRelatives (ROOT, ad=True, type='joint' , f = True)
         cmds.select( cl = True)
         cmds.sets(  n=MESHSET )
-        for obj in final_geo_ls + ['root'] + joint_ls:
+        for obj in final_geo_ls + [ROOT] + joint_ls:
             cmds.sets ( obj , edit=True , forceElement  = MESHSET )
 
-        cmds.sets( ['root'] + joint_ls, n=ANIMSET )
+        cmds.sets( [ROOT] + joint_ls, n=ANIMSET )
 
 def set_driven_visibility( driver, attr_na , value, side, driven_ls_ctrl):
     cmds.setAttr( driver+'.'+ attr_na, value )

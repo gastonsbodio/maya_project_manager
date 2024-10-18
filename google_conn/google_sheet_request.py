@@ -186,12 +186,27 @@ class GoogleDriveQuery():
             pathTuple.append(pathh)
         return pathTuple
 
-    def update_tools (self, google_fol, folder ):
+    def update_tools (self, google_fol_id, folder ):
         """log in list tool files and download them to local.
         """
         credentials = self.login()
         if '{' not in google_fol :
-            id_fol = self.find_goo_tools_fol( credentials , google_fol)['id']
+            print ( ' credentials ')
+            print ( credentials )
+            print ( google_fol )
+            #goo_obj = self.find_goo_tools_fol( credentials , google_fol_id)
+            
+            goo_obj = credenciales.ListFile({
+            'q': "'%s' in parents" %google_fol_id,
+            'supportsAllDrives': True,  # Modified
+            'includeItemsFromAllDrives': True,  # Added
+            }).GetList()
+            
+            
+            if goo_obj != None:
+                id_fol = goo_obj['id']
+            else:
+                id_fol = ''
         else:
             dicc = ast.literal_eval( google_fol )
             for key in dicc:

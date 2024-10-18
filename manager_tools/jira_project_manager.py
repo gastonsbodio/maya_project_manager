@@ -525,25 +525,29 @@ class MyMainWindow(QMainWindow):
         self.ui.lineEd_perforce_pass.setEchoMode( QLineEdit.Password )
         self.ui.lineEd_perforce_pass.setText( self.PERF_PASS  )
         self.t_fea = table_features( self.ui.table_assetsTasks , self.ui.table_animTasks , main_widg = self )
-        diccAni =  self.PROJ_SETTINGS['KEYW']['areaAnim'] 
-        diccAss =   self.PROJ_SETTINGS['KEYW']['areaAssets'] 
+
 
         if self.PROJ_SETTINGS != None:
+            diccAni =  self.PROJ_SETTINGS['KEYW']['areaAnim'] 
+            diccAss =   self.PROJ_SETTINGS['KEYW']['areaAssets'] 
             assetsAreaLs = list(diccAss.values())
             animAreaLs = list(diccAni.values())
             self.id_rows_ass = self.t_fea.populate_table( self.ui.table_assetsTasks, assetsAreaLs  , de.HEADER_ASS_LS)
             self.id_rows_ani = self.t_fea.populate_table( self.ui.table_animTasks, animAreaLs  , de.HEADER_ANI_LS )
+            area_ani_ls = list(diccAni.values())
+            area_ass_ls = list(diccAss.values())
+            self.t_fea.initialized_features_table(self.ui.table_assetsTasks)
+            self.t_fea.initialized_features_table(self.ui.table_animTasks)
+            self.run_menues( )
+            self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , area_ani_ls  )    )
+            self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , area_ass_ls  )  )
         else:
+            area_ani_ls = []
+            area_ass_ls = []
             self.id_rows_ass = {}
             self.id_rows_ani = {}
-        self.t_fea.initialized_features_table(self.ui.table_assetsTasks)
-        self.t_fea.initialized_features_table(self.ui.table_animTasks)
+
         self.ui.pushBut_reload_tables.clicked.connect( lambda: self.t_fea.refresh_tables( )  )
-        self.run_menues( )
-        area_ani_ls = list(diccAni.values())
-        area_ass_ls = list(diccAss.values())
-        self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , area_ani_ls  )    )
-        self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , area_ass_ls  )  )
 
     def run_menues( self ):
         self.menu_help()

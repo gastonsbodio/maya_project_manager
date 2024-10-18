@@ -9,7 +9,7 @@ KEYW:
         JI_SERVER: "https://gastonsbodio.atlassian.net/" #"https://straykitestudios.atlassian.net"
         TRACK_SHEET_ITEMS: 'https://docs.google.com/spreadsheets/d/1sy7NgFtjADYhvmU45rqlgfl4qznpW2adECWv892Ua-Q/edit?usp=sharing'
     GOO_SH_INFO:
-        GOOG_CONTENT_TOOLS_FOL: "jira_manager"
+        GOOG_CONTENT_TOOLS_FOL: {"jira_manager":'1oIZK4cghkvGf-b5NysHNaq7mB-P3tUfQ'}
         GOOG_CONT_ANI_TOO_FOL: {"anim":"1eKe34fN0zFmxCfy4HzObuBn_hk1wVuIo"}
         GOOG_CONT_RIG_TOO_FOL: {"rig":"1J8PcsElh5OB8KjAuxJEYE23HA-RrnAwi"}
         GOOGLE_SH_TASK_TRACKER: "https://docs.google.com/spreadsheets/d/1sy7NgFtjADYhvmU45rqlgfl4qznpW2adECWv892Ua-Q/edit?usp=sharing"
