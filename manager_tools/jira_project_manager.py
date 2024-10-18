@@ -538,7 +538,6 @@ class MyMainWindow(QMainWindow):
             area_ass_ls = list(diccAss.values())
             self.t_fea.initialized_features_table(self.ui.table_assetsTasks)
             self.t_fea.initialized_features_table(self.ui.table_animTasks)
-            self.run_menues( )
             self.ui.table_animTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_animTasks , self.id_rows_ani  , area_ani_ls  )    )
             self.ui.table_assetsTasks.itemClicked.connect( lambda: self.tableOnClicItemAction( self.ui.table_assetsTasks , self.id_rows_ass , area_ass_ls  )  )
         else:
@@ -546,6 +545,7 @@ class MyMainWindow(QMainWindow):
             area_ass_ls = []
             self.id_rows_ass = {}
             self.id_rows_ani = {}
+        self.run_menues( )
 
         self.ui.pushBut_reload_tables.clicked.connect( lambda: self.t_fea.refresh_tables( )  )
 
