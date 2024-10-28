@@ -186,25 +186,40 @@ class GoogleDriveQuery():
             pathTuple.append(pathh)
         return pathTuple
 
+    def list_fi_contente (self ,credentials, google_fol_id ):
+        tool_fi_ls = credentials.ListFile({
+                                            'q': "'%s' in parents" %google_fol_id,
+                                            'supportsAllDrives': True, 
+                                            'includeItemsFromAllDrives': True,
+                                            }).GetList()
+        return tool_fi_ls
+
     def update_tools (self, google_fol_dicc, folder ):
         """log in list tool files and download them to local.
         """
         google_fol_id = list( ast.literal_eval(google_fol_dicc).values() )[0]
         google_fol_na = list(ast.literal_eval(google_fol_dicc).keys() )[0]
         credentials = self.login()
-        tool_fi_ls = credentials.ListFile({
-                                            'q': "'%s' in parents" %google_fol_id,
-                                            'supportsAllDrives': True, 
-                                            'includeItemsFromAllDrives': True,
-                                            }).GetList()
-        #tool_fi_ls = self.listContentFold(  credentials , id_fol )
+        tool_fi_ls = self.list_fi_contente ( credentials, google_fol_id )
         if not os.path.exists( folder ):
             try:
                 os.makedirs( folder )
             except Exception:
                 pass
+        print ( de.GOOG_CONTENT_TOOLS_FOL )
+        print ( type( de.GOOG_CONTENT_TOOLS_FOL ) )
+        if google_fol_na ==  list(  ast.literal_eval( de.GOOG_CONTENT_TOOLS_FOL)).keys() [0]:
+            #google_fol_na = list(  ast.literal_eval( google_fol_dicc           ).keys()  )[0]
+            self.dowload_sk_menu_fi( credentials  )
         self.dowloading_ls( credentials, google_fol_na, folder , tool_fi_ls )
+        
 
+    def dowload_sk_menu_fi( self , credentials  ):
+        google_fol_id = list( ast.literal_eval( de.GOOG_CONT_MAYA_MENU_FOL ).values() )[0]
+        google_fol_na = list(ast.literal_eval( de.GOOG_CONT_MAYA_MENU_FOL ).keys() )[0]
+        tool_fi_ls = self.list_fi_contente ( credentials, google_fol_id )
+        self.dowloading_ls( credentials, google_fol_na, de.MAYA_MENU_FOL , tool_fi_ls )
+        
     def dowloading_ls(self, credentials, google_fol, folder , tool_fi_ls):
         for goo_fi in tool_fi_ls:
             goo_path_name = self.buildPathGooD( credentials, [ goo_fi ] )[0]
