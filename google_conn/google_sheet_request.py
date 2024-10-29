@@ -206,17 +206,15 @@ class GoogleDriveQuery():
                 os.makedirs( folder )
             except Exception:
                 pass
-        print ( de.GOOG_CONTENT_TOOLS_FOL )
-        print ( type( de.GOOG_CONTENT_TOOLS_FOL ) )
-        if google_fol_na ==  list(  ast.literal_eval( de.GOOG_CONTENT_TOOLS_FOL)).keys() [0]:
+        if google_fol_na ==  list(  de.GOOG_CONTENT_TOOLS_FOL.keys() )[0]:
             #google_fol_na = list(  ast.literal_eval( google_fol_dicc           ).keys()  )[0]
             self.dowload_sk_menu_fi( credentials  )
         self.dowloading_ls( credentials, google_fol_na, folder , tool_fi_ls )
         
 
     def dowload_sk_menu_fi( self , credentials  ):
-        google_fol_id = list( ast.literal_eval( de.GOOG_CONT_MAYA_MENU_FOL ).values() )[0]
-        google_fol_na = list(ast.literal_eval( de.GOOG_CONT_MAYA_MENU_FOL ).keys() )[0]
+        google_fol_id = list( de.GOOG_CONT_MAYA_MENU_FOL.values() )[0]
+        google_fol_na = list( de.GOOG_CONT_MAYA_MENU_FOL.keys() )[0]
         tool_fi_ls = self.list_fi_contente ( credentials, google_fol_id )
         self.dowloading_ls( credentials, google_fol_na, de.MAYA_MENU_FOL , tool_fi_ls )
         
