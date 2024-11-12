@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -211,19 +211,6 @@
       </property>
       <property name="text">
        <string>Set SetUp Path</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBFbatchmode">
-      <property name="geometry">
-       <rect>
-        <x>340</x>
-        <y>390</y>
-        <width>81</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>batch mode</string>
       </property>
      </widget>
     </widget>
@@ -437,6 +424,19 @@
     </property>
     <property name="text">
      <string>switcher preset</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBFbatchmode">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>120</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>batch mode</string>
     </property>
    </widget>
   </widget>

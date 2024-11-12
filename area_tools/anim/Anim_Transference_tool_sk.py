@@ -604,7 +604,7 @@ class ik_copying_animation():
         self.limbs_ctl_ls = limbs_ctl_ls
         
     def import_switcher_selected(self  ):
-        self.ikfk = __import__( self.selected_switcher )
+        self.ikfk = __import__( 'area_tools.anim.'+ self.selected_switcher )
         return self.selected_switcher
 
     def set_limbs_2_ik(self):
