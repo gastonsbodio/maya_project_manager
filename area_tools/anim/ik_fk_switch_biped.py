@@ -13,8 +13,12 @@
 #reload(ikfk)
 #ikfk.limb_fk_2_ik()
 
+import importing_modules as im
+com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
+
 import maya.cmds as cmds
 import maya.mel as mel
+
 DUPLI_SUF = '_dupli'
 TRANSFORMS = ["translate","rotate", "scale"]
 
@@ -33,14 +37,6 @@ front_ls = ['Scapula', 'Shoulder', 'Elbow' ,  'Wrist' ] #, 'Fingers1']
 
 leg_na_templa = "%sLeg%s_%s"
 switch_na_templa = "FKIK%s_%s"
-
-def break_connection( control ):
-    for transf in ['t' , 'r']:
-        for axe in [ 'x' , 'y', 'z' ]:
-            try:
-                mel.eval( 'source channelBoxCommand;CBdeleteConnection "%s.%s%s";'%( control, transf, axe ) )
-            except Exception:
-                pass
 
 def get_father_duplic( obj , attrBend , ikfkbend = 'None' ):
     if ':' not in obj:
@@ -155,9 +151,12 @@ def limb_ik_2_fk( signalAnim=False ):
                 target_original = cmds.ls( '*:'+target_original )[0]
                 parent_target , dupli_offset_target = get_father_duplic( target_original , '')
                 parent_contrain = cmds.parentConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False )
-                scale_constrain = cmds.scaleConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False)
+                try:
+                    scale_constrain = cmds.scaleConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False)
+                except Exception:
+                    pass
                 setTransf( parent_target , target_original )
-                break_connection( parent_target )
+                com.break_connection( parent_target  , ['x','y','z'] , transf_ls = ['t','r',] )
                 cmds.delete( dupli_offset_target )
             cmds.delete( dupli_joint_father )
             if signalAnim == False:
@@ -201,13 +200,16 @@ def limb_fk_2_ik( signalAnim=False ):
                     parent_contrain = cmds.parentConstraint (  father_offset, dupli_offset_target , mo = False )
                 if key1+'_' in tup_na[0] or key2 in tup_na[0]:
                     pointtt_contrain = cmds.parentConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False )
-                    scale_constrain = cmds.scaleConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False)
+                    try:
+                        scale_constrain = cmds.scaleConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False)
+                    except Exception:
+                        pass
                     if key2 in tup_na[0]:
                         loc_matcherB = tup_na[0]%( tup[1] ) + '_matcherB'
                         loc_matcherA = tup_na[0]%( tup[1] ) + '_matcherA'
                         dupli_offset = cmds.listRelatives( parent_target , p = True, type = 'transform')
                         cmds.parent( loc_matcherB , dupli_offset )
-                        break_connection( parent_target )
+                        com.break_connection( parent_target  , ['x','y','z'] , transf_ls = ['t','r',] )
                         cmds.parentConstraint (  loc_matcherB, parent_target , mo = True )
                         cmds.parentConstraint (  loc_matcherA , loc_matcherB , mo = False )
                 if 'Pole' in tup_na[0]:
@@ -215,7 +217,10 @@ def limb_fk_2_ik( signalAnim=False ):
                 if  '5' in tup_na[0] :
                     parent_source = parent_source.replace('5','')
                     parent_contrain = cmds.parentConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False )
-                    scale_constrain = cmds.scaleConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False)
+                    try:
+                        scale_constrain = cmds.scaleConstraint (  parent_source+ DUPLI_SUF, parent_target , mo = False)
+                    except Exception:
+                        pass
                 setTransf( parent_target , target_original )
                 cmds.delete( dupli_offset_target )
             cmds.delete( dupli_joint_father )

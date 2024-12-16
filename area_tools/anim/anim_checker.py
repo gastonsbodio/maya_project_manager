@@ -4,12 +4,6 @@
 """
 
 """    Anim files checker tool """
-#from importlib import reload
-#import area_tools.anim.anim_checker as anc
-#reload(anc)
-#widget = anc.AnimCheckerApp()
-#widget.ui.show()
-
 import sys
 import os
 import time
@@ -25,16 +19,6 @@ except exception:
     from PySide6 import QtCore
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
-
-import ctypes
-from ctypes.wintypes import MAX_PATH
-dll = ctypes.windll.shell32
-buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-	USER_DOC = buf.value
-SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
-sys.path.append(SCRIPT_FOL)
-
 
 from importlib import reload
 import importing_modules as  im

@@ -5,18 +5,6 @@
 """
 
 """    Animation transfering tool """
-#from importlib import reload
-#import area_tools.anim.Anim_Transference_tool_sk as att
-#reload(att)
-#widget = att.animTransference()
-
-
-"""    FK - IK matcher script isolated """
-#from importlib import reload
-#import area_tools.anim.Anim_Transference_tool_sk as att
-#reload(att)
-#att.ik_copying_animation()
-
 import sys
 import os
 import json
@@ -34,38 +22,10 @@ from PySide2 import QtCore
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-import ctypes
-from ctypes.wintypes import MAX_PATH
-dll = ctypes.windll.shell32
-buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-	USER_DOC = buf.value
-SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
-sys.path.append(SCRIPT_FOL)
 import importing_modules as im
 de = im.importing_modules( 'definitions' )
-
-MAYA_FOL = USER_DOC + "\\maya"
-MAYA_FOL = MAYA_FOL.replace('\\','/')
-for path in sys.path:
-    if "Maya2020" in path :
-        MAYA_VER = '2020'
-        break
-    elif "Maya2021" in path :
-        MAYA_VER = '2021'
-        break
-    elif "Maya2022" in path :
-        MAYA_VER = '2022'
-        break
-    elif "Maya2023" in path :
-        MAYA_VER = '2023'
-        break
-    elif "Maya2024" in path :
-        MAYA_VER = '2024'
-        break
-    elif "Maya2025" in path :
-        MAYA_VER = '2025'
-        break
+hlp = im.importing_modules(  'helper' )
+com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
 
 TEMP_FOL = tempfile.gettempdir().replace("\\","/") + "/"
 UI_ANIM_FOL = [ de.SCRIPT_MANAG_FOL.replace('\\','/') + de.ANIM_FOL_FILES  ]
@@ -74,6 +34,10 @@ SKELETON = 'skeleton.ma'
 ANIM_RIG_EXP = 'anim_rig_exporter.ma'
 COG_CONTROL = 'pelvis'
 TRANSFERENCE_FOL = "exported"
+#ANIM_FBX_EXPORT =  
+SET_FULL_ANI_EXP = 'SKM_FullBody_Export'
+SET_JOINT_SK = 'Animation_Export'
+#file -force -options "v=0;" -typ "FBX export" -pr -es "C:/Users/gasco/Desktop/test.fbx";
 FPS = 'ntsc'
 METADATA_ANIM_TRANSF = "anim_transfer.json"
 ##########
@@ -92,20 +56,6 @@ DICC_MIRROR = { 'FKIndexFinger1': 'index_01', 'FKIndexFinger2': 'index_02' , 'FK
   'FKHip':'thigh', 'FKKnee': 'calf',
   'FKAnkle': 'foot', 'FKToes': 'ball',
   'FKEye': 'eye'}
-
-def json2dicc_load( path ):
-    """Read a json dicc and return a python dicc
-    Args:
-        path ([str]): [json file path]
-    Returns:
-        [dicc]: [description]
-    """
-    dicc = {}
-    if os.path.isfile( path ):
-        with open( path) as fileFa:
-            dicc = json.load(fileFa)
-            fileFa.close()
-    return dicc
 
 def initialize_ls( switcher ):
     if 'dragon' not in switcher:
@@ -161,19 +111,8 @@ def set_start_end(   control , checkBox , linEStart, lineEEnd ):
         end_value = int(  lineEEnd.text()  ) + 1
     return start_value , end_value, signalKey
 
-
-
-def getWindow():
-    pointer = mui.MQtUtil.mainWindow()
-    if pointer is not None:
-        try:
-            return wrapInstance(long(pointer), QWidget)
-        except Exception:
-            return wrapInstance(int(pointer), QWidget)
-
-
 class animTransference(QDialog):
-    def __init__( self, *args ,parent=getWindow() ):
+    def __init__( self, *args ,parent=com.getWindow() ):
         super(animTransference, self).__init__(parent)
         loader = QUiLoader()
         self.centralLayout = QVBoxLayout(self)
@@ -196,7 +135,7 @@ class animTransference(QDialog):
     def initialize_widget_conn(self):
         """Initializing functions, var and features.
         """
-        dicc = json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
+        dicc = hlp.json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
         if dicc == {}:
             dicc ['rig_path'] = ''
             dicc ['skeleton_path'] = ''
@@ -304,25 +243,12 @@ class animTransference(QDialog):
             self.ui.lineEd_start_f.setText( '0' )
             self.ui.lineEd_end_f.setText( '0' )
             
-            
-    def metadata_dicc2json( self, path, dicc ):
-        """Creates a json file from a givem dicctionary
-        Args:
-            path ([str]): [json file path ]
-            dicc ([dicc obj]): [description]
-        """
-        json_object = json.dumps( dicc, indent = 2 ) 
-        with open( path, 'w') as fileFa:
-            fileFa.write( str(json_object) )
-            fileFa.close()
-        
-    
     def set_rig_file(self):
         old_rig_path = self.ui.lineEd_setUpPath.text()
-        dicc = json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
+        dicc = hlp.json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
         rig_path = QFileDialog().getOpenFileName()[0]
         dicc ['rig_path'] = rig_path 
-        self.metadata_dicc2json( TEMP_FOL + METADATA_ANIM_TRANSF , dicc)
+        hlp.metadata_dicc2json( TEMP_FOL + METADATA_ANIM_TRANSF , dicc)
         self.ui.lineEd_setUpPath.setText( rig_path )
 
         if old_rig_path != rig_path:
@@ -339,18 +265,8 @@ class animTransference(QDialog):
             self.ui.lab_anim_rig_exported.setText( path_rig + ANIM_RIG_EXP )
         else:
             self.ui.lab_anim_rig_exported.setText( '' )
-
-
-    def break_connection( self, control  , axe_ls ,transf_ls = ['t','r','s']):
-        for axe in axe_ls:
-            for transf in transf_ls:
-                try:
-                    mel.eval( 'source channelBoxCommand;CBdeleteConnection "%s.%s%s";'%( control, transf, axe ) )
-                except Exception:
-                    pass
-
     def create_skel_file(self):
-        dicc = json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
+        dicc = hlp.json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
         rig_path = dicc ['rig_path']
         cmds.file( rig_path, o =True , force = True )
         name_rig = rig_path.split('/')[-1]
@@ -360,19 +276,19 @@ class animTransference(QDialog):
         cmds.file( s=True, type='mayaAscii', force = True )
         joint_list = cmds.listRelatives('root', ad=True, type = 'joint' ) + ['root']
         for joint in joint_list:
-            self.break_connection(  joint  , ['x','y','z'] ,transf_ls = ['t','r','s'])
+            com.break_connection(  joint  , ['x','y','z'] ,transf_ls = ['t','r','s'])
         script_nodes = cmds.ls( '*matcher', 'script_rot*', type='script' )
         cmds.delete ('Group', 'mesh_grp', script_nodes )
         self.ui.lab_skelPath.setText( path_skeleton  )
         dicc ['skeleton_path'] = path_skeleton 
-        self.metadata_dicc2json( TEMP_FOL + METADATA_ANIM_TRANSF , dicc)
+        hlp.metadata_dicc2json( TEMP_FOL + METADATA_ANIM_TRANSF , dicc)
         cmds.delete( cmds.ls(type='displayLayer') )
         cmds.file( s=True, type='mayaAscii', force = True )
         cmds.file( new=True, force = True )
 
     def create_anim_rig_exporter( self ):
         cmds.file( new=True, force = True )
-        dicc = json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
+        dicc = hlp.json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
         rig_path = dicc ['rig_path']
         name_rig = rig_path.split('/')[-1]
         path_rig = rig_path.split( name_rig )[0]
@@ -385,10 +301,10 @@ class animTransference(QDialog):
         self.ui.lab_anim_rig_exported.setText( path_rig+ANIM_RIG_EXP )
 
     def set_anim_fol_file( self ):
-        dicc = json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
+        dicc = hlp.json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
         anim_fol_path = QFileDialog().getExistingDirectory(None, 'Set Anim Folder', ROOT, QFileDialog.ShowDirsOnly )
         dicc ['anim_fol_path'] = anim_fol_path + '/'
-        self.metadata_dicc2json( TEMP_FOL + METADATA_ANIM_TRANSF , dicc)
+        hlp.metadata_dicc2json( TEMP_FOL + METADATA_ANIM_TRANSF , dicc)
         self.ui.lineEd_amimFolder.setText( anim_fol_path + '/')
 
     def constraining_rig( self ):
@@ -429,15 +345,6 @@ class animTransference(QDialog):
                             except Exception:
                                 pass
     
-    def delete_namespace (self ):
-        cmds.namespace(setNamespace=':')
-        all_namespaces = [x for x in cmds.namespaceInfo(listOnlyNamespaces=True, recurse=True) if x != "UI" and x != "shared"]
-        if all_namespaces:
-            all_namespaces.sort(key=len, reverse=True)
-            for namespace in all_namespaces:
-                if cmds.namespace(exists=namespace) is True:
-                    cmds.namespace(removeNamespace=namespace, mergeNamespaceWithRoot=True)
-
     def import_reference( self , path_dir = ''  ):
         listAnims = os.listdir( path_dir )
         for anim in listAnims:
@@ -449,18 +356,18 @@ class animTransference(QDialog):
                 for ref_path in all_ref_paths:
                     if cmds.referenceQuery(ref_path, isLoaded=True): 
                         cmds.file(ref_path, importReference=True)
-                self.delete_namespace()
+                com.delete_namespaces()
                 cmds.file( s=True, type='mayaAscii', force = True )
 
 
     def write_mayabatch_command_file( self  ):
-        
         control_patt = "*:Cog"
         start_value , end_value, signalKey = set_start_end(  control_patt, 
                                                            self.ui.radioButt_fulll_timeline , self.ui.lineEd_start_f,
                                                            self.ui.lineEd_end_f )
         selection = self.ui.comboB_switch_template.currentText()
         bool_value = self.ui.checkBFKIK_matcher.isChecked()
+        bool_value2 = self.ui.checkBFExportFbx.isChecked() 
         line =        "import maya.standalone\n"
         line = line + "maya.standalone.initialize(name='python')\n"
         line = line + "import maya.cmds as cmds\n"
@@ -475,20 +382,14 @@ class animTransference(QDialog):
         line = line + "att = im.importing_modules( 'Anim_Transference_tool_sk' )\n"   
  
         line = line + "toolcommand = att.transfer_anim_( key_checkBFKIK_matcher = %s ,"%str(bool_value)
-        line = line + "selected_switcher = '%s' )\n" %selection
+        line = line + "selected_switcher = '%s' , key_reexportAnim = %s )\n" %( selection, bool_value2 )
         line = line + "toolcommand.transfer_anim( )\n"
         return line
-
-
-    def create_python_file( self , python_file_na , python_file_content ):
-        with open( USER_DOC +'/'+ python_file_na + ".py", "w") as fileFa:
-            fileFa.write( python_file_content )
-            fileFa.close()
 
     def batch_procces (self ):
         python_file_na = 'python_batch'
         line = self.write_mayabatch_command_file( )
-        self.create_python_file ( python_file_na , line )
+        hlp.create_python_file ( python_file_na , line )
         for pathh in sys.path:
             if pathh.endswith('bin'):
                 mayabinpath = pathh
@@ -511,21 +412,45 @@ class animTransference(QDialog):
             lineE_end = self.ui.lineEd_end_f       
             selection = self.ui.comboB_switch_template.currentText()
             bool_value = self.ui.checkBFKIK_matcher.isChecked()
+            bool_value2 = self.ui.checkBFExportFbx.isChecked()
             obj = transfer_anim_(  key_checkBFKIK_matcher = bool_value  , selected_switcher = selection, 
-                                   checkBoxFullT = check_, linEStart = lineE_start, lineEEnd = lineE_end )
+                                   checkBoxFullT = check_, linEStart = lineE_start, lineEEnd = lineE_end ,
+                                   key_reexportAnim = bool_value2 )
             obj.transfer_anim( )
             
 class transfer_anim_():
     def __init__(self, key_checkBFKIK_matcher = False  ,selected_switcher = '' ,
-                        checkBoxFullT = None, linEStart = None, lineEEnd = None ):
+                        checkBoxFullT = None, linEStart = None, lineEEnd = None ,
+                        key_reexportAnim = False ):
         self.key_checkBFKIK_matcher = key_checkBFKIK_matcher
+        self.key_reexportAnim = key_reexportAnim
         self.selection = selected_switcher
         self.checkBox = checkBoxFullT
         self.linEStart = linEStart
         self.lineEEnd =  lineEEnd
 
+    def export_as_fbx (self , export_path_full_na , start , end):
+        joints = cmds.ls( '*:'+SET_JOINT_SK )
+        cmds.bakeResults( joints , hi = 'none' , t = (start , end), simulation=True )
+        cmds.select( '*:'+SET_FULL_ANI_EXP )
+        cmds.file ( export_path_full_na , force=True, 
+                   options ="v=0;" , typ = "FBX export" , pr=True , es=True )
+
+    def getting_key( self , anim):
+        key = False
+        if anim.endswith( '.FBX' ):
+            exten = '.FBX'
+            key = True 
+        elif anim.endswith( '.fbx' ):
+            exten = '.fbx'
+            key = True
+        elif anim.endswith( '.ma' ):
+            exten = '.ma'
+            key = True
+        return key , exten
+                    
     def transfer_anim( self ):
-        dicc = json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
+        dicc = hlp.json2dicc_load( TEMP_FOL + METADATA_ANIM_TRANSF )
         rig_path = dicc ['rig_path']
         name_rig = rig_path.split('/')[-1]
         path_rig = rig_path.split( name_rig )[0]
@@ -533,20 +458,10 @@ class transfer_anim_():
         ANIM_FOLDER = dicc ['anim_fol_path'] 
         SKELETON_SETUP_MATCH_FILE = path_rig + ANIM_RIG_EXP 
         SET_UP_FI_NA = name_rig
-
         listAnims = os.listdir( ANIM_FOLDER )
         for anim in listAnims:
             if os.path.isfile(ANIM_FOLDER+anim):
-                key = False
-                if anim.endswith( '.FBX' ):
-                    exten = '.FBX'
-                    key = True 
-                elif anim.endswith( '.fbx' ):
-                    exten = '.fbx'
-                    key = True
-                elif anim.endswith( '.ma' ):
-                    exten = '.ma'
-                    key = True
+                key , exten = self.getting_key( anim )
                 if key:
                     cmds.file( SKELETON_SETUP_MATCH_FILE, o =True , force = True )
                     constrols_ikfk = cmds.ls( "*:FKIKArm_*" , "*:FKIKLeg_*" , type = 'transform' )
@@ -557,9 +472,6 @@ class transfer_anim_():
                     for ref in all_ref_paths:
                         if not ref.endswith('/'+SET_UP_FI_NA): ### or is == to unreal skeleton
                             refNode = cmds.referenceQuery( ref, referenceNode=True)
-                            print ( refNode )
-                            print ( ref )
-                            print ( ANIM_FOLDER+anim )
                             cmds.file( ANIM_FOLDER+anim, f = True ,loadReference=refNode)
                     cmds.select( '*:ControlSet' )
                     cnt_ls = cmds.ls(sl=True)
@@ -588,10 +500,13 @@ class transfer_anim_():
                     exported_path = ANIM_FOLDER+TRANSFERENCE_FOL+'/'
                     if not os.path.exists( exported_path ):
                         os.makedirs( exported_path )
-                    cmds.file( rename = exported_path+anim.split(exten)[0] + '.ma') #'_exported.ma'
+                    file_path = exported_path+anim.split(exten)[0] 
+                    cmds.file( rename = file_path + '.ma') #'_exported.ma'
                     cmds.file ( removeReference = True , referenceNode = refNode)
                     cmds.file( s=True, type='mayaAscii', force = True )
-                
+                    if self.key_reexportAnim :#self.ui.checkBFExportFbx.isChecked():
+                        self.export_as_fbx ( file_path+'.fbx' , 0 , end_value )
+           
 
 class ik_copying_animation():
     def __init__( self , limbs_ctl_ls, ui = None , selected_switcher = '',
@@ -604,7 +519,8 @@ class ik_copying_animation():
         self.limbs_ctl_ls = limbs_ctl_ls
         
     def import_switcher_selected(self  ):
-        self.ikfk = __import__( 'area_tools.anim.'+ self.selected_switcher )
+        self.ikfk = im.importing_modules(  'area_tools.anim.'+ self.selected_switcher )
+        #self.ikfk = __import__( 'area_tools.anim.'+ self.selected_switcher )
         return self.selected_switcher
 
     def set_limbs_2_ik(self):

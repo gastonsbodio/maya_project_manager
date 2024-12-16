@@ -3,59 +3,27 @@
     take out the  (hashtag chars)
     use a character referenced scene
 """
-
-#from importlib import reload
-#import area_tools.anim.WeaponConstraint_sk as wc
-#reload(wc)
-#widget = wc.parentWeapon()
-
-
 import sys
 import os
 import maya.cmds as cmds
 import maya.OpenMayaUI as mui
 from shiboken2 import wrapInstance
 #from pymel import core as pm
+try:
+    from PySide2.QtUiTools import QUiLoader
+    from PySide2 import QtCore
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except Exception:
+    from PySide6.QtUiTools import QUiLoader
+    from PySide6 import QtCore
+    from PySide6.QtGui import *
+    from PySide6.QtWidgets import *
 
-from PySide2.QtUiTools import QUiLoader
-from PySide2 import QtCore
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-
-from importlib import reload
-
-import ctypes
-from ctypes.wintypes import MAX_PATH
-dll = ctypes.windll.shell32
-buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-
-if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-	USER_DOC = buf.value
-SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
-sys.path.append(SCRIPT_FOL)
 import importing_modules as im
 de = im.importing_modules( 'definitions' )
-
-MAYA_SCRIPT_FOL = USER_DOC + "\\maya"
-for path in sys.path:
-    if "Maya2020" in path :
-        MAYA_VER = '2020'
-        break
-    elif "Maya2021" in path :
-        MAYA_VER = '2021'
-        break
-    elif "Maya2022" in path :
-        MAYA_VER = '2022'
-        break
-    elif "Maya2023" in path :
-        MAYA_VER = '2023'
-        break
-    elif "Maya2024" in path :
-        MAYA_VER = '2024'
-        break
-    elif "Maya2025" in path :
-        MAYA_VER = '2025'
-        break
+com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
+hlp = im.importing_modules( 'helper' )
 
 ROOT_PATH = "C:/dev/"
 PROJECT_PATH = ROOT_PATH + "%s/"
@@ -69,32 +37,26 @@ WEAPON_CONSTRAIN = "weapon_weaponDriver_Constraint"
 HAND_CONTRAIN = "_hand__Constraint"
 HAND_PARENT_FOLLOW = 'gun_follow_%s_cnt'
 DUPLI_SUF = '_dupli'
-
 ANIM_FOL_FILES = de.ANIM_FOL_FILES
-
 ui_name = 'ImportFileUI'
-def getWindow():
-    pointer = mui.MQtUtil.mainWindow()
-    if pointer is not None:
-        try:
-            return wrapInstance(long(pointer), QWidget)
-        except Exception:
-            return wrapInstance(int(pointer), QWidget)
 
-
+HEAD_LS = [ 'None' , 'WorldZero' , 'MoveAll1' , 'MoveAll2' ]
+ROOT_LA = HEAD_LS +  [ 'Cog' ]
+SCAP_LS = HEAD_LS + [ 'FKChest_M' ]
+SHOULD_LS = SCAP_LS
+IK_LS = SCAP_LS + ['FKHead_M' ]
 
 class parentWeapon(QDialog):
     def __init__(self, parent=QApplication.activeWindow()):
         super(parentWeapon, self).__init__(parent)
         loader = QUiLoader()
-        maya_fol = MAYA_SCRIPT_FOL.replace('\\','/')
         self.centralLayout = QVBoxLayout(self)
         self.centralLayout.setContentsMargins(0, 0, 0, 0)
         for script_path in [ de.SCRIPT_MANAG_FOL.replace('\\','/') + ANIM_FOL_FILES  ]:
             try:
                 uifile = QtCore.QFile(os.path.join(script_path, de.PARENTWEAP_TOOL_UI))
                 uifile.open(QtCore.QFile.ReadOnly)
-                self.ui = loader.load(uifile)
+                self.ui = loader.load(uifile , com.getWindow(QWidget) )
                 break
             except Exception as err:
                 print ( script_path )
@@ -107,6 +69,7 @@ class parentWeapon(QDialog):
     def initialize_widget_conn(self):
         """Initializing functions, var and features.
         """
+        print (' lal la la la       llllllllllllllllllll     ')
         project_ls = self.add_items_combo_project(  )
         self.project_na = self.set_loaded_project( )
         self.ui.lineEd_file_ref.setEnabled(False)
@@ -138,10 +101,15 @@ class parentWeapon(QDialog):
         self.set_loaded_gun_ref(folders)
         #self.referenceWeapon()
         self.referencePlayer()
-        #try:
+        self.initialize_space_switch_tool( )
         self.show()
-        #except Exception:
-        #    pass
+
+     
+    def initialize_space_switch_tool( self ):
+        print (' * * * * *')
+        sp_tool = space_swith_tool( ui = self.ui )
+        print ('. . . . . ')
+        sp_tool.initialize()
         
     def set_loaded_project( self ):
         folders = os.listdir( ROOT_PATH )
@@ -173,7 +141,6 @@ class parentWeapon(QDialog):
 
 
     def add_items_combo_project( self ):
-
         foldersPath = ROOT_PATH
         folders = os.listdir( foldersPath )
         for folder in folders:
@@ -213,7 +180,6 @@ class parentWeapon(QDialog):
         self.project_na = self.combo_current_text( self.ui.comboB_choose_project )
         self.add_items_combo_gun( self.project_na  )
 
-
     def load_file_to_ref( self ):
         selectedWeapon = self.combo_current_text( self.ui.comboB_choose_weap )
         selectedWeaponPath = PROJECT_PATH%self.project_na + WEAPON_ROOT  + selectedWeapon + RIG_3D_FOLDER
@@ -225,9 +191,7 @@ class parentWeapon(QDialog):
                 self.ui.lineEd_file_ref.setText( file )
                 break
 
-
     def ConstraintWeaponToDriver( self ):
-
         char_parent_jnt = cmds.ls ( namespace_char+'*:'+WEAPON_DRIVER )[0]
         weapon_parent_jnt = cmds.ls ( namespace_weapon+'*:Root_ctrl' )[0] #Root_ctrl
         weaponRefExist = self.checkReferences( WEAPON_FOL )
@@ -321,31 +285,6 @@ class parentWeapon(QDialog):
                 dupli = cmds.rename( target , obj+DUPLI_SUF)
                 return dupli , dupli_offset
 
-    def setTransf( self, source, target ):
-        axes=["X","Y","Z"]
-        transfs = ["translate","rotate","scale"]
-        for transform in transfs:
-            try:
-                for axe in axes:
-                    try:
-                        value = cmds.getAttr ( source+"."+transform+axe )
-                        cmds.setAttr ( target+"."+transform+axe, value )
-                    except Exception as err:
-                        print( err )
-                        pass
-            except Exception as err:
-                print( err )
-                pass
-
-    def break_connection( self, control  , axe_ls , transf_ls = ['t','r','s']):
-        for axe in axe_ls:
-            for transf in transf_ls:
-                try:
-                    mel.eval( 'source channelBoxCommand;CBdeleteConnection "%s.%s%s";'%( control, transf, axe ) )
-                except Exception:
-                    pass
-
-
     def fit_cnt_to_position( self , cnt_drivenn, parent_driver , value_degree_ls, axe_ls):
 
         parent_target , dupli_offset_target = self.get_father_duplic( cnt_drivenn )
@@ -353,7 +292,7 @@ class parentWeapon(QDialog):
                                                   dupli_offset_target , mo = False )
         parent_contrain = cmds.parentConstraint (  parent_driver, parent_target , mo = False )
 
-        self.setTransf( parent_target , namespace_char+":"+cnt_drivenn )
+        com.setTransf( parent_target , namespace_char+":"+cnt_drivenn )
         for idx, axe in enumerate( axe_ls ):    
             value = cmds.getAttr ( parent_target+".rotate"+axe )
             cmds.setAttr ( namespace_char+":"+cnt_drivenn+".rotate"+axe, value + value_degree_ls[idx] )
@@ -416,7 +355,6 @@ class parentWeapon(QDialog):
             
             self.fit_cnt_to_position(  ik_cnt_drivenn, parent_driver , [180,0,0], ['X','Y','Z'])
             self.fit_cnt_to_position(  WEAPON_DRIVER, parent_driver , [180, 0, 0], ['X','Y','Z'])
-
         else:
             print("incorrect references")
 
@@ -568,3 +506,64 @@ class parentWeapon(QDialog):
                     cmds.file(playerFile,e = True, namespace = "Player")
                 break        
 
+class space_swith_tool():
+    def __init__( self , ui ):
+        self.ui = ui
+        self.initialize( )
+        
+    def initialize ( self ):
+        print ( '_ _ _ _bla bla bla _ _ _ _ _ _ _ _')
+        self.fill_char_combo( )
+        #self.ui.comboBCharacters.currentIndexChanged.connect( self.cobo_nameS_change )
+        self.all_menues_gen( position )
+        
+    def fill_char_combo( self ):
+        all_ref_paths = cmds.file( q=True, reference=True ) or []
+        for ref_path in all_ref_paths:
+                #cmds.file(ref_path, importReference=True)
+            print ()
+            if '/'+CHAR_FOL in ref_path or '/'+CHAR_FOL.lower() in ref_path:
+                self.namespa = cmds.referenceQuery( ref_path, ns=True )
+                self.ui.comboBCharacters.addItem( self.namespa )
+                
+    def cobo_nameS_change ( self ):
+        self.namespa = self.ui.comboBCharacters.currentText()
+        
+    def all_menues_gen( self , position ):
+        CONTROLS_DICC = { 'FKHead_M' : self.ui.pushBut_Head ,  'FKScapula_L' : self.ui.pushBut_Scap_l ,
+                         'FKShoulder_L' : self.ui.pushButshoulder_l , 'IKArm_L' : self.ui.pushButIkarm_l,
+                         'FKScapula_R' : self.ui.pushBut_Scap_r , 'FKShoulder_R': self.ui.pushButshoulder_r ,
+                         'IKArm_R': self.ui.pushButIkarm_r , 'FKroot_M': self.ui.pushButRoot }
+        for cnt in CONTROLS_DICC:
+            print ( 'que ondis ?')
+            #table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+            #table.customContextMenuRequested.connect( self.menues_asset_table )
+            #table.setEditTriggers( QTableWidget.NoEditTriggers )
+            CONTROLS_DICC[cnt].clicked.connect( lambda: self.menu_action_parent( cnt , CONTROLS_DICC , position ))
+     
+    def menu_action_parent( self , cnt , CONTROLS_DICC , position ):
+        menu_controls = QMenu()
+        listt = self.create_menues_ls( target )
+        for target in listt:
+            menu_controls.addAction( target )
+            actionMenu = menu_controls.exec_( CONTROLS_DICC[cnt].mapToGlobal(position) )
+            if actionMenu != None:
+                menu_na = str(actionMenu.text())
+                self.trigging_parent( menu_na )
+
+
+    def create_menues_ls( cnt ):
+        if 'FKHead_M' == cnt:
+            listt = HEAD_LS
+        elif 'FKScapula_L' == cnt or 'FKScapula_R' == cnt :            
+            listt = SCAP_LS
+        elif 'FKShoulder_L' == cnt or 'FKShoulder_R' == cnt : 
+            listt = SHOULD_LS
+        elif 'IKArm_L' == cnt or 'IKArm_R' == cnt : 
+            listt = IK_LS
+        elif 'FKroot_M' == cnt :
+            listt = ROOT_LA
+        return listt
+
+    def trigging_parent( self , name_cnt_target):
+        print ( name_cnt_target )

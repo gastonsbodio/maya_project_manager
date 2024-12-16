@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -190,7 +190,7 @@
      <widget class="QCheckBox" name="checkBFKIK_matcher">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>140</x>
         <y>390</y>
         <width>131</width>
         <height>21</height>
@@ -211,6 +211,19 @@
       </property>
       <property name="text">
        <string>Set SetUp Path</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBFExportFbx">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>370</y>
+        <width>111</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string> Export Fbx Too</string>
       </property>
      </widget>
     </widget>

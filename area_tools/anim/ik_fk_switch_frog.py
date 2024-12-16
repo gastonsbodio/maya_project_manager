@@ -12,6 +12,9 @@
 #reload(ikfk)
 #ikfk.limb_fk_2_ik()
 
+import importing_modules as im
+com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
+
 import maya.cmds as cmds
 import maya.mel as mel
 DUPLI_SUF = '_dupli'
@@ -45,13 +48,6 @@ front_ls = ['Scapula', 'Shoulder', 'Elbow', 'Wrist', 'Fingers1']
 leg_na_templa = "%sLeg%s_%s"
 switch_na_templa = "FKIKLeg%s_%s"
 
-def break_connection( control ):
-    for transf in ['t' , 'r']:
-        for axe in [ 'x' , 'y', 'z' ]:
-            try:
-                mel.eval( 'source channelBoxCommand;CBdeleteConnection "%s.%s%s";'%( control, transf, axe ) )
-            except Exception:
-                pass
 
 def get_father_duplic( obj ):
     if ':' not in obj:
@@ -229,7 +225,7 @@ def limb_fk_2_ik():
                             if dupli_offset in matcherB:
                                 print ( matcherB )
                                 cmds.parent( matcherB , dupli_offset )
-                                break_connection( parent_target )
+                                com.break_connection( parent_target  , ['x','y','z'] , transf_ls = ['t','r',] )
                                 matcherB = cmds.ls( '*'+dupli_offset+'|'+loc_matcherB , l = True )[0]
                                 cmds.parentConstraint (  matcherB, parent_target , mo = True )
                                 cmds.parentConstraint (  loc_matcherA , matcherB , mo = False )
