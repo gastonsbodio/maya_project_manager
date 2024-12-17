@@ -10,11 +10,14 @@ SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
 sys.path.append( SCRIPT_FOL )
 from importlib import reload
 import importing_modules as  im
-reload(im )
+reload( im )
+de = im.importing_modules( 'definitions' )
 
-ENVIROMENT = 'Windows'
+#ENVIROMENT = 'Windows'
 for path in sys.path:
-    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:
+    if de.PY_PATH + 'DLLs' in path.replace('\\','/'):
+        ENVIROMENT = 'Windows'
+    elif "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:
         ENVIROMENT = 'Maya'
         break
 
@@ -27,7 +30,6 @@ if ENVIROMENT == 'Maya':
         return com.getWindow(QWidget)
     def create_empty_task( fi_na ):
         com.create_empty_task( fi_na )
-
 elif ENVIROMENT == 'Windows':
     def getWindow(QWidget):
         return None

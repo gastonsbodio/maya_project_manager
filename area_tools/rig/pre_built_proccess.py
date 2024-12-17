@@ -13,6 +13,8 @@ import maya.mel as mel
 from importlib import reload
 import definitions as de
 reload(de)
+import importing_modules as im
+com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
 
 ##   1     import unreal skeleton template
 #pbp.run_all_preskeleton_code()
@@ -37,46 +39,6 @@ reload(de)
 
 PATH_FOOT_HELP = de.SCRIPT_MANAG_FOL.replace('\\','/')+ de.RIG_FOL_FILES + 'rig_micelane/generic_skeleton.ma'
 
-def delete_namespaces( is_checked ):
-    if is_checked:
-        curNS = cmds.namespaceInfo( lon=True )
-        defaults = ["UI", "shared"]
-        diff = [item for item in curNS if item not in defaults]
-        for ns in diff:
-            if cmds.namespace( exists=str(ns)):
-                try:
-                    cmds.namespace( rm=str(ns) , f = True)
-                except Exception:
-                    pass
-
-def setTransf(source, target, transf=['t','r','s']):
-    axes=[ "X", "Y", "Z" ]
-    transfs = ["translate","rotate","scale"]
-    for transform in transfs:
-        if transform[0] in transf:
-            try:
-                for axe in axes:
-                    try:
-                        value = cmds.getAttr ( source+"."+transform+axe )
-                        cmds.setAttr ( target+"."+transform+axe, value )
-                    except Exception as err:
-                        print( err )
-                        pass
-            except Exception as err:
-                print( err )
-                pass
-
-
-def unlock_transf( name , transf = ['t','r','s'] ):
-    for attr in [ 't' , 'r' , 's' ]:
-        if attr in transf:
-            for axe in [ 'x', 'y', 'z' ]:
-                try:
-                    cmds.setAttr(name+'.'+attr+axe, lock=0)
-                except Exception:
-                    pass
-
-
 
 ##### pre_keleton procces ##################################################################
 def mel_pre_code():
@@ -90,7 +52,7 @@ def mel_pre_code():
 
 def create_foot_fitting_helper():
     cmds.file( PATH_FOOT_HELP , i = True )
-    delete_namespaces( True )
+    com.delete_namespaces( )
 
 def run_all_preskeleton_code():
     print ('que ondaaa  ???')
@@ -102,19 +64,6 @@ def create_ad_sk_code():
     mel_pre_code()
 
 ##### pre builting proccess #################################################################
-
-def fix():
-    cmds.lockNode('initialShadingGroup', l=0, lockUnpublished=0)
-    print('Broken Lambert shader fixed')
-    cmds.lockNode('defaultTextureList1', l=False, lockUnpublished=False)
-
-def break_connection( control  , axe_ls ,transf_ls = ['t','r','s']):
-    for axe in axe_ls:
-        for transf in transf_ls:
-            try:
-                mel.eval( 'source channelBoxCommand;CBdeleteConnection "%s.%s%s";'%( control, transf, axe ) )
-            except Exception:
-                pass
 
 def mirror_unre_skele():
     for joint in ['clavicle_r', 'thigh_r', 'eye_r']:
@@ -128,18 +77,9 @@ def spine_pos_fix ():
     dicc = { 'Spine1': 'spine_01',  'Spine2': 'spine_02', 
             'Spine3': 'spine_03', 'Spine4': 'spine_04',  'Chest': 'spine_05'}
     for key in dicc:
-        #select -r Root ;
-        #select -r Spine1 ;
-        #select -r Spine1 ;
-        #select -cl  ;
-        #select -r Jaw ;
-        #select -r Head ;
-        #select -r Chest ;
-        #select -r Neck ;
-        #select -r Spine1 ;
-        unlock_transf( key , transf = ['t','r','s'] )
+        com.unlock_transf( key , transf = ['t','r','s'] )
         contrain = cmds.parentConstraint ( dicc[key ]  , key , sr=['x','y','z'] , mo = False )[0]
-        break_connection( key  , ['x','y','z'] ,transf_ls = ['r'] )
+        com.break_connection( key  , ['x','y','z'] ,transf_ls = ['r'] )
         cmds.delete( contrain )
         
 def create_metacarp():
@@ -182,11 +122,11 @@ def create_metacarp():
     dupli_pink = cmds.duplicate ( pinky_metac )[0]
     dupli_ring = cmds.duplicate ( ring_metac )[0]
     contrain2 = cmds.orientConstraint ( [  dupli_pink, dupli_ring   ],  "Cup" , mo = False )[0]
-    break_connection( "Cup"  , ['x','y','z'] ,transf_ls = ['t','r'])
+    com.break_connection( "Cup"  , ['x','y','z'] ,transf_ls = ['t','r'])
     cmds.delete( contrain2 )
     cmds.delete( dupli_pink , dupli_ring )
-    break_connection( pinky_metac  , ['x','y','z'] ,transf_ls = ['t','r'])
-    break_connection( ring_metac  , ['x','y','z'] ,transf_ls = ['t','r'])
+    com.break_connection( pinky_metac  , ['x','y','z'] ,transf_ls = ['t','r'])
+    com.break_connection( ring_metac  , ['x','y','z'] ,transf_ls = ['t','r'])
     cmds.delete (contrain0 , contrain1 )
 
   
@@ -196,15 +136,13 @@ def bendy_setup():
     cmds.setAttr( "Shoulder.bendyJoints", 1 )
     cmds.setAttr( "Shoulder.twistJoints", 2 )
     
-
-
 def pose_extra_joints():
     dicc = { 'Jaw' : 'jaw', 'Eye': 'eye_r' ,
             'Heel':'Heel_ref' , 'FootSideOuter':'FootSideOuter_ref',
             'FootSideInner' : 'FootSideInner_ref', 'ToesEnd' : 'ToesEnd_ref'}
     for key in dicc:
         try:
-            unlock_transf( key , transf = ['t','r','s'] )
+            com.unlock_transf( key , transf = ['t','r','s'] )
             contrain = cmds.pointConstraint (  dicc[key] , key , mo = False )[0]
             cmds.delete( contrain )
         except Exception:
@@ -242,7 +180,7 @@ def mel_action():
 
 
 def run_all_fixes():
-    fix()
+    com.fix_lambert_lock_error()
     pose_extra_joints()
     bendy_setup()
     create_metacarp()
@@ -360,11 +298,11 @@ def shapes_control_source_target():
 
     control_ls = cmds.ls(sl=True)
     control_source = control_ls[0]
-    target = 'FK'+control_ls[0]
+    target = 'FK'+control_ls[1]
     control_ls = [target]
     for control in control_ls:
         try:
-            control_source = cmds.ls( '*:'+control)[0]
+            #control_source = cmds.ls( '*:'+control)[0]
             print ( control_source )
             controls_cv = cmds.ls( control+'.cv[*]' )
             if controls_cv != []:
@@ -388,11 +326,10 @@ def shapes_control_source_target():
 def match_skeleton_with_skeleton_reference():
     joints_ls = cmds.listRelatives( '*:FitSkeleton' , type = 'joint' , ad = True )
     nameSpa = cmds.ls ( '*:FitSkeleton')[0].split(':')[0]
-    #setTransf( nameSpa+':FitSkeleton', 'FitSkeleton', transf=['s'])
     for joint in joints_ls:
         try:
             cmds.parentConstraint( joint, joint.split(':')[-1] , mo = False)
         except Exception:
             pass
     for joint in joints_ls:
-        break_connection( joint.split(':')[-1]  , ['x','y','z'] ,transf_ls = ['t','r'])
+        com.break_connection( joint.split(':')[-1]  , ['x','y','z'] ,transf_ls = ['t','r'])

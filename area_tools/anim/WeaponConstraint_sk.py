@@ -41,8 +41,8 @@ ANIM_FOL_FILES = de.ANIM_FOL_FILES
 ui_name = 'ImportFileUI'
 
 HEAD_LS = [ 'None' , 'WorldZero' , 'MoveAll1' , 'MoveAll2' ]
-ROOT_LA = HEAD_LS +  [ 'Cog' ]
-SCAP_LS = HEAD_LS + [ 'FKChest_M' ]
+ROOT_LS = HEAD_LS +  [ 'Cog' ]
+SCAP_LS = ROOT_LS + [ 'FKChest_M' ]
 SHOULD_LS = SCAP_LS
 IK_LS = SCAP_LS + ['FKHead_M' ]
 
@@ -69,7 +69,6 @@ class parentWeapon(QDialog):
     def initialize_widget_conn(self):
         """Initializing functions, var and features.
         """
-        print (' lal la la la       llllllllllllllllllll     ')
         project_ls = self.add_items_combo_project(  )
         self.project_na = self.set_loaded_project( )
         self.ui.lineEd_file_ref.setEnabled(False)
@@ -106,11 +105,9 @@ class parentWeapon(QDialog):
 
      
     def initialize_space_switch_tool( self ):
-        print (' * * * * *')
         sp_tool = space_swith_tool( ui = self.ui )
-        print ('. . . . . ')
-        sp_tool.initialize()
-        
+        #sp_tool.initialize()
+                
     def set_loaded_project( self ):
         folders = os.listdir( ROOT_PATH )
         rootReference = cmds.file(r=True, q=True)
@@ -138,7 +135,6 @@ class parentWeapon(QDialog):
                     if fol == weapon_foll:
                         self.ui.comboB_choose_weap.setCurrentIndex( idx )
                         break
-
 
     def add_items_combo_project( self ):
         foldersPath = ROOT_PATH
@@ -509,61 +505,128 @@ class parentWeapon(QDialog):
 class space_swith_tool():
     def __init__( self , ui ):
         self.ui = ui
+        
+        self.CONTROLS_DICC = { 'FKHead_M' : ( self.ui.comboBHead, HEAD_LS ), 
+                              'FKScapula_L' : ( self.ui.comboBScapula_l , SCAP_LS ),
+                              'FKShoulder_L' : ( self.ui.comboBSholuder_l , SHOULD_LS ),
+                              'IKArm_L' : ( self.ui.comboBIK_l, IK_LS ),
+                              'FKScapula_R' : ( self.ui.comboBScapula_r  , SCAP_LS ),
+                              'FKShoulder_R': (self.ui.comboBSholuder_r, SHOULD_LS),
+                              'IKArm_R': ( self.ui.comboBIK_r , IK_LS ),
+                              'FKroot_M': ( self.ui.comboBRootcnt , ROOT_LS )  }
         self.initialize( )
         
-    def initialize ( self ):
-        print ( '_ _ _ _bla bla bla _ _ _ _ _ _ _ _')
+    def initialize ( self  ):
         self.fill_char_combo( )
-        #self.ui.comboBCharacters.currentIndexChanged.connect( self.cobo_nameS_change )
-        self.all_menues_gen( position )
+        self.all_menues_gen(  )
+        self.allcombo_change_action( )
+        self.all_buttons_action( )
         
     def fill_char_combo( self ):
         all_ref_paths = cmds.file( q=True, reference=True ) or []
         for ref_path in all_ref_paths:
                 #cmds.file(ref_path, importReference=True)
-            print ()
             if '/'+CHAR_FOL in ref_path or '/'+CHAR_FOL.lower() in ref_path:
                 self.namespa = cmds.referenceQuery( ref_path, ns=True )
+                self.namespa = self.namespa.replace(':','') + ':'
                 self.ui.comboBCharacters.addItem( self.namespa )
                 
     def cobo_nameS_change ( self ):
         self.namespa = self.ui.comboBCharacters.currentText()
         
-    def all_menues_gen( self , position ):
-        CONTROLS_DICC = { 'FKHead_M' : self.ui.pushBut_Head ,  'FKScapula_L' : self.ui.pushBut_Scap_l ,
-                         'FKShoulder_L' : self.ui.pushButshoulder_l , 'IKArm_L' : self.ui.pushButIkarm_l,
-                         'FKScapula_R' : self.ui.pushBut_Scap_r , 'FKShoulder_R': self.ui.pushButshoulder_r ,
-                         'IKArm_R': self.ui.pushButIkarm_r , 'FKroot_M': self.ui.pushButRoot }
-        for cnt in CONTROLS_DICC:
-            print ( 'que ondis ?')
-            #table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-            #table.customContextMenuRequested.connect( self.menues_asset_table )
-            #table.setEditTriggers( QTableWidget.NoEditTriggers )
-            CONTROLS_DICC[cnt].clicked.connect( lambda: self.menu_action_parent( cnt , CONTROLS_DICC , position ))
-     
-    def menu_action_parent( self , cnt , CONTROLS_DICC , position ):
-        menu_controls = QMenu()
-        listt = self.create_menues_ls( target )
-        for target in listt:
-            menu_controls.addAction( target )
-            actionMenu = menu_controls.exec_( CONTROLS_DICC[cnt].mapToGlobal(position) )
-            if actionMenu != None:
-                menu_na = str(actionMenu.text())
-                self.trigging_parent( menu_na )
+    def all_menues_gen( self  ):
+        for cnt in self.CONTROLS_DICC:
+            if 'FKHead_M' == cnt:
+                listt = HEAD_LS
+            elif 'FKScapula_L' == cnt or 'FKScapula_R' == cnt :            
+                listt = SCAP_LS
+            elif 'FKShoulder_L' == cnt or 'FKShoulder_R' == cnt : 
+                listt = SHOULD_LS
+            elif 'IKArm_L' == cnt or 'IKArm_R' == cnt : 
+                listt = IK_LS
+            elif 'FKroot_M' == cnt :
+                listt = ROOT_LS
+            self.CONTROLS_DICC[cnt][0].addItems( listt )
+            #line_edit = self.CONTROLS_DICC[cnt].lineEdit()
+            #line_edit.setAlignment( QtCore.Qt.AlignCenter )
+
+    def allcombo_change_action(self):
+        #self.CONTROLS_DICC = { 'FKHead_M' : self.ui.comboBHead ,  'FKScapula_L' : self.ui.comboBScapula_l ,
+        
+        #                 'FKShoulder_L' : self.ui.comboBSholuder_l , 'IKArm_L' : self.ui.comboBIK_l,
+        
+        
+        #                 'FKScapula_R' : self.ui.comboBScapula_r , 'FKShoulder_R': self.ui.comboBSholuder_r ,
+        #                 'IKArm_R': self.ui.comboBIK_r , 'FKroot_M': self.ui.comboBRootcnt }
+        self.ui.comboBHead.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBHead  , 'FKHead_M' ) )
+        self.ui.comboBScapula_l.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBScapula_l  , 'FKScapula_L' ) )
+        self.ui.comboBSholuder_l.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBSholuder_l  , 'FKShoulder_L' ) )
+        self.ui.comboBIK_l.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBIK_l  , 'IKArm_L' ) )
+        self.ui.comboBScapula_r.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBScapula_r  , 'FKScapula_R' ) )
+        self.ui.comboBSholuder_r.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBSholuder_r  , 'FKShoulder_R' ) )
+        self.ui.comboBIK_r.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBIK_r  , 'IKArm_R' ) )
+        self.ui.comboBRootcnt.currentIndexChanged.connect( 
+                                              lambda: self.trigging_parent( self.ui.comboBRootcnt  , 'FKroot_M' ) )
+
+    def all_buttons_action( self ):
+        
+        self.ui.pushButKeyHead.clicked.connect( lambda: self.key_control( 'FKHead_M' , just_sel = False) )
+        self.ui.pushButSelHead.clicked.connect( lambda: self.key_control( 'FKHead_M' , just_sel = True) )       
 
 
-    def create_menues_ls( cnt ):
-        if 'FKHead_M' == cnt:
-            listt = HEAD_LS
-        elif 'FKScapula_L' == cnt or 'FKScapula_R' == cnt :            
-            listt = SCAP_LS
-        elif 'FKShoulder_L' == cnt or 'FKShoulder_R' == cnt : 
-            listt = SHOULD_LS
-        elif 'IKArm_L' == cnt or 'IKArm_R' == cnt : 
-            listt = IK_LS
-        elif 'FKroot_M' == cnt :
-            listt = ROOT_LA
-        return listt
 
-    def trigging_parent( self , name_cnt_target):
-        print ( name_cnt_target )
+        self.ui.pushButKeyScapu_r.clicked.connect( lambda: self.key_control( 'FKScapula_R' , just_sel = False) )
+        self.ui.pushButSelScapu_r.clicked.connect( lambda: self.key_control( 'FKScapula_R' , just_sel = True) ) 
+
+        self.ui.pushButKeyScapu_l.clicked.connect( lambda: self.key_control( 'FKScapula_L' , just_sel = False) )
+        self.ui.pushButSelScapu_l.clicked.connect( lambda: self.key_control( 'FKScapula_L' , just_sel = True) ) 
+
+
+
+        self.ui.pushButKeysholud_r.clicked.connect( lambda: self.key_control( 'FKShoulder_R' , just_sel = False) )
+        self.ui.pushButselShould_r.clicked.connect( lambda: self.key_control( 'FKShoulder_R' , just_sel = True) ) 
+
+        self.ui.pushButKeysholud_l.clicked.connect( lambda: self.key_control( 'FKShoulder_L' , just_sel = False) )
+        self.ui.pushButselShould_l.clicked.connect( lambda: self.key_control( 'FKShoulder_L' , just_sel = True) ) 
+
+
+
+
+        self.ui.pushButKeyIk_r.clicked.connect( lambda: self.key_control( 'IKArm_R' , just_sel = False) )
+        self.ui.pushButSelIk_r.clicked.connect( lambda: self.key_control( 'IKArm_R' , just_sel = True) ) 
+
+        self.ui.pushButKeyIk_l.clicked.connect( lambda: self.key_control( 'IKArm_L' , just_sel = False) )
+        self.ui.pushButSelIk_l.clicked.connect( lambda: self.key_control( 'IKArm_L' , just_sel = True) ) 
+
+
+
+        self.ui.pushButKeyRoot.clicked.connect( lambda: self.key_control( 'FKroot_M' , just_sel = False) )
+        self.ui.pushButSelRoot.clicked.connect( lambda: self.key_control( 'FKroot_M' , just_sel = True) ) 
+
+
+
+    def key_control( self , cnt , just_sel = True ):
+        cmds.select( self.namespa + cnt +'_bridge_control' )
+        if just_sel == False:
+            cmds.setKeyframe( self.namespa + cnt +'_bridge_control', attribute='parentTo' )
+
+
+        
+    def getIndex( self, list , name):
+        for idx , obj in enumerate (list):
+            if obj == name:
+                return idx
+                
+    def trigging_parent( self , combo , cnt ):
+        cnt_target = str( combo.currentText() ) 
+        indx = self.getIndex( self.CONTROLS_DICC[ cnt ][1] , cnt_target )
+        cmds.setAttr( self.namespa + cnt +'_bridge_control.parentTo', indx  )
+        print(  self.namespa +cnt +'_bridge_control' )
+        print ( indx )

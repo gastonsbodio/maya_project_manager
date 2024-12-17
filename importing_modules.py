@@ -26,6 +26,7 @@ def with_package( import_str ):
 
 def importing_modules( import_str ):
     imported = with_package( import_str )
+    importlib.reload(imported)
     return imported
 
 

@@ -2,6 +2,7 @@ KEYW:
     COMPANY:
       COMPANY_MENU_NA: "Stray Kite"
       TOOLS_MENU_NA: "Tools"
+      ANIM_SHELF_NA: "sk_animation_tools"
       ANIM_TOOLS_MENU_NA: "Animation"
       RIG_TOOLS_MENU_NA: "Rigging"
       SKIP_AUTO_READ_PHRASE: "avoid_auto_read"

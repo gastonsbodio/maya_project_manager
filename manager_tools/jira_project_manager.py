@@ -713,15 +713,6 @@ class MyMainWindow(QMainWindow):
             self.set_roots()
         hlp.metadata_dicc2json( de.TEMP_FOL+de.PERF_LOG_METADATA_FI_NA , dicc)
 
-if ev.ENVIROMENT == 'Windows':
-    ###   manager launch  ####
-    #import manager_tools.jira_project_manager as jiraM
-    loader = QUiLoader()
-    app = QApplication(sys.argv)
-    widget = MyMainWindow( loader = loader)
-    widget.ui.show()
-    sys.exit(app.exec())
-
 if str(sys.version).startswith('2'): #ThreadReturnPy2
     class ThreadReturn(Thread):
         def __init__(self, group=None, target=None, name=None,args=(), kwargs={}, Verbose=None):
@@ -752,3 +743,13 @@ elif str(sys.version).startswith('3'):
         def join(self, *args):
             Thread.join(self, *args)
             return self._return
+
+
+if ev.ENVIROMENT == 'Windows':
+    ###   manager launch  ####
+    #import manager_tools.jira_project_manager as jiraM
+    loader = QUiLoader()
+    app = QApplication(sys.argv)
+    widget = MyMainWindow( loader = loader)
+    widget.ui.show()
+    sys.exit(app.exec())

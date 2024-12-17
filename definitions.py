@@ -71,6 +71,7 @@ INSTRUCTION_CHECK_ANIM_TOOL = 'https://docs.google.com/document/d/1gAxtH1fhukNAW
 LINK_ICON_PATH =  PY_PACKAGES.replace('\\','/')  + "/icon/link.png" 
 COMMENT_ICON_PATH =  PY_PACKAGES.replace('\\','/')  + "/icon/comment.png" 
 ANIM_CHECK_TOOL_SETTING ='anim_check_settings.json'
+BATCH_RENDER_TOOL_SETTING = 'batch_render_setting.json'
 ANIM_PATH_TASK_CREAT = 'anim_path_creation_tool.json'
 LOGIN_METADATA_FI_NA ='login_metadata.json'
 PERF_LOG_METADATA_FI_NA ='perf_log_metadata.json'
@@ -82,6 +83,7 @@ ANIM_CHECK_UI = 'checker_anim_tool.ui'
 ANIM_PATH_TREE_UI = 'anim_path_treel.ui'
 COMMENTS_UI = 'comments_panel.ui'
 TRANSF_ANIM_T_UI = "transferAnimTool.ui"
+BATCH_RENDER_ANIM_UI = "batch_anim_render.ui"
 PARENTWEAP_TOOL_UI = "parentWeaponTool.ui"
 FORBIDDEN_CHARS = [" ","-","_","@","%", "$","?", "!", "|","*",".",",",";"]
 
@@ -93,6 +95,7 @@ FORBIDDEN_CHARS = [" ","-","_","@","%", "$","?", "!", "|","*",".",",",";"]
 ### company vars
 COMPANY_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['COMPANY_MENU_NA']
 TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['TOOLS_MENU_NA']
+ANIM_SHELF_NA = DEFIN_DICC['KEYW']['COMPANY']['ANIM_SHELF_NA']
 ANIM_TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['ANIM_TOOLS_MENU_NA']
 RIG_TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['RIG_TOOLS_MENU_NA']
 SKIP_AUTO_READ_PHRASE = DEFIN_DICC['KEYW']['COMPANY']['SKIP_AUTO_READ_PHRASE']

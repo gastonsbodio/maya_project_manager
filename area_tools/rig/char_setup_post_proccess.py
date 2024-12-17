@@ -44,7 +44,7 @@
 
 #cspp.skeleton_unreal_settings ( True )
 
-#cspp.delete_namespaces( True )
+#cspp.delete_namespaces_( True )
 
 #cspp.set_color_controls( True )
 
@@ -52,8 +52,10 @@ from importlib import reload
 import maya.cmds as cmds
 import maya.mel as mel
 
-import definitions as de
-reload(de)
+import importing_modules as im
+de = im.importing_modules( 'definitions' )
+com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
+
 import area_tools.rig.parent_to_tool as p2t
 reload( p2t )
 import area_tools.rig.default_rot_value_script as drvs
@@ -109,79 +111,6 @@ DICC_MIRROR = { 'IndexFinger1': 'index_01', 'IndexFinger2': 'index_02' , 'IndexF
   'Eye': 'eye'}
 
 
-
-def break_connection( control  , axe_ls ,transf_ls = ['t','r','s']):
-    for axe in axe_ls:
-        for transf in transf_ls:
-            try:
-                mel.eval( 'source channelBoxCommand;CBdeleteConnection "%s.%s%s";'%( control, transf, axe ) )
-            except Exception:
-                pass
-
-def unlock_transf( name , transf = ['t','r','s'] ):
-    for attr in [ 't' , 'r' , 's' ]:
-        if attr in transf:
-            for axe in [ 'x', 'y', 'z' ]:
-                try:
-                    cmds.setAttr(name+'.'+attr+axe, lock=0)
-                except Exception:
-                    pass
-
-def setTransf(source, target, transf=['t','r','s']):
-    axes=[ "X", "Y", "Z" ]
-    transfs = ["translate","rotate","scale"]
-    for transform in transfs:
-        if transform[0] in transf:
-            try:
-                for axe in axes:
-                    try:
-                        value = cmds.getAttr ( source+"."+transform+axe )
-                        cmds.setAttr ( target+"."+transform+axe, value )
-                    except Exception as err:
-                        print( err )
-                        pass
-            except Exception as err:
-                print( err )
-                pass
-
-def resetTransf( target, axe_enable = ['t','r']):
-    axes=[ "X","Y","Z" ]
-    transfs = [ "translate", "rotate"]# , "scale" ]
-    for transform in transfs:
-        if transform[0] in axe_enable:
-            try:
-                for axe in axes:
-                    try:
-                        cmds.setAttr ( target+"."+transform+axe, 0 )
-                    except Exception as err:
-                        print( err )
-                        pass
-            except Exception as err:
-                print( err )
-                pass
-
-def offset_creation( obj ):
-    offset_orig = cmds.listRelatives( obj , p = True , type = 'transform' ) or []
-    if offset_orig != []:
-        offset_orig = offset_orig [0]
-    mel.eval( 'CreateLocator;' )
-    loc = cmds.ls( sl = True)[0]
-    if cmds.ls( OFFSET_NA %(obj) )  != []:
-        amount = str( len( cmds.ls( OFFSET_NA %(obj) +'*') ) + 1 ) 
-    else:
-        amount = ''
-    offset_na = OFFSET_NA %(obj) + amount 
-    cmds.rename( loc, offset_na)
-    shape_loc = cmds.listRelatives( offset_na , ad =True , f=True)[0]
-    cmds.delete( shape_loc )
-    cmds.parent( offset_na  , obj )
-    resetTransf( offset_na  )
-    cmds.parent( offset_na  , w = True )
-    cmds.parent( obj, offset_na  )
-    if offset_orig != []:
-        cmds.parent( offset_na, offset_orig  )
-    return  offset_na
-
 def fix_rotation( name_  ,range = 20):
     for axe in ['X','Y','Z']:
         value = cmds.getAttr( name_ + '.rotate' + axe )
@@ -211,7 +140,7 @@ def joint_shape_4_defor( cnt , dupli = False ):
     cmds.select(cl=True)
     joint = cmds.joint( p=(0, 0, 0) )
     contrain2 = cmds.parentConstraint ( dupli_cnt  , joint , mo = False )[0]
-    break_connection( joint  , ['x','y','z'] , transf_ls = ['t','r',] )
+    com.break_connection( joint  , ['x','y','z'] , transf_ls = ['t','r',] )
     cmds.delete( contrain2 )
     cmds.select(cl=True)
     cmds.select( joint , dupli_cnt )
@@ -228,7 +157,7 @@ def edit_shape( control_2_dup , dupli = False , value=[ 0.5, 0.5, 0.5 ] , transf
     cmds.select( dupli_cnt )
     mel.eval('DeleteHistory;')
     cmds.delete( joint )
-    unlock_transf( dupli_cnt , transf = ['t','r','s'] )
+    com.unlock_transf( dupli_cnt , transf = ['t','r','s'] )
     return shape_nurb, dupli_cnt
 
 def edit_shape_exact_position( IK_wrist_original  , IK_wrist_new_oriented ):
@@ -276,7 +205,7 @@ def freeze_ik_control(  IK_wrist_original , IK_wrist_new_oriented , fk_cnt):
     mel.eval( 'CreateLocator;' )
     loc = cmds.ls( sl = True)[0]
     contrain = cmds.parentConstraint ( fk_cnt  , loc , mo = False )[0]
-    break_connection( loc  , ['x','y','z'] , transf_ls = ['t','r',] )
+    com.break_connection( loc  , ['x','y','z'] , transf_ls = ['t','r',] )
     cmds.delete( contrain )
     values_xyz = []
     for axe in [ 'X', 'Y', 'Z' ]:
@@ -306,7 +235,7 @@ def freeze_ik_control(  IK_wrist_original , IK_wrist_new_oriented , fk_cnt):
                 value2 = value2 * 1 #-1
         values_xyz.append( value2 )
         cmds.setAttr( IK_wrist_original + '.rotate' + axe , value2  )
-    unlock_transf( IK_wrist_new_oriented , transf = ['t','r','s'] )
+    com.unlock_transf( IK_wrist_new_oriented , transf = ['t','r','s'] )
     #cmds.delete(  loc )
     if IK_wrist_original.endswith( '_L'):
         value = cmds.getAttr( IK_wrist_original + '.rotateX' )
@@ -384,19 +313,6 @@ def creating_pole_vectors_ref( is_checked ):
                     cmds.setAttr ( dupli_offset+'.visibility', l = False )
                     cmds.setAttr ( dupli_offset+'.visibility', 0 )
 
-def setTransfDefault(target):
-    axes=["X","Y","Z"]
-    for transform in TRANSFORMS:
-        for axe in axes:
-            value= 0
-            if transform == 'scale':
-                value=1
-            try:
-                cmds.setAttr ( target+"."+transform+axe, value )
-            except Exception as err:
-                print( err )
-                pass
-
 def arrow_shape( is_checked ):
     if is_checked:
         cmds.file( PATH_ARROW  , i = True )
@@ -430,7 +346,7 @@ def moveAll_controls( is_checked ):
         
         shape_nurb , delete_dupl = edit_shape( MoveAll1  , dupli= False, value=[ 1.3, 1.3, 1.3 ])
 
-        unlock_transf( MoveAll1 , transf = ['t','r','s'])
+        com.unlock_transf( MoveAll1 , transf = ['t','r','s'])
         cmds.parent ( MoveAll2 ,MoveAll1 )
         cmds.sets ( [ MoveAll2 ,MoveAll1 ] , edit=True , forceElement  = 'ControlSet' )
 
@@ -445,7 +361,7 @@ def hip_translation( is_checked , templa_skelet_type ):
         children = cmds.listRelatives( 'offset_'+HIP , ad = True )
         cmds.delete( children )
         cmds.parent( HIP , 'offset_'+ HIP )
-        resetTransf( offset )
+        com.resetTransf( offset )
         offset_cog = cmds.listRelatives( COG_ , p = True , type='transform')[0]
         if templa_skelet_type == 'biped' or templa_skelet_type == 'quadruped':
             cmds.connectAttr( HIP+'.translateX', offset_cog+'.translateX' )
@@ -469,12 +385,12 @@ def hip_translation( is_checked , templa_skelet_type ):
         mel.eval( 'CreateLocator;' )
         loc = cmds.ls( sl = True)[0]
         cmds.parent( loc , HIP )
-        resetTransf( loc )
+        com.resetTransf( loc )
 
         offset_spine1 = cmds.listRelatives ( Spine1, p =True, type = 'transform')[0]
         offset2lev_spine1 = cmds.listRelatives ( offset_spine1, p =True, type = 'transform')[0]
         cmds.parent( loc , offset2lev_spine1 )
-        resetTransf( loc , axe_enable = ['t'] )
+        com.resetTransf( loc , axe_enable = ['t'] )
         value = cmds.getAttr('FKOffsetRoot_M.rotateY' )
         value2 = cmds.getAttr( loc+'.rotateZ' )
         new_value = value2 + value
@@ -515,17 +431,17 @@ def worldZero_creation( is_checked ):
         cmds.rename ( circlel, GUN_FOLLOW%'l' )
         
         shape_nurb , delete_dupl = edit_shape( GUN_FOLLOW%'l'  , dupli= False, value=[ 9, 9, 9 ])
-        unlock_transf( GUN_FOLLOW , transf = ['t','r','s'] )
+        com.unlock_transf( GUN_FOLLOW , transf = ['t','r','s'] )
         cmds.duplicate( GUN_FOLLOW%'l' , n=GUN_FOLLOW%'r' )
         cmds.duplicate( GUN_FOLLOW%'l' , n=WEAPON_DRIVER )
         shape_nurb , delete_dupl = edit_shape( WEAPON_DRIVER  , dupli= False, value=[ 0.75, 0.75, 0.75 ])
-        unlock_transf( WEAPON_DRIVER , transf = ['t','r','s'] )
+        com.unlock_transf( WEAPON_DRIVER , transf = ['t','r','s'] )
         
-        off_foolow_l = offset_creation( GUN_FOLLOW%'l' )
-        off_foolow_r = offset_creation( GUN_FOLLOW%'r' )
+        off_foolow_l = com.offset_creation( GUN_FOLLOW%'l' )
+        off_foolow_r = com.offset_creation( GUN_FOLLOW%'r' )
         cmds.setAttr( off_foolow_l + '.translateX', 9 )
         cmds.setAttr( off_foolow_r + '.translateX', -9 )
-        off_weapon_driver = offset_creation( WEAPON_DRIVER )
+        off_weapon_driver = com.offset_creation( WEAPON_DRIVER )
         cmds.setAttr( off_weapon_driver + '.rotateX', -90 )
         cmds.setAttr( off_weapon_driver + '.rotateY', -90 )
 
@@ -573,7 +489,7 @@ def create_hand_object_joint( is_checked ):
                 offset = 'offset'+side+'_origHandObject'
                 loc = cmds.rename( loc, offset )
                 cmds.parent( offset, wrist_patt+side )
-                resetTransf( offset )
+                com.resetTransf( offset )
                 
                 ik_arm = 'IKArm_' + side 
                 
@@ -594,7 +510,7 @@ def create_hand_object_joint( is_checked ):
                 cmds.parentConstraint ( control  , joint , mo = False )
 
                 cmds.parent( control  , offset )
-                resetTransf( control )
+                com.resetTransf( control )
                 cmds.parentConstraint ( wrist_patt+side  , offset , mo = True )
                 shape_nurb ,delete_dupl = edit_shape( ik_arm , dupli= True)
                 cmds.parent(  shape_nurb   ,  control  , s=1 , r=1)
@@ -614,7 +530,7 @@ def loop_selecting_parenting ( control_pattern_ls, parent_default_ls, extra_ls ,
             if item in control_set_ls or HAND_OBJ in item:
                 list = [ item ] + parent_default_ls + extra_ls 
                 for obj in list:
-                    unlock_transf( obj, transf= ['t', 'r', 's'] )
+                    com.unlock_transf( obj, transf= ['t', 'r', 's'] )
                 do_parenting ( list, disconnect_t_ls )
 
 def delete_script():
@@ -663,12 +579,9 @@ def switch_ik_fk_preparing( is_checked , templa_skelet_type):
 
             wrist_ik_match_ls = [ ( 'Wrist_', 'IKArm_', 'MiddleFinger1_' ) ,
                                 ( 'Ankle_', 'IKLeg_', 'Toes_' ) ]
-
-
         elif templa_skelet_type == 'quadruped':
             wrist_ik_match_ls = [ ( 'Fingers1_', 'IKLegFront_', 'MiddleFinger1_' ) ,
                                 ( 'Toes1_', 'IKLegBack_', 'Alltoes_' ) ]
-
         for tuple_ik in wrist_ik_match_ls:
             for side in ['R','L']:
                 loc = mel.eval( "spaceLocator -p 0 0 0;" )[0]
@@ -681,8 +594,8 @@ def switch_ik_fk_preparing( is_checked , templa_skelet_type):
                 cmds.parent ( tuple_ik[0]+ side + '_matcherA' , tuple_ik[0]+ side  )
                 cmds.parent ( tuple_ik[0]+ side + '_matcherB' , tuple_ik[0]+ side  )
                 
-                setTransfDefault( tuple_ik[0]+ side + '_matcherA' )
-                setTransfDefault( tuple_ik[0]+ side + '_matcherB' )
+                com.setTransfDefault( tuple_ik[0]+ side + '_matcherA' )
+                com.setTransfDefault( tuple_ik[0]+ side + '_matcherB' )
                 if templa_skelet_type == 'biped':
                     try:
                         cmds.parent ( tuple_ik[0]+ side + '_matcherA' , tuple_ik[0]+side )
@@ -690,14 +603,6 @@ def switch_ik_fk_preparing( is_checked , templa_skelet_type):
                         print( ' warning try...')
                         print ( err)
                 cmds.parent ( tuple_ik[0]+ side + '_matcherB', tuple_ik[1]+side )
-
-def set_color( shape, color_index ):
-    for sha in cmds.ls ( shape, l = True ):
-        try:
-            cmds.setAttr ( sha+'.overrideEnabled' ,1)
-            cmds.setAttr ( sha+'.overrideColor' , color_index )
-        except Exception as err:
-            print ( err )
 
 def set_color_controls( is_checked ):
     if is_checked:
@@ -719,7 +624,7 @@ def set_color_controls( is_checked ):
             if color != 'nocolor':
                 controlShape_ls = cmds.listRelatives( control , s = True, c = True ) or []
                 for controlShape in controlShape_ls:
-                    set_color( controlShape, color )
+                    com.set_color( controlShape, color )
 
 
 def get_setLs( method ):
@@ -740,7 +645,7 @@ def do_gun_space( is_checked , method = 'spaceSwitch'):
         set_ls = get_setLs( method )
         for list in set_ls:
             for item in list:
-                unlock_transf( item, transf= ['t', 'r', 's'] )
+                com.unlock_transf( item, transf= ['t', 'r', 's'] )
             cmds.select( list )
             control_ls = cmds.ls( sl=True )
             if method == 'parent_tool':
@@ -750,26 +655,21 @@ def do_gun_space( is_checked , method = 'spaceSwitch'):
                                         constrain_offset = False, attribname = "gun_space" )
             elif method == 'spaceSwitch':
                 target = list[-1]
-                offset = offset_creation( target )
+                offset = com.offset_creation( target )
                 list.remove( target )
                 cmds.select( list + [offset] )
                 ss.switchedParentMatrix(trans = "ALL", rot = "ALL", scale = None, switchControl = target)
 
-def delete_namespaces( is_checked ):
+def delete_namespaces_( is_checked ):
     if is_checked:
-        curNS = cmds.namespaceInfo( lon=True )
-        defaults = ["UI", "shared"]
-        diff = [item for item in curNS if item not in defaults]
-        for ns in diff:
-        	if cmds.namespace( exists=str(ns)):
-        		cmds.namespace( rm=str(ns) )
+        com.delete_namespaces_()
      
 def camera_importing( is_checked ):
     if is_checked:
         camera_jt = cmds.ls( 'Camera', type = 'join' )
         if camera_jt == []:
             cmds.file( PATH_CAMERA_CHAR  , i = True )
-            delete_namespaces( True )
+            com.delete_namespaces_()
         try:
             contrain = cmds.pointConstraint ( 'FKChest_M'  , CAM_OFFS_CONST , mo = False )[0]
             contrain = cmds.orientConstraint ( 'FKChest_M'  , CAM_OFFS_CONST , mo = True )[0]
@@ -825,7 +725,7 @@ def set_ik_hands_pose_fk______( is_checked ):
 
 def get_shapes_pole_vec():
         cmds.file( PATH_CONTROL_SH  , i = True )
-        delete_namespaces( True )
+        com.delete_namespaces_()
         dicc = { 'Sphere' : 'PoleLeg_', 'Diamond' : 'PoleArm_' }
 
         for cont_sh in dicc :
@@ -922,8 +822,8 @@ def contrainUnrealWithAdv():
 
  
 def neck_settings():
-    break_connection( 'neck_01'  , ['x','y','z'] , transf_ls = ['t','r',] )
-    break_connection( 'neck_02'  , ['x','y','z'] , transf_ls = ['t','r',] )
+    com.break_connection( 'neck_01'  , ['x','y','z'] , transf_ls = ['t','r',] )
+    com.break_connection( 'neck_02'  , ['x','y','z'] , transf_ls = ['t','r',] )
     cmds.parentConstraint ( 'FKNeck_M'  , 'FKExtraNeck1_M' , mo = True )
     cmds.parentConstraint ( 'FKNeck_M'  , 'neck_01' , mo = True )
     cmds.parentConstraint ( 'FKNeck1_M'  , 'neck_02' , mo = True )
@@ -946,14 +846,6 @@ def skeleton_unreal_settings ( is_checked ):
         neck_settings()
         lock_hide_attrb()
         
-def set_color( shape, color_index ):
-    for sha in cmds.ls ( shape, l = True ):
-        try:
-            cmds.setAttr ( sha+'.overrideEnabled' ,1)
-            cmds.setAttr ( sha+'.overrideColor' , color_index )
-        except Exception as err:
-            print ( err )
-
 def delete_unknown_():
     node_ls = cmds.ls('_UNKNOWN_*_')
     for node in node_ls:
@@ -979,7 +871,7 @@ def set_color_controls( is_checked ):
             if color != 'nocolor':
                 controlShape_ls = cmds.listRelatives( control , s = True, c = True ) or []
                 for controlShape in controlShape_ls:
-                    set_color( controlShape, color )
+                    com.set_color( controlShape, color )
                     
                     
 def launch_full_post_procces():
@@ -1002,5 +894,5 @@ def launch_full_post_procces():
     set_freze_ik_controls()
     skeleton_unreal_settings ( True )
     delete_unknown_()
-    delete_namespaces( True )
+    delete_namespaces_( True )
     set_color_controls( True )

@@ -5,6 +5,10 @@ import ast
 import os
 import stat
 import subprocess
+try:
+    import maya.mel as mel
+except Exception:
+    pass
 si = subprocess.STARTUPINFO()
 
 from importlib import reload
@@ -14,7 +18,11 @@ de = im.importing_modules( 'definitions' )
 hlp = im.importing_modules(  'helper' )
 hlp_perf = im.importing_modules(  'perforce_conn.hlp_perf' )
 hlp_goo = im.importing_modules(  'google_conn.hlp_goo' )
-
+ev = im.importing_modules(  'enviroment' )
+try:
+    com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
+except Exception:
+    pass
 sys.path.append( de.PY_PACKAGES)
 import yaml as yaml
 import shutil
@@ -398,3 +406,139 @@ def snipping_tool_launch( line, if_result, result_fi_na ):#
         file_content = file_content +'    fileFa.write( str(json_object) )\n'
         file_content = file_content +'    fileFa.close()\n'
     return file_content
+
+
+def launch_external_maya_tools( line):
+    """.
+    Args:
+        line ([str]): [code line to insert on script]
+    Returns:
+        [str]: [python script command content formated]
+    """
+    file_content =                'import sys\n'
+    file_content = file_content + 'import subprocess\n'
+    file_content = file_content + 'si = subprocess.STARTUPINFO()\n'
+    file_content = file_content + 'import ctypes\n'
+    file_content = file_content + 'from ctypes.wintypes import MAX_PATH\n'
+    file_content = file_content + 'dll = ctypes.windll.shell32\n'
+    file_content = file_content + 'buf = ctypes.create_unicode_buffer(MAX_PATH + 1)\n'
+    file_content = file_content + 'if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):\n'
+    file_content = file_content + '    USER_DOC = buf.value\n'
+    file_content = file_content + 'print( USER_DOC ) \n'    
+    file_content = file_content + 'SCRIPT_FOL = USER_DOC.replace("\\\\","/") + "/company_tools/jira_manager"\n'
+    file_content = file_content + 'sys.path.append( r"" + SCRIPT_FOL.replace("/","\\\\") )\n'
+    file_content = file_content + line
+    return file_content
+
+
+def batch_render_anim_exec():
+    line =        "from importlib import reload\n"
+    line = line + "import importing_modules as im\n"
+    line = line + "reload(im)\n"
+    line = line + "abr = im.importing_modules( 'area_tools.anim.batch_Render_Anim' )\n"   
+    line = line + "win = abr.batchRenderAnim()\n"
+    return line
+
+def extrac_launch_sentence( tool_na , path ):
+    sentence = ''
+    with open( path + tool_na, 'r' , errors="ignore" ) as fi:
+        fiLinesLsStrings = fi.readlines()
+        fi.close()
+    counter = 0
+    value = False
+    for line in fiLinesLsStrings:
+        counter = counter + 1
+        if de.SKIP_AUTO_READ_PHRASE in line:
+            break
+        if '#' in line :
+            if counter < 40:
+                sentence =  sentence + line.replace('#','')
+                value = True
+        if line == '\n' and value:
+            break
+        if counter > 40:
+            break
+    return sentence
+
+
+def anim_shelf_updating():
+    shelf_file_path = r''+de.USER_DOC.replace('\\','/') + '/maya/2023/prefs/shelves/'
+    with open( shelf_file_path + 'shelf_'+de.ANIM_SHELF_NA+'.mel', 'r') as fi:
+        fiLinesLsStrings = fi.readlines()
+        fi.close()
+    anim_tool_path = de.SCRIPT_MANAG_FOL.replace('\\','/') + de.ANIM_FOL_FILES
+    anim_tools_ls = os.listdir( anim_tool_path )
+    for file in anim_tools_ls:
+        if file.endswith('.read'):
+            key = True
+            for line in  fiLinesLsStrings:
+                tool_na = file.replace( '.read', '' )
+                if tool_na in line:
+                    key = False
+            if key:        
+                sentence = extrac_launch_sentence( file , anim_tool_path )
+                print ( sentence )
+                icon = tool_na
+                label =  tool_na
+                annotation = tool_na
+                run_command =  sentence
+                shelf_ma = de.ANIM_SHELF_NA
+                mel.eval ( '''shelfButton -rpt true 
+                            -i1"%s.png" -l "%s"
+                            -ann "%s" -stp "python"
+                            -c "%s" 
+                            -p "%s";''' %( icon, label, annotation, run_command, shelf_ma  )  )
+                cmds.shelfButton()
+                
+def get_fast_external_fi_fps( file_full_path ):
+    with open( file_full_path, 'r') as fi:
+        fiLinesLsStrings = fi.readlines()
+        fi.close()
+    for line in  fiLinesLsStrings:
+        if 'currentUnit ' in line and ' -t ' in line:
+            extracted_line = line.split(' -t ')[-1]
+            dicc, current_s_value , curremt_n_value = com.currentFpsChoiceFunc(  )
+            for key in dicc:
+                if key in extracted_line:
+                    return key , dicc[key]
+
+def extract_ref_full_fi_na ( line ):
+    name = line.split( '"mayaAscii" "')[-1].split('";')[0]
+    return name 
+def rewrite_maya_fi_striping_unused_plugins( file_full_path , na_change_ext):
+    print( '\n///////////////               //////////////////////\n')
+    print ( file_full_path )
+    with open( file_full_path, 'r') as fi:
+        fiLinesLsStrings = fi.readlines()
+        fi.close()
+    refe_key = 'file -r -ns '
+    init ='requires maya "202'
+    ending = 'currentUnit -l'
+    new_file_ls = []
+    key1 = False
+    key2 = False
+    ref_ls = []
+    for line in  fiLinesLsStrings:
+        if ".ufem" not in line:
+            #new_file_ls.append( line )
+            if init in line:
+                key1 = True
+            elif ending in line:
+                key2 = True
+            if line.startswith( refe_key ) or  line.startswith( 'file -rdi 1 -ns' )  :
+                ref_na = extract_ref_full_fi_na( line )
+                if ref_na not in ref_ls:
+                    ref_ls.append( ref_na )
+                line = line.replace( '.ma', na_change_ext )
+            if key1 == False: 
+                new_file_ls.append( line )
+            elif init in line:
+                new_file_ls.append( line )
+            elif key2 == True:
+                new_file_ls.append( line )
+
+    new_full_path = file_full_path.replace( '.ma', na_change_ext )
+    with open( new_full_path , "w") as fileFa:
+        fileFa. writelines( new_file_ls )
+        fileFa.close()
+    return new_full_path, ref_ls
