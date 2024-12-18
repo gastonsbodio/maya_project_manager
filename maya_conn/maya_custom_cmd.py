@@ -31,8 +31,10 @@ def thumbnail_cmd( h, w, path, name):
                 fr = [frame], viewer = False, orn = False, fp = 0, fo = True, p = 100, qlt = 100)
 
 def get_script_fol():
-    cmds.internalVar(usd=True)
-
+    try:
+        return cmds.internalVar(usd=True)
+    except Exception:
+        return None
 def get_current_sc():
     return cmds.file(query=True, sceneName=True)
 

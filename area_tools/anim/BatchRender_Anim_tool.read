@@ -1,0 +1,5 @@
+#import importing_modules as im
+#abr = im.importing_modules( 'area_tools.anim.batch_Render_Anim' ) 
+#com = im.importing_modules( 'maya_conn.maya_custom_cmd' ) 
+#bin_fol = com.get_bin_fol()
+#abr.batchRenderAnim( bin_fol = bin_fol)

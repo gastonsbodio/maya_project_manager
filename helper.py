@@ -91,7 +91,7 @@ def run_py_stand_alone( python_file_na , with_console = False ,  extraLine= '' ,
         py_path = de.PY_PATH
         py_console_na = 'python.exe'
     elif alt_py_console == 'maya_py':
-        py_path = ev.get_bin_fol() + '/'
+        py_path = ev.ENV_SCRIPT_FOL + '/'
         py_console_na = 'mayapy.exe'        
     batPythonExec = '@echo off\n'
     batPythonExec = batPythonExec + '"'+ py_path.replace('/','\\') + py_console_na + '" "'+de.PY_PATH.replace('/','\\')+python_file_na+'.py" \n'
