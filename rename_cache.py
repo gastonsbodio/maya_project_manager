@@ -63,4 +63,4 @@ for file in files_ls + files_ls222 :
 func_na = 'upload_custom_files( %s , "%s" , "%s" )' %( files_2_upload, 'jira_manager', 'jira_manager' )
 file_content = hlp_goo.write_googld_func( func_na, 'upload_.json' , True )
 hlp.create_python_file ('upload_', file_content )
-hlp.run_py_stand_alone( 'upload_', True )
+hlp.run_py_stand_alone( 'upload_', with_console = True)

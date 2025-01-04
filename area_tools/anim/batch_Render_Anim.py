@@ -37,8 +37,11 @@ de = im.importing_modules( 'definitions' )
 ev = im.importing_modules( 'enviroment' )
 hlp = im.importing_modules( 'helper' )
 hlp_manager = im.importing_modules( 'manager_tools.hlp_manager' )
-com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
-
+try:
+    import maya_conn.maya_custom_cmd as com
+    #com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
+except Exception:
+    com = None
 TEMP_FOL = tempfile.gettempdir().replace("\\","/") + "/"
 UI_ANIM_FOL = [ de.SCRIPT_MANAG_FOL.replace('\\','/') + de.ANIM_FOL_FILES  ]
 ROOT = 'C:/dev/'
@@ -46,7 +49,10 @@ STATUS_RED = 'not started'
 STATUS_YELLOW = 'in proccess'
 STATUS_GREEN = 'done'
 STATUS_HIDED = 'old_finished'
-
+DICC_FPS = { "ntsc" : "30" , "game" : "15",
+                      "23.976fps" : "23.976", "film" : "24", "pal" : "25" ,
+                      "show" : "48", "palf": "50", "ntscf": "60"
+                     }
 FPS = 'ntsc'
 SCENE_RANGE = 'scene_range'
 CUSTOM_RANGE = 'custom_range'
@@ -60,7 +66,7 @@ def set_start_end(  checkBox , linEStart, lineEEnd ):
     end_value = int(cmds.playbackOptions( maxTime=True, q=True ))
     return start_value , end_value, signalKey
 
-class batchRenderAnim( QDialog ):
+class batchRenderAnim( QMainWindow):#QDialog ):
     #parent=QApplication.activeWindow()
     def __init__( self  ,loader = None , bin_fol = ''):
         super(batchRenderAnim, self).__init__( )
@@ -94,7 +100,7 @@ class batchRenderAnim( QDialog ):
         self.ui.radioButt_fulll_timeline.setChecked( True )
         self.ui.checkBFbatchmode.setChecked( True)
         self.ui.checkBFbatchmode.setEnabled( False )
-        self.ui.comboB_fps.addItems( list ( com.currentFpsChoiceFunc()[0].keys() ) )
+        self.ui.comboB_fps.addItems( list ( DICC_FPS.keys() ) )
         self.ui.comboB_mayaVersion.addItems( ['current','2022', '2023','2024'] )
         self.ui.comboB_resolution.addItems( ['1280x720'] )
         self.ui.comboB_format.addItems( ['mp4', 'avi', 'mov'] )
@@ -104,7 +110,9 @@ class batchRenderAnim( QDialog ):
         self.ui.comboB_resolution.currentIndexChanged.connect( self.combo_change_ac )
         self.ui.comboB_format.currentIndexChanged.connect( self.combo_change_ac )
         self.set_settings( )
-        self.show()
+        print ('              que ondis           5555555555555')
+        #self.show()
+        print ('              que ondis                44444444 ')
 
 
     def combo_change_ac( self ):
@@ -394,16 +402,23 @@ class render_queue_anims():
                 except Exception:
                     pass
                 
-if ev.ENVIROMENT == 'Windows':
-    print ('      que ondis    ' )
+if True: #ev.ENVIROMENT == 'Windows':
+    print ('                        que ondis           3333' )
     ###   manager launch  ####
     #import manager_tools.jira_project_manager as jiraM
     loader = QUiLoader()
-    QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
-    app = QApplication(sys.argv)
+    #QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+    
+    if not QApplication.instance():
+        app = QApplication(sys.argv)
+    else:
+        app = QApplication.instance()
+    
+    
+    #app = QApplication(sys.argv)
     #app = QApplication.instance()
-    print ('      que ondis    ' )
+    print ('                          que ondis    2222' )
     widget = batchRenderAnim( )#loader = loader)
-    widget.show()
+    widget.ui.show()
     sys.exit(app.exec())
                 

@@ -112,7 +112,7 @@ def set_start_end(   control , checkBox , linEStart, lineEEnd ):
     return start_value , end_value, signalKey
 
 class animTransference(QDialog):
-    def __init__( self, *args ,parent=com.getWindow() ):
+    def __init__( self, *args ,parent=com.getWindow(QWidget) ):
         super(animTransference, self).__init__(parent)
         loader = QUiLoader()
         self.centralLayout = QVBoxLayout(self)

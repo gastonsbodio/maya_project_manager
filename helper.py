@@ -96,6 +96,7 @@ def run_py_stand_alone( python_file_na , with_console = False ,  extraLine= '' ,
     batPythonExec = '@echo off\n'
     batPythonExec = batPythonExec + '"'+ py_path.replace('/','\\') + py_console_na + '" "'+de.PY_PATH.replace('/','\\')+python_file_na+'.py" \n'
     batPythonExec = batPythonExec + '\n'+extraLine
+    batPythonExec = batPythonExec + '\npause'
     with open( de.PY_PATH+"Execute_" + python_file_na + ".bat", "w") as fileFa:
         fileFa.write( batPythonExec )
         fileFa.close()

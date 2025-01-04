@@ -1,18 +1,21 @@
 import sys
-import maya.cmds as cmds
-import maya.mel as mel
-#import pymel.core as pm
-import maya.OpenMaya as OpenMaya
-import maya.OpenMayaUI as mui
-from shiboken2 import wrapInstance
+try:
+    import maya.cmds as cmds
+    import maya.mel as mel
+    #import pymel.core as pm
+    import maya.OpenMaya as OpenMaya
+    import maya.OpenMayaUI as mui
+    from shiboken2 import wrapInstance
 
-def getWindow(QWidget):
-    pointer = mui.MQtUtil.mainWindow()
-    if pointer is not None:
-        try:
-            return wrapInstance(long(pointer), QWidget)
-        except Exception:
-            return wrapInstance(int(pointer), QWidget)
+    def getWindow(QWidget):
+        pointer = mui.MQtUtil.mainWindow()
+        if pointer is not None:
+            try:
+                return wrapInstance(long(pointer), QWidget)
+            except Exception:
+                return wrapInstance(int(pointer), QWidget)
+except Exception:
+    pass
 
 def thumbnail_cmd( h, w, path, name):
     """Maya thumbnail generator command

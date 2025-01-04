@@ -259,7 +259,7 @@ class GoogleDriveQuery():
         sys.path.append( de.SCRIPT_MANAG_FOL )
         file_content = hlp_goo.write_googld_func ( 'update_tools', '', False)
         hlp.create_python_file ('update_tools', file_content)
-        hlp.run_py_stand_alone( 'update_tools', True)
+        hlp.run_py_stand_alone( 'update_tools', with_console = True)
 
     def pathOnlyBuilt (self, pathh):        
         allFolNaLs = pathh.split ("/")
