@@ -15,12 +15,12 @@ de = im.importing_modules( 'definitions' )
 
 #ENVIROMENT = 'Windows'
 for path in sys.path:
-    if de.PY_PATH + 'DLLs' in path.replace('\\','/'):
+    if 'Python312' in path:
         ENVIROMENT = 'Windows'
+        break
     elif "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:
         ENVIROMENT = 'Maya'
         break
-
 if ENVIROMENT == 'Maya': 
     com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
     ENV_SCRIPT_FOL = com.get_script_fol()

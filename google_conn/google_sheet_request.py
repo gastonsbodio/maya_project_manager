@@ -106,7 +106,14 @@ class GoogleDriveQuery():
             googleFi ([google file obj]): [description]
             targuet_full_path ([str]): [local target full path]
         """
-        googleFi.GetContentFile( targuet_full_path )
+        try:
+            hlp.make_read_writeable( targuet_full_path )
+            googleFi.GetContentFile( targuet_full_path )
+            print ( ' downloading:      ' + targuet_full_path )
+            print ( '\n ben \n')
+        except Exception as err:
+            print ( err )
+            print ( targuet_full_path + '         failed   dowloading     - - - ')
         
     def listContentFold( self, credenciales, idFather , final_ls = []):
         """
@@ -209,7 +216,7 @@ class GoogleDriveQuery():
         if google_fol_na ==  list(  de.GOOG_CONTENT_TOOLS_FOL.keys() )[0]:
             #google_fol_na = list(  ast.literal_eval( google_fol_dicc           ).keys()  )[0]
             self.dowload_sk_menu_fi( credentials  )
-        self.dowloading_ls( credentials, google_fol_na, folder , tool_fi_ls )
+        self.dowloading_ls( credentials, google_fol_na, folder , tool_fi_ls , static_root = google_fol_na)
         
 
     def dowload_sk_menu_fi( self , credentials  ):
@@ -217,18 +224,54 @@ class GoogleDriveQuery():
         google_fol_na = list( de.GOOG_CONT_MAYA_MENU_FOL.keys() )[0]
         tool_fi_ls = self.list_fi_contente ( credentials, google_fol_id )
         self.dowloading_ls( credentials, google_fol_na, de.MAYA_MENU_FOL , tool_fi_ls )
+
+    def patch_path_fixer( self , credentials, goo_fi ):
+        goo_path_name = self.buildPathGooD( credentials, [ goo_fi ] )[0]
+        if not goo_path_name.startswith('/'):
+            goo_path_name = '/'+goo_path_name
+        goo_only_path , fi_na = hlp.separate_path_and_na( goo_path_name )
+        return goo_path_name, goo_only_path, fi_na
         
-    def dowloading_ls(self, credentials, google_fol, folder , tool_fi_ls):
+    def dowloading_ls(self, credentials, google_fol, folder , tool_fi_ls, static_root = ''):
         for goo_fi in tool_fi_ls:
-            goo_path_name = self.buildPathGooD( credentials, [ goo_fi ] )[0]
-            if not goo_path_name.startswith('/'):
-                goo_path_name = '/'+goo_path_name
-            end_path_name = goo_path_name.split('/'+google_fol+'/')[-1]
-            full_path_name = folder + '/'+end_path_name.replace('__pycache__/', '')
-            if '.cpython' in full_path_name:
-                full_path_name = full_path_name.split( '.cpython')[0] + '.pyc'
-            self.dowload_fi ( goo_fi, full_path_name  )
-            print ( ' downloading:      ' + full_path_name )
+            if goo_fi['mimeType'] != 'application/vnd.google-apps.folder':
+                goo_path_name , goo_only_path, fi_na= self.patch_path_fixer( credentials, goo_fi )
+
+                print ( google_fol )
+                print ( '         google_fol        ' )   #  jira_manager     #  jira_manager 
+                end_path_name = goo_path_name.split( google_fol )[-1]
+                print ( folder )  #C/:... /jira_manager        #C/:... /jira_manager
+                print ( 'folder' )
+                print ( end_path_name )
+                print ( 'end_path_name' )  # /__init__.py      # /projects_settings
+                full_path_name = self.cpython_issue( folder , end_path_name )
+                self.dowload_fi ( goo_fi, full_path_name  )
+            else:
+                key_enter = False
+                for keyy in  de.GOOG_CONTENT_TOOLS_FOL:
+                    if 'jira_manager' == keyy:
+                        key_enter = True
+                if key_enter:
+                    google_fol = goo_fi['title']
+                    if static_root != '':
+                        if folder == static_root:
+                            folder_ = folder + '/' + google_fol
+                        else:
+
+                            goo_path_name , goo_only_path, fi_na= self.patch_path_fixer( credentials, goo_fi )
+
+                            patch = folder.split('/'+static_root)[0 ]
+                            folder_ = patch + goo_only_path + google_fol
+                        tool_fi_ls = self.list_fi_contente ( credentials ,  goo_fi['id'] )
+                        #full_path_name = self.cpython_issue( folder , end_path_name )
+                        self.dowloading_ls( credentials, google_fol, folder_ , tool_fi_ls )
+
+    def cpython_issue( self, folder , end_path_name ):
+
+        full_path_name = folder + end_path_name.replace('__pycache__/', '')
+        if '.cpython' in full_path_name:
+            full_path_name = full_path_name.split( '.cpython')[0] + '.pyc'
+        return full_path_name
 
     def download_studio_library (self):
         """log in list tool files and download them to local.

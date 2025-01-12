@@ -13,7 +13,7 @@ def with_package( import_str ):
     try:
         inmp_mod = importlib.import_module( import_str )
     except Exception as err:
-        print (' \n\n\n\n  import modules first try warning error  ' + str ( err) +'\n\n   '+import_str+'    \n\n' )
+        #print (' \n\n\n\n  import modules first try warning error  ' + str ( err) +'\n\n   '+import_str+'    \n\n' )
         try:
             typee = '_cpython-39'
             import_str___ = import_str + typee
@@ -27,7 +27,7 @@ def with_package( import_str ):
 
 def importing_modules( import_str ):
     imported = with_package( import_str )
-    importlib.reload(imported)
+    #importlib.reload(imported)
     return imported
 
 
