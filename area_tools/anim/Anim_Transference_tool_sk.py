@@ -542,15 +542,15 @@ class ik_copying_animation():
                         amount_frames = amount_frames + 1
                         cmds.currentTime( time, update=True, edit=True )
                         cmds.select ( control )
-                        self.ikfk.limb_fk_2_ik( signalAnim = True )
+                        self.ikfk.limb_fk_2_ik( signalAnim = True , frame = time)
                         cmds.select( control_key )
                         cmds.select( control ,deselect = True)
                         cmds.select( control_key[0] ,deselect = True)
                         key = True
                         if signalKey == False and  counter == 0:
                             key = False
-                        if key:
-                            mel.eval('SetKey;')
+                        #if key:
+                        #    mel.eval('SetKey;')
                         counter = counter + 1
                     cmds.undoInfo(chunkName='chunk_tool2', closeChunk=True)
                     cmds.setAttr ( "%s.FKIKBlend"%ikfkCnt , 10 )
@@ -576,7 +576,7 @@ class ik_copying_animation():
                         amount_frames = amount_frames + 1
                         cmds.currentTime( time, update=True, edit=True )
                         cmds.select ( control )
-                        self.ikfk.limb_ik_2_fk( signalAnim = True )
+                        self.ikfk.limb_ik_2_fk( signalAnim = True , frame = time)
                         cmds.select( control_key )
                         cmds.select( control ,deselect = True)
                         cmds.select( control_key[0] ,deselect = True)
