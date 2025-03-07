@@ -70,6 +70,24 @@ def get_father_duplic( obj , attrBend , ikfkbend = 'None' ):
             dupli = cmds.rename( target , obj+DUPLI_SUF)
             return dupli , dupli_offset
 
+
+
+def get_source_dupli_and_father( source  ):
+    if ':' not in source:
+        father_offset = cmds.listRelatives( '*:'+source , parent=True, f=True)[0]
+    else:
+        father_offset = cmds.listRelatives( source , parent=True, f=True)[0]
+    
+    dupli_offset = cmds.duplicate( father_offset , name= father_offset.split(':')[-1] + DUPLI_SUF )[0]
+
+    cmds.parent( dupli_offset , w=True)
+    return  dupli_offset
+
+
+
+
+
+
 def rename_children_chain( dupli ):
     child_joints_ls = cmds.listRelatives( dupli , ad = True, type = 'joint', f = True)
     for ch in child_joints_ls:
@@ -112,26 +130,12 @@ def limb_ik_2_fk( signalAnim=False , frame = 0):
         place , key1, key2, list_tuple_na , part_na_ls = set_front_back_vars( part )
         if place == limb_ls :
             if control_name.endswith( '_R' ) or control_name.endswith( '_L' )  :
-                for limb_part_na in part_na_ls:  #part_na_ls is front_ls = ['Scapula', 'Shoulder', 'Elbow' ,  'Wrist' ] 
+                for limb_part_na in part_na_ls:
                     switch_control = nameSpace + ':' + switch_na_templa%( limb_ls, side )
-                    #switch_control = cmds.ls( '*:'+switch_control )[0]
                     parent_source = nameSpace + ':' + limb_part_na + "_" + side 
                     cmds.setAttr( switch_control+'.FKIKBlend', 10 ) # 10 es ik
-                    #if key1 + '_' in parent_source:
-                        ## dupli , dupli_joint_father = get_father_duplic( parent_source , switch_control+'.FKIKBlend' ,ikfkbend = 10 )
-                        #rename_children_chain( dupli )
                     target_original = nameSpace + ':' + "FK" + parent_source
-                    #target_original = cmds.ls( '*:'+target_original )[0]
-                    #parent_target , dupli_offset_target = get_father_duplic( target_original , '')
-                    #cmds.parentConstraint (   parent_source , parent_target , mo = False )
-                    #try:
-                    #    cmds.scaleConstraint (   parent_source , parent_target , mo = False)
-                    #except Exception:
-                    #    pass
                     com.setTransf( parent_source , target_original )
-                    #com.break_connection( parent_target  , ['x','y','z'] , transf_ls = ['t','r',] )
-                    #cmds.delete( dupli_offset_target )
-                #cmds.delete( dupli_joint_father )
                 if signalAnim == False:
                     cmds.setAttr( switch_control+'.FKIKBlend', 0)
 
@@ -142,7 +146,19 @@ def delete_contraint( contraint ):
         cmds.delete ( contraint )
     except Exception:
         pass
-        
+
+
+def detect_keyed( signalAnim , target_original, frame ):
+    if signalAnim == True:
+        cmds.select ( target_original )
+        mel.eval('SetKey;')
+    else:
+        isKeyed = cmds.keyframe( target_original, attribute='rotateY', q=True, time=(frame,) )
+        cmds.select ( target_original )
+        mel.eval('SetKey;')
+        if isKeyed == None:
+            cmds.cutKey( time=( frame,) )
+    
         
 def limb_fk_2_ik( signalAnim=False , frame = 0):
     control_name = cmds.ls( sl=True )
@@ -153,25 +169,18 @@ def limb_fk_2_ik( signalAnim=False , frame = 0):
         side = control_name.split('_')[-1]
         place, key1, key2, list_tuple_na , part_na_ls = set_front_back_vars( part)
         if place == tup and control_name.endswith( '_'+side ) :
+            #'Scapula_' + side
+            dupli_joint_father = get_source_dupli_and_father( key1+'_' + side )
             for tup_na in list_tuple_na:
-                
-                
-                #place='Arm'
-                #key1 = 'Scapula'
-                #key2 = 'Wrist'
-                
-                
                 parent_contrain = ''
                 switch_control = nameSpace + ':' + switch_na_templa%( tup, side )
-                #switch_control = cmds.ls( '*:'+switch_control )[0]
                 cmds.setAttr( switch_control+'.FKIKBlend', 0)
                 try:
                     parent_source = nameSpace + ':' + tup_na[0] %( tup, side )
+                    parent_source_dupli = tup_na[0] %( tup, side )
                 except Exception:
                     parent_source = nameSpace + ':' + tup_na[0] %(  side )
-                #if key1+'_' in tup_na[0]:
-                #    dupli , dupli_joint_father = get_father_duplic( parent_source , switch_control+'.FKIKBlend' ,ikfkbend = 0)
-                #    rename_children_chain( dupli )
+                    parent_source_dupli =  tup_na[0] %(  side )
                 try:
                     target_original = tup_na[1]%( tup, side )
                 except Exception:
@@ -179,64 +188,64 @@ def limb_fk_2_ik( signalAnim=False , frame = 0):
                 if ':' not in target_original:
                     target_original = nameSpace + ':' + target_original
                     
-                    
-                    
-                ########     if  '5' in tup_na[0]:
-                ########         target_original = target_original.replace('5','')
-                
-                
-                
-                
-                #parent_target , dupli_offset_target = get_father_duplic( target_original , '' )
-                #if 'Pole' in tup_na[0] or key1 in tup_na[0]:
-                    #father_offset = cmds.listRelatives( target_original , parent=True)[0]
-                    #parent_contrain = cmds.parentConstraint (  father_offset, dupli_offset_target , mo = False )
-
-
-
-                #if key1+'_' in tup_na[0] or key2 in tup_na[0]:
-                #    point_contrain = cmds.parentConstraint ( parent_source, target_original , mo = False )
+      
+            #if key2 in tup_na[0]:
+                #    pointtt_contrain = cmds.parentConstraint (  parent_source+ DUPLI_SUF, target_original , mo = False )
                 #    try:
-                #        scale_constrain = cmds.scaleConstraint (  parent_source , target_original , mo = False)
+                #        scale_constrain = cmds.scaleConstraint (  parent_source+ DUPLI_SUF, target_original , mo = False)
                 #    except Exception:
-                #        pass
+                #        pass 
+                #    loc_matcherB = tup_na[0]%( tup[1] ) + '_matcherB'
+                #    loc_matcherA = tup_na[0]%( tup[1] ) + '_matcherA'
+                #    dupli_offset = cmds.listRelatives( target_original , p = True, type = 'transform')
+                #    cmds.parent( loc_matcherB , dupli_offset )
+                #    com.break_connection( target_original  , ['x','y','z'] , transf_ls = ['t','r',] )
+                #    cmds.parentConstraint (  loc_matcherB, target_original , mo = True )
+                #    cmds.parentConstraint (  loc_matcherA , loc_matcherB , mo = False )
+
+                
                 if key2 in tup_na[0]:
-                    loc_matcherB = nameSpace + ':' + tup_na[0]%( side ) + '_matcherB'
-                    loc_matcherA = nameSpace + ':' + tup_na[0]%( side ) + '_matcherA'
-                    loc_matcherB_dupli = cmds.duplicate ( loc_matcherB , n = loc_matcherB + DUPLI_SUF)
-                    dupli_offset = cmds.listRelatives( target_original , p = True, type = 'transform')
-                    ## cmds.parent( loc_matcherB , dupli_offset )
-                    cmds.parent( loc_matcherB_dupli , dupli_offset )
-                    #com.break_connection( target_original  , ['x','y','z'] , transf_ls = ['t','r',] )
-                    parent_contrain = cmds.parentConstraint (  loc_matcherB_dupli, target_original , mo = True )
-                    cmds.parentConstraint (  loc_matcherA , loc_matcherB_dupli , mo = False )
-                if 'Pole' in tup_na[0]:
+                    dupli_offset_target = get_source_dupli_and_father( target_original  )
+                    parent_target = target_original.split(':')[-1]
+                    print('test')
+                    parent_contrain = cmds.parentConstraint (  parent_source_dupli, parent_target , mo = False )
+                    #cmds.parentConstraint (  loc_matcherA , loc_matcherB , mo = False )
+                    loc_matcherB =   tup_na[0]%( side ) + '_matcherB' # esta emparentado al ik control
+                    loc_matcherA =  tup_na[0]%( side ) + '_matcherA'  # esta emparentado al wrist skeleton
+                    
+                    #loc_matcherB_dupli = cmds.duplicate ( loc_matcherB , n = loc_matcherB + DUPLI_SUF)
+                    
+                    #dupli_offset = cmds.listRelatives( parent_target , p = True, type = 'transform')
+
+                    cmds.parent( loc_matcherB , dupli_offset_target )
+                    
+                    com.break_connection( parent_target  , ['x','y','z'] , transf_ls = ['t','r',] )
+                    #detect_keyed( signalAnim , parent_target, frame )
+                    #delete_contraint( parent_contrain )
+                    
+                    parent_contrain = cmds.parentConstraint (  loc_matcherB, parent_target , mo = True )
+                    cmds.parentConstraint (  loc_matcherA , loc_matcherB , mo = False )
+                    
+                    com.setTransf( parent_target , target_original )
+                    #
+
+                    
+                    
+                    
+                elif 'Pole' in tup_na[0]:
                     point_contrain = cmds.pointConstraint (  parent_source, target_original , mo = False )
                     
-                #if  '5' in tup_na[0] :
-                #    parent_source = parent_source.replace('5','')
-                #    parent_contrain = cmds.parentConstraint (  parent_source, target_original , mo = False )
-                #    try:
-                #        scale_constrain = cmds.scaleConstraint ( parent_source, target_original , mo = False)
-                #    except Exception:
-                #        pass
-                
-                if signalAnim == True:
-                    cmds.select ( target_original )
-                    mel.eval('SetKey;')
-                else:
-                    isKeyed = cmds.keyframe( target_original, attribute='rotateY', q=True, time=(frame,) )
-                    cmds.select ( target_original )
-                    mel.eval('SetKey;')
-                    if isKeyed == None:
-                        cmds.cutKey( time=( frame,) )
-
-                delete_contraint( parent_contrain )
-                delete_contraint( scale_constrain )
-                delete_contraint( point_contrain )
-                #com.setTransf( parent_target , target_original )
-                #cmds.delete( dupli_offset_target )
-            #cmds.delete( dupli_joint_father )
+                detect_keyed( signalAnim , target_original, frame )
+                #if key2 in tup_na[0]:
+                #    delete_contraint( parent_contrain )
+                #    cmds.delete ( loc_matcherB_dupli )
+                if 'Pole' in tup_na[0]:
+                    delete_contraint( point_contrain )
+                try:
+                    cmds.delete( dupli_offset_target )
+                except Exception:
+                    pass
+            cmds.delete( dupli_joint_father )
             if signalAnim == False:
                 cmds.setAttr( switch_control+'.FKIKBlend', 10)
 #limb_fk_2_ik()
