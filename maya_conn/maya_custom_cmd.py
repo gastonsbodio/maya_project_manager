@@ -16,6 +16,8 @@ try:
                 return wrapInstance(int(pointer), QWidget)
 except Exception:
     pass
+OFFSET_NA = 'zero_transf_%s_offset'
+TRANSFORMS = ["translate","rotate", "scale"]
 
 def thumbnail_cmd( h, w, path, name):
     """Maya thumbnail generator command
@@ -38,8 +40,12 @@ def get_script_fol():
         return cmds.internalVar(usd=True)
     except Exception:
         return None
+
 def get_current_sc():
-    return cmds.file(query=True, sceneName=True)
+    #filepath_maya = pm.sceneName()
+    #filepath_maya = str(self.filepath_maya).split('Path(')[-1].split(')')[0]
+    filepath_maya = cmds.file(query=True, sceneName=True)
+    return filepath_maya
 
 def create_empty_task( fi_na ):
     cmds.file( new=True , force=True )
