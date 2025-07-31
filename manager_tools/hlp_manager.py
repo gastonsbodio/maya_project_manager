@@ -505,6 +505,7 @@ def get_fast_external_fi_fps( file_full_path ):
 def extract_ref_full_fi_na ( line ):
     name = line.split( '"mayaAscii" "')[-1].split('";')[0]
     return name 
+
 def rewrite_maya_fi_striping_unused_plugins( file_full_path , na_change_ext):
     print( '\n///////////////               //////////////////////\n')
     print ( file_full_path )
