@@ -79,12 +79,15 @@ ROOTS_METAD_FI_NA = 'roots_metadata.json'
 SETTINGS_SUFIX = '__settings__.yaml'
 MANAGE_PROD_UI = 'management_tool.ui'
 TASK_CREATION_UI = 'task_creation_panel.ui'
+PUBLISH_TOOL_UI = 'publish_tool.ui'
 ANIM_CHECK_UI = 'checker_anim_tool.ui'
 ANIM_PATH_TREE_UI = 'anim_path_treel.ui'
 COMMENTS_UI = 'comments_panel.ui'
 TRANSF_ANIM_T_UI = "transferAnimTool.ui"
 BATCH_RENDER_ANIM_UI = "batch_anim_render.ui"
 PARENTWEAP_TOOL_UI = "parentWeaponTool.ui"
+PARENTWEAP_TOOL_UI = "parentWeaponTool.ui"
+SEARCH_AND_UPDATE_UI = "search_update.ui"
 FORBIDDEN_CHARS = [" ","-","_","@","%", "$","?", "!", "|","*",".",",",";"]
 
 ###########
@@ -99,6 +102,11 @@ ANIM_SHELF_NA = DEFIN_DICC['KEYW']['COMPANY']['ANIM_SHELF_NA']
 ANIM_TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['ANIM_TOOLS_MENU_NA']
 RIG_TOOLS_MENU_NA = DEFIN_DICC['KEYW']['COMPANY']['RIG_TOOLS_MENU_NA']
 SKIP_AUTO_READ_PHRASE = DEFIN_DICC['KEYW']['COMPANY']['SKIP_AUTO_READ_PHRASE']
+
+########
+MANAGER_MENU_NA = DEFIN_DICC['KEYW']['MANAGER_TOOL']['MANAGER_MENU_NA']
+PIPELINE_FEATURE_MENU_NA = DEFIN_DICC['KEYW']['MANAGER_TOOL']['PIPELINE_FEATURE_MENU_NA']
+SEARCH_BAR_MENU_NA = DEFIN_DICC['KEYW']['MANAGER_TOOL']['SEARCH_BAR_MENU_NA']
 
 #### Googles vars
 STU_LIB_FOL_NA = DEFIN_DICC['KEYW']['STU_LIB_FOL_NA']

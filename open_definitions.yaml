@@ -1,11 +1,15 @@
 KEYW:
     COMPANY:
       COMPANY_MENU_NA: "Stray Kite"
-      TOOLS_MENU_NA: "Tools"
+      TOOLS_MENU_NA: "Area Tools"
       ANIM_SHELF_NA: "sk_animation_tools"
       ANIM_TOOLS_MENU_NA: "Animation"
       RIG_TOOLS_MENU_NA: "Rigging"
       SKIP_AUTO_READ_PHRASE: "avoid_auto_read"
+    MANAGER_TOOL:
+      PIPELINE_FEATURE_MENU_NA: "Pipeline Features"
+      MANAGER_MENU_NA: "Jira Manager Tool"
+      SEARCH_BAR_MENU_NA: "Search File 4 Update"
     WEB_LINKS:
         JI_SERVER: "https://gastonsbodio.atlassian.net/" #"https://straykitestudios.atlassian.net"
         TRACK_SHEET_ITEMS: 'https://docs.google.com/spreadsheets/d/1sy7NgFtjADYhvmU45rqlgfl4qznpW2adECWv892Ua-Q/edit?usp=sharing'

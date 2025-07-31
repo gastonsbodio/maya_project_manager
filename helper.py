@@ -31,7 +31,7 @@ def metadata_dicc2json( path, dicc ):
     with open( path, 'w') as fileFa:
         fileFa.write( str(json_object) )
         fileFa.close()
-        
+
 def json2dicc_load(path):
     """Read a json dicc and return a python dicc
     Args:
@@ -106,8 +106,8 @@ def run_py_stand_alone( python_file_na , with_console = False ,  extraLine= '' ,
     elif with_console == True:
         subprocess.Popen( [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na ) ] )
     elif with_console == 'Special':
-        subprocess.call( [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na ) ] )
-    #subprocess.call(["start", 'C:\\Python27\\Execute_google_sheet_query.bat'], shell=True)
+        #subprocess.call( [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na ) ] )
+        subprocess.call(["start", r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na )], shell=False)
 
 
 def create_python_file( python_file_na, python_file_content ):

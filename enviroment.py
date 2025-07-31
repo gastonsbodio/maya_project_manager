@@ -30,6 +30,8 @@ if ENVIROMENT == 'Maya':
         return com.getWindow(QWidget)
     def create_empty_task( fi_na ):
         com.create_empty_task( fi_na )
+    def get_current_scene_na():
+        return com.get_current_sc()
 elif ENVIROMENT == 'Windows':
     def getWindow(QWidget):
         return None
