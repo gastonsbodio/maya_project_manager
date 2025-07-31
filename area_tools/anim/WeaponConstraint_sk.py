@@ -24,6 +24,7 @@ import importing_modules as im
 de = im.importing_modules( 'definitions' )
 com = im.importing_modules( 'maya_conn.maya_custom_cmd' )
 hlp = im.importing_modules( 'helper' )
+p2t = im.importing_modules( 'area_tools.rig.parent_to_tool' )
 
 ROOT_PATH = "C:/dev/"
 PROJECT_PATH = ROOT_PATH + "%s/"
@@ -625,8 +626,11 @@ class space_swith_tool():
                 return idx
                 
     def trigging_parent( self , combo , cnt ):
+        control = self.namespa + cnt 
         cnt_target = str( combo.currentText() ) 
         indx = self.getIndex( self.CONTROLS_DICC[ cnt ][1] , cnt_target )
-        cmds.setAttr( self.namespa + cnt +'_bridge_control.parentTo', indx  )
+        
+        #cmds.setAttr( self.namespa + cnt +'_bridge_control.parentTo', indx  )
+        old_time,  old_frame = p2t.action_getPos_set_keep( control , indx )
         print(  self.namespa +cnt +'_bridge_control' )
         print ( indx )

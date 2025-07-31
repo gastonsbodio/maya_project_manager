@@ -41,7 +41,7 @@ SET_JOINT_SK = 'Animation_Export'
 FPS = 'ntsc'
 METADATA_ANIM_TRANSF = "anim_transfer.json"
 ##########
-LIMBS_CTL_LS = ['Arm_R' ,'Arm_L','Leg_R', 'Leg_L']
+LIMBS_CTL_LS = [ 'Spine_M', 'Arm_R' ,'Arm_L','Leg_R', 'Leg_L']
 DICC_M = { 'Cog':'pelvis' , 'FKSpine1':'spine_01' , 'FKSpine2':'spine_02' , 'FKSpine3':'spine_03' , 'FKSpine4':'spine_04',
   'FKChest':'spine_05' , 'FKNeck' : 'neck_01', 'FKHead':'head',  'FKJaw' : 'jaw' , 'FKNeck1': 'neck_02'}
 DICC_MIRROR = { 'FKIndexFinger1': 'index_01', 'FKIndexFinger2': 'index_02' , 'FKIndexFinger3': 'index_03',
@@ -57,31 +57,6 @@ DICC_MIRROR = { 'FKIndexFinger1': 'index_01', 'FKIndexFinger2': 'index_02' , 'FK
   'FKAnkle': 'foot', 'FKToes': 'ball',
   'FKEye': 'eye'}
 
-def initialize_ls( switcher ):
-    if 'dragon' not in switcher:
-        comtrol_ls_2ik = [ [ '*:FKIKArm_L','*:FKScapula_L','*:PoleArm_L','*:IKArm_L', '*:FKWrist_L'] ,
-                                ['*:FKIKArm_R','*:FKScapula_R','*:PoleArm_R','*:IKArm_R', '*:FKWrist_R'] ,
-            ['*:FKIKLeg_L','*:PoleLeg_L','*:RollHeel_L', '*:IKToes_L', '*:RollToes_L', '*:RollToesEnd_L' , 
-            '*:IKLeg_L' ,'*:FKAnkle_L'],
-            ['*:FKIKLeg_R','*:PoleLeg_R','*:RollHeel_R', '*:IKToes_R', '*:RollToes_R', '*:RollToesEnd_R' , 
-            '*:IKLeg_R' ,'*:FKAnkle_R'] ]
-        comtrol_ls_2fk = [ ['*:FKIKArm_L','*:FKScapula_L','*:FKShoulder_L','*:FKElbow_L', '*:FKWrist_L' ,'*:IKArm_L'] ,
-                        ['*:FKIKArm_R','*:FKScapula_R','*:FKShoulder_R','*:FKElbow_R', '*:FKWrist_R' ,'*:IKArm_R'] ,
-                        ['*:FKIKLeg_L','*:FKHip_L', '*:FKKnee_L', '*:FKAnkle_L', '*:FKToes_L', '*:IKLeg_L'],
-                        ['*:FKIKLeg_R','*:FKHip_R', '*:FKKnee_R', '*:FKAnkle_R', '*:FKToes_R', '*:IKLeg_R'] ]
-        
-    else:
-        comtrol_ls_2ik = [ [ '*:FKIKArm2_L','*:FKScapula1_L','*:PoleArm2_L','*:IKArm2_L', '*:FKWrist1_L'] ,
-                                ['*:FKIKArm2_R','*:FKScapula1_R','*:PoleArm2_R','*:IKArm2_R', '*:FKWrist1_R'] ,
-            ['*:FKIKLeg_L','*:PoleLeg_L', '*:RollToes1_L', '*:RollToes2_L' , '*:IKToes2_L',
-            '*:IKLeg_L' ,'*:FKAnkle_L'],
-            ['*:FKIKLeg_R','*:PoleLeg_R', '*:RollToes1_R', '*:RollToes2_R' , '*:IKToes2_R',
-            '*:IKLeg_R' ,'*:FKAnkle_R'] ]
-        comtrol_ls_2fk = [ ['*:FKIKArm2_L','*:FKScapula1_L','*:FKShoulder1_L','*:FKElbow1_L', '*:FKWrist1_L' ,'*:IKArm2_L'] ,
-                        ['*:FKIKArm2_R','*:FKScapula1_R','*:FKShoulder1_R','*:FKElbow1_R', '*:FKWrist1_R' ,'*:IKArm2_R'] ,
-                        ['*:FKIKLeg_L','*:FKHip_L', '*:FKKnee_L', '*:FKAnkle_L', '*:FKToes1_L', '*:IKLeg_L'],
-                        ['*:FKIKLeg_R','*:FKHip_R', '*:FKKnee_R', '*:FKAnkle_R', '*:FKToes1_R', '*:IKLeg_R'] ]
-    return comtrol_ls_2ik, comtrol_ls_2fk
 
 def set_start_end(   control , checkBox , linEStart, lineEEnd ):
     signalKey = True
@@ -374,7 +349,7 @@ class animTransference(QDialog):
         line = line + "import sys\n"
         line = line + "import os\n"
         line = line + "cmds.loadPlugin('fbxmaya', quiet=True)\n"
-        line = line + "sys.path.append( r'" + SCRIPT_FOL + "' )\n"
+        line = line + "sys.path.append( r'" + de.SCRIPT_MANAG_FOL + "' )\n"
         for spath in UI_ANIM_FOL:
             line = line + "sys.path.append( r'" + spath + "' )\n"
 
@@ -395,12 +370,12 @@ class animTransference(QDialog):
                 mayabinpath = pathh
                 break
         batPythonExec = '@echo off\n'
-        batPythonExec = batPythonExec + '"'+ mayabinpath.replace('/','\\') + '\\mayapy.exe" "'+USER_DOC.replace('/','\\')+'/'+python_file_na+'.py" \n'
+        batPythonExec = batPythonExec + '"'+ mayabinpath.replace('/','\\') + '\\mayapy.exe" "' + de.PY_PATH.replace('/','\\')+'\\'+python_file_na+'.py" \n'
         batPythonExec = batPythonExec + 'pause 10'
-        with open( USER_DOC +'/'+"Execute_" + python_file_na + ".bat", "w") as fileFa:
+        with open( de.USER_DOC +'/'+"Execute_" + python_file_na + ".bat", "w") as fileFa:
             fileFa.write( batPythonExec )
             fileFa.close()
-        subprocess.Popen( [r'%sExecute_%s.bat'%( USER_DOC.replace('/','\\\\') +'\\'  , python_file_na ) ] )
+        subprocess.Popen( [r'%sExecute_%s.bat'%( de.USER_DOC.replace('/','\\\\') +'\\'  , python_file_na ) ] )
 
 
     def batch_transfer_anim( self ):
@@ -525,10 +500,9 @@ class ik_copying_animation():
 
     def set_limbs_2_ik(self):
         switcher = self.import_switcher_selected()
-        self.comtrol_ls_2ik, self.comtrol_ls_2fk = initialize_ls( switcher )
         amount_frames = 0
-        for control_key in self.comtrol_ls_2ik:
-            for limb in self.limbs_ctl_ls:
+        for control_key in self.ikfk.comtrol_ls_2ik:
+            for limb in self.limbs_ctl_ls: # ['Leg_R']
                 limb, side = limb.split('_')
                 if limb in control_key[0] and control_key[0].endswith('_'+side):
                     control = control_key[-1]
@@ -560,8 +534,7 @@ class ik_copying_animation():
     def set_limbs_2_fk(self):
         amount_frames = 0
         switcher = self.import_switcher_selected()
-        self.comtrol_ls_2ik, self.comtrol_ls_2fk = initialize_ls( switcher )
-        for control_key in self.comtrol_ls_2fk:
+        for control_key in self.ikfk.comtrol_ls_2fk:
             for limb in self.limbs_ctl_ls:
                 limb, side = limb.split('_')
                 if limb in control_key[0] and control_key[0].endswith('_'+side):

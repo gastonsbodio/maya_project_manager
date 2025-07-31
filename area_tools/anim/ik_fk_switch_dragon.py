@@ -20,6 +20,23 @@ import maya.mel as mel
 DUPLI_SUF = '_dupli'
 TRANSFORMS = ["translate","rotate", "scale"]
 
+
+
+
+comtrol_ls_2ik = [ [ '*:FKIKArm2_L','*:FKScapula1_L','*:PoleArm2_L','*:IKArm2_L', '*:FKWrist1_L'] ,
+             ['*:FKIKArm2_R','*:FKScapula1_R','*:PoleArm2_R','*:IKArm2_R', '*:FKWrist1_R'] ,
+            ['*:FKIKLeg_L','*:PoleLeg_L', '*:RollToes1_L', '*:RollToes2_L' , '*:IKToes2_L',
+            '*:IKLeg_L' ,'*:FKAnkle_L'],
+            ['*:FKIKLeg_R','*:PoleLeg_R', '*:RollToes1_R', '*:RollToes2_R' , '*:IKToes2_R',
+            '*:IKLeg_R' ,'*:FKAnkle_R'] ]
+comtrol_ls_2fk = [ ['*:FKIKArm2_L','*:FKScapula1_L','*:FKShoulder1_L','*:FKElbow1_L', '*:FKWrist1_L' ,'*:IKArm2_L'] ,
+            ['*:FKIKArm2_R','*:FKScapula1_R','*:FKShoulder1_R','*:FKElbow1_R', '*:FKWrist1_R' ,'*:IKArm2_R'] ,
+            ['*:FKIKLeg_L','*:FKHip_L', '*:FKKnee_L', '*:FKAnkle_L', '*:FKToes1_L', '*:IKLeg_L'],
+            ['*:FKIKLeg_R','*:FKHip_R', '*:FKKnee_R', '*:FKAnkle_R', '*:FKToes1_R', '*:IKLeg_R'] ]
+ 
+ 
+
+
 control_tuple = [ ('Arm2','L') , ('Arm2','R') , ('Leg','L') , ('Leg','R')  ]
                     #### , ( 'Fingers1_%s' , 'IK%s_%s', 'IKFingers1_%s' )
 list_tuple_na_front = [( 'Scapula1_%s' , 'FKScapula1_%s' ) , ( 'Wrist1_%s' , 'IK%s_%s', 'FKIndexFinger11_%s' ) , ( 'Pole%s_%s_ref' , 'Pole%s_%s' ) , 
