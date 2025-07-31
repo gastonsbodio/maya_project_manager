@@ -25,7 +25,7 @@ dll = ctypes.windll.shell32
 buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
 if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
     USER_DOC = buf.value
-
+RIG_FOL = 'rig'
         
 class GoogleSheetRequests():
     def get_master_credentials( self ):
@@ -109,8 +109,14 @@ class GoogleDriveQuery():
         try:
             hlp.make_read_writeable( targuet_full_path )
             googleFi.GetContentFile( targuet_full_path )
+            path_only, na = hlp.separate_path_and_na(targuet_full_path)
+            if not os.path.exists( path_only ):
+                try:
+                    os.makedirs( path_only )
+                except Exception:
+                    pass
+            
             print ( ' downloading:      ' + targuet_full_path )
-            print ( '\n ben \n')
         except Exception as err:
             print ( err )
             print ( targuet_full_path + '         failed   dowloading     - - - ')
@@ -140,8 +146,6 @@ class GoogleDriveQuery():
         Returns:
             [ls]: [list of google files objects]
         """
-        print ("credentials")
-        print ( credentials )
         top_list = credentials.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
         return top_list
 
@@ -193,32 +197,69 @@ class GoogleDriveQuery():
             pathTuple.append(pathh)
         return pathTuple
 
-    def list_fi_contente (self ,credentials, google_fol_id ):
+    def search_filter_fi ( self , full_fol_ls, pattern_fi ):
+        new_tool_fi_ls = []
+        for goo_fi in full_fol_ls:
+            if pattern_fi in goo_fi['title']:
+                
+                new_tool_fi_ls.append( goo_fi )
+        return new_tool_fi_ls
+
+    def list_fi_full_content ( self ,credentials, google_fol_id ,
+                              filtered_Files = '', final_ls = [] ):
         tool_fi_ls = credentials.ListFile({
-                                            'q': "'%s' in parents" %google_fol_id,
+                                            'q': "'%s' in parents and trashed = false " %google_fol_id,
                                             'supportsAllDrives': True, 
                                             'includeItemsFromAllDrives': True,
                                             }).GetList()
+        for gooObj in tool_fi_ls:
+            if gooObj['mimeType'] == 'application/vnd.google-apps.folder':
+                self.list_fi_full_content ( credentials, gooObj['id'] , filtered_Files = filtered_Files ,
+                            final_ls = final_ls )
+            elif gooObj['mimeType'] != 'application/vnd.google-apps.folder':
+                if gooObj not in final_ls:
+                    final_ls.append( gooObj )
+        if filtered_Files != '':
+            final_ls = self.search_filter_fi ( final_ls, filtered_Files )
+        return final_ls
+
+
+    def list_fi_contente ( self ,credentials, google_fol_id , filtered_Files = ''):
+        tool_fi_ls = credentials.ListFile({
+                                            'q': "'%s' in parents and trashed = false " %google_fol_id,
+                                            'supportsAllDrives': True, 
+                                            'includeItemsFromAllDrives': True,
+                                            }).GetList()
+        if filtered_Files != '':
+            tool_fi_ls = self.search_filter_fi ( tool_fi_ls, filtered_Files )
         return tool_fi_ls
 
-    def update_tools (self, google_fol_dicc, folder ):
+    def found_filtered_files( self ,  google_fol_id , filtered_Files = ''):
+        credentials = self.login()
+
+        goo_fi_ls = self.list_fi_full_content ( credentials, google_fol_id ,
+                                               filtered_Files = filtered_Files )
+        found_fi = []
+        dicc = {}
+        for fi in goo_fi_ls:
+            if fi['title'] not in found_fi:
+                print (  fi['title']  + '            appending')
+                goo_path_name , goo_only_path, fi_na= self.patch_path_fixer( credentials, fi )
+                found_fi.append( goo_path_name)
+                dicc[ goo_path_name ] = fi['id']
+        return found_fi, dicc
+        
+    def update_tools (self, google_fol_dicc, folder , filtered_Files = '' ):
         """log in list tool files and download them to local.
         """
         google_fol_id = list( ast.literal_eval(google_fol_dicc).values() )[0]
         google_fol_na = list(ast.literal_eval(google_fol_dicc).keys() )[0]
         credentials = self.login()
-        tool_fi_ls = self.list_fi_contente ( credentials, google_fol_id )
-        if not os.path.exists( folder ):
-            try:
-                os.makedirs( folder )
-            except Exception:
-                pass
+        tool_fi_ls = self.list_fi_contente ( credentials, google_fol_id , filtered_Files = filtered_Files)
         if google_fol_na ==  list(  de.GOOG_CONTENT_TOOLS_FOL.keys() )[0]:
-            #google_fol_na = list(  ast.literal_eval( google_fol_dicc           ).keys()  )[0]
             self.dowload_sk_menu_fi( credentials  )
         self.dowloading_ls( credentials, google_fol_na, folder , tool_fi_ls , static_root = google_fol_na)
         
-
     def dowload_sk_menu_fi( self , credentials  ):
         google_fol_id = list( de.GOOG_CONT_MAYA_MENU_FOL.values() )[0]
         google_fol_na = list( de.GOOG_CONT_MAYA_MENU_FOL.keys() )[0]
@@ -231,25 +272,37 @@ class GoogleDriveQuery():
             goo_path_name = '/'+goo_path_name
         goo_only_path , fi_na = hlp.separate_path_and_na( goo_path_name )
         return goo_path_name, goo_only_path, fi_na
-        
+
+    def downlad_obj_fi(self, dicc , google_fol_id ):
+        credentials = self.login()
+        goo_fi_ls = self.list_fi_full_content ( credentials, google_fol_id ,
+                                               filtered_Files = '' )
+        id_ls = list( dicc.values() )
+        for gooOnj in goo_fi_ls:
+            if gooOnj['id'] in id_ls:
+                for key in dicc:
+                    if gooOnj['id'] == dicc[key]:
+                        self.dowload_fi ( gooOnj,  key  )
+    
     def dowloading_ls(self, credentials, google_fol, folder , tool_fi_ls, static_root = ''):
         for goo_fi in tool_fi_ls:
             if goo_fi['mimeType'] != 'application/vnd.google-apps.folder':
                 goo_path_name , goo_only_path, fi_na= self.patch_path_fixer( credentials, goo_fi )
-
-                print ( google_fol )
-                print ( '         google_fol        ' )   #  jira_manager     #  jira_manager 
-                end_path_name = goo_path_name.split( google_fol )[-1]
-                print ( folder )  #C/:... /jira_manager        #C/:... /jira_manager
-                print ( 'folder' )
-                print ( end_path_name )
-                print ( 'end_path_name' )  # /__init__.py      # /projects_settings
+                goo_path_na_split = goo_path_name.split( google_fol )
+                if len( goo_path_na_split ) == 2:
+                    end_path_name = goo_path_na_split[-1]
+                elif len( goo_path_na_split ) > 2:
+                    end_path_name = goo_path_na_split[-2] + google_fol + goo_path_na_split[-1]
                 full_path_name = self.cpython_issue( folder , end_path_name )
                 self.dowload_fi ( goo_fi, full_path_name  )
             else:
                 key_enter = False
-                for keyy in  de.GOOG_CONTENT_TOOLS_FOL:
-                    if 'jira_manager' == keyy:
+                if google_fol == RIG_FOL:
+                    dicc = de.GOOG_CONT_RIG_TOO_FOL
+                elif google_fol == de.JIRA_MANAGE_FOL:
+                    dicc = de.GOOG_CONTENT_TOOLS_FOL
+                for keyy in  dicc:
+                    if de.JIRA_MANAGE_FOL == keyy or RIG_FOL == keyy :
                         key_enter = True
                 if key_enter:
                     google_fol = goo_fi['title']
@@ -257,13 +310,15 @@ class GoogleDriveQuery():
                         if folder == static_root:
                             folder_ = folder + '/' + google_fol
                         else:
-
                             goo_path_name , goo_only_path, fi_na= self.patch_path_fixer( credentials, goo_fi )
-
                             patch = folder.split('/'+static_root)[0 ]
                             folder_ = patch + goo_only_path + google_fol
+                            if '/'+ static_root + '/' + static_root + '/' in folder_:
+                                folder_ = folder_.replace( '/'+ static_root + '/' + static_root + '/' , '/'+ static_root + '/')
+                            elif len( folder_.split( '/'+de.JIRA_MANAGE_FOL+'/') ) > 1:
+                                patch = folder.split('/'+de.JIRA_MANAGE_FOL)[0 ]
+                                folder_ = patch + goo_only_path + google_fol
                         tool_fi_ls = self.list_fi_contente ( credentials ,  goo_fi['id'] )
-                        #full_path_name = self.cpython_issue( folder , end_path_name )
                         self.dowloading_ls( credentials, google_fol, folder_ , tool_fi_ls )
 
     def cpython_issue( self, folder , end_path_name ):
@@ -369,8 +424,7 @@ class GoogleDriveQuery():
                 if key_exist:
                     break
                 children_obj_ls = self.get_childrens ( credenciales, fol, id_path )
-                for gooObj in children_obj_ls: 
-                    print ( gooObj['title'] )
+                for gooObj in children_obj_ls:
                     if gooObj['title'] == fol:
                         id_path = '/'+gooObj['id']
                         pathInGooglId = pathInGooglId + '/' + gooObj['id']

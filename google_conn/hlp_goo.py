@@ -130,7 +130,7 @@ def write_googld_func( func_na, result_fi_na, if_result):
     file_content = file_content + '    if "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:\n'
     file_content = file_content + '        sys.path.remove(path)\n'
 
-    file_content = file_content + 'error_ls = []\n'
+    file_content = file_content + 'error_ls = "[]"\n'
     file_content = file_content + '%s = []\n' %de.ls_result
     file_content = file_content + 'try:\n'
     
@@ -149,7 +149,7 @@ def write_googld_func( func_na, result_fi_na, if_result):
     if if_result:
         file_content = file_content + de.dicc_result +' = {}\n'
         file_content = file_content + de.dicc_result + '["'+ de.ls_result +'"] = '+ de.ls_result+'\n'
-        file_content = file_content + de.dicc_result + '["'+ de.key_errors +'"] = error_ls\n'
+        file_content = file_content + de.dicc_result + '["'+ de.key_errors +'"] = error_ls\n' 
         file_content = file_content +'json_object = json.dumps( {dicc_result}, indent = 2 )\n'.format( dicc_result = de.dicc_result ) 
         file_content = file_content + 'with open( "{path}", "w") as fileFa:\n'.format( path = de.PY_PATH + result_fi_na )
         file_content = file_content +'    fileFa.write( str(json_object) )\n'
