@@ -80,8 +80,6 @@ Spine1 = 'FKSpine1_M'
 WORLD_ZERO = 'WorldZero'
 GUN_FOLLOW = 'gun_follow_%s_cnt'
 WEAPON_DRIVER = 'weaponDriver_cnt'
-TRANSFORMS = ["translate","rotate", "scale"]
-OFFSET_NA = 'zero_transf_%s_offset'
 HAND_OBJ = '_Hand_Object'
 WEAPON_PREFIX_JNT = 'weapon_'
 MESHGRP = 'mesh_grp'
@@ -582,6 +580,11 @@ def switch_ik_fk_preparing( is_checked , templa_skelet_type):
         elif templa_skelet_type == 'quadruped':
             wrist_ik_match_ls = [ ( 'Fingers1_', 'IKLegFront_', 'MiddleFinger1_' ) ,
                                 ( 'Toes1_', 'IKLegBack_', 'Alltoes_' ) ]
+
+        elif templa_skelet_type == 'hybrid':
+            wrist_ik_match_ls = [ ( 'Wrist_', 'IKArm_', 'MiddleFinger1_' ) ,
+                                ( 'Toes1_', 'IKLegBack_', 'Toes2_' ) ]
+ 
         for tuple_ik in wrist_ik_match_ls:
             for side in ['R','L']:
                 loc = mel.eval( "spaceLocator -p 0 0 0;" )[0]
@@ -636,7 +639,7 @@ def get_setLs( method ):
     elif method == 'spaceSwitch' :
         set_ls = [ [ '_offset_parentToIKArm_R', GUN_FOLLOW%'r', 'L'+HAND_OBJ,  'IKArm_R',  ] ,
                    [ '_offset_parentToIKArm_L', GUN_FOLLOW%'l', 'R'+HAND_OBJ,   'IKArm_L',  ] ,
-                   [  OFFSET_NA %(WEAPON_DRIVER) ,'L'+HAND_OBJ , 'R'+HAND_OBJ,  WEAPON_DRIVER ]] 
+                   [  com.OFFSET_NA %(WEAPON_DRIVER) ,'L'+HAND_OBJ , 'R'+HAND_OBJ,  WEAPON_DRIVER ]] 
         
     return set_ls
 
@@ -662,14 +665,14 @@ def do_gun_space( is_checked , method = 'spaceSwitch'):
 
 def delete_namespaces_( is_checked ):
     if is_checked:
-        com.delete_namespaces_()
+        com.delete_namespaces()
      
 def camera_importing( is_checked ):
     if is_checked:
         camera_jt = cmds.ls( 'Camera', type = 'join' )
         if camera_jt == []:
             cmds.file( PATH_CAMERA_CHAR  , i = True )
-            com.delete_namespaces_()
+            com.delete_namespaces()
         try:
             contrain = cmds.pointConstraint ( 'FKChest_M'  , CAM_OFFS_CONST , mo = False )[0]
             contrain = cmds.orientConstraint ( 'FKChest_M'  , CAM_OFFS_CONST , mo = True )[0]
@@ -725,7 +728,7 @@ def set_ik_hands_pose_fk______( is_checked ):
 
 def get_shapes_pole_vec():
         cmds.file( PATH_CONTROL_SH  , i = True )
-        com.delete_namespaces_()
+        com.delete_namespaces()
         dicc = { 'Sphere' : 'PoleLeg_', 'Diamond' : 'PoleArm_' }
 
         for cont_sh in dicc :

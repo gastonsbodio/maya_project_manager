@@ -55,6 +55,50 @@ def if_loop( old_frame , old_time ):#, *args ):
     #    key = False
     return key
 
+def action_getPos_set_keep( control , indexChange):
+    
+    offset = cmds.listRelatives( control , p=True)[0]
+    offset_refe = cmds.duplicate( offset , name= offset+'_refe' , rc=True)[0]
+    cmds.parent( offset_refe, w = True )
+    controlRefe =  cmds.listRelatives( offset_refe , c=True, type = 'transform')[0]
+    current = cmds.currentTime( query=True )
+    key_f_ls = cmds.keyframe( control+"."+ATTR_NA , q=True, time=() ) or []
+    if current in key_f_ls:
+        value = cmds.keyframe( control, attribute=ATTR_NA, query=True, ev=True )[0]
+        cmds.setAttr( control+BRIDGE+"."+ATTR_NA, value ) 
+        cmds.setKeyframe( control+BRIDGE, attribute=ATTR_NA )
+    else:
+        cmds.select( control+BRIDGE )
+        mel.eval("timeSliderClearKey;")
+        
+    cmds.setAttr( control+BRIDGE+"."+ATTR_NA, indexChange )  
+    cmds.parent( controlRefe , offset )
+    valueTx = cmds.getAttr ( controlRefe+".translateX" )
+    valueTy = cmds.getAttr ( controlRefe+".translateY" )
+    valueTz = cmds.getAttr ( controlRefe+".translateZ" )
+    valueRx = cmds.getAttr ( controlRefe+".rotateX" )
+    valueRy = cmds.getAttr ( controlRefe+".rotateY" )
+    valueRz = cmds.getAttr ( controlRefe+".rotateZ" )
+    attr_ls = cmds.listConnections( offset, c = True ) or []
+    key = False
+    for attr in attr_ls:
+        if '.translate' in attr:
+            key = True
+    if key:
+        cmds.setAttr ( control+".translateX" ,valueTx )
+        cmds.setAttr ( control+".translateY" ,valueTy )
+        cmds.setAttr ( control+".translateZ" ,valueTz )
+    cmds.setAttr ( control+".rotateX" , valueRx )
+    cmds.setAttr ( control+".rotateY" , valueRy )
+    cmds.setAttr ( control+".rotateZ" , valueRz )
+    cmds.delete( controlRefe )
+    cmds.delete( offset_refe )
+    cmds.select( control )
+    old_time = current_time()
+    old_frame = cmds.currentTime( q=True ) 
+    return  old_time,  old_frame
+
+
 def match_control( control ):#, old_time ):
     global old_time
     global old_frame
@@ -76,45 +120,8 @@ def match_control( control ):#, old_time ):
             old_time = current_time()
             old_frame = cmds.currentTime( q=True ) 
             if indexChangeBridge != indexChange:
-                offset = cmds.listRelatives( control , p=True)[0]
-                offset_refe = cmds.duplicate( offset , name= offset+'_refe' , rc=True)[0]
-                cmds.parent( offset_refe, w = True )
-                controlRefe =  cmds.listRelatives( offset_refe , c=True, type = 'transform')[0]
-                current = cmds.currentTime( query=True )
-                key_f_ls = cmds.keyframe( control+"."+ATTR_NA , q=True, time=() ) or []
-                if current in key_f_ls:
-                    value = cmds.keyframe( control, attribute=ATTR_NA, query=True, ev=True )[0]
-                    cmds.setAttr( control+BRIDGE+"."+ATTR_NA, value ) 
-                    cmds.setKeyframe( control+BRIDGE, attribute=ATTR_NA )
-                else:
-                    cmds.select( control+BRIDGE )
-                    mel.eval("timeSliderClearKey;")
-                    
-                cmds.setAttr( control+BRIDGE+"."+ATTR_NA, indexChange )  
-                cmds.parent( controlRefe , offset )
-                valueTx = cmds.getAttr ( controlRefe+".translateX" )
-                valueTy = cmds.getAttr ( controlRefe+".translateY" )
-                valueTz = cmds.getAttr ( controlRefe+".translateZ" )
-                valueRx = cmds.getAttr ( controlRefe+".rotateX" )
-                valueRy = cmds.getAttr ( controlRefe+".rotateY" )
-                valueRz = cmds.getAttr ( controlRefe+".rotateZ" )
-                attr_ls = cmds.listConnections( offset, c = True ) or []
-                key = False
-                for attr in attr_ls:
-                    if '.translate' in attr:
-                        key = True
-                if key:
-                    cmds.setAttr ( control+".translateX" ,valueTx )
-                    cmds.setAttr ( control+".translateY" ,valueTy )
-                    cmds.setAttr ( control+".translateZ" ,valueTz )
-                cmds.setAttr ( control+".rotateX" , valueRx )
-                cmds.setAttr ( control+".rotateY" , valueRy )
-                cmds.setAttr ( control+".rotateZ" , valueRz )
-                cmds.delete( controlRefe )
-                cmds.delete( offset_refe )
-                cmds.select( control )
-                old_time = current_time()
-                old_frame = cmds.currentTime( q=True ) 
+                old_time,  old_frame = action_getPos_set_keep( control , indexChange )
+
 
 def script_job_matcher( cnt ):
     control = cmds.ls( cnt , '*:'+ cnt , '*:*:'+ cnt )
