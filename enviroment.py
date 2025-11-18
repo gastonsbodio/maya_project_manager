@@ -13,12 +13,11 @@ import importing_modules as  im
 reload( im )
 de = im.importing_modules( 'definitions' )
 
-#ENVIROMENT = 'Windows'
 for path in sys.path:
     if 'Python312' in path:
         ENVIROMENT = 'Windows'
         break
-    elif "Maya2020" in path or "Maya2021" in path or "Maya2022" in path or "Maya2023" in path:
+    elif "Maya202" in path:
         ENVIROMENT = 'Maya'
         break
 if ENVIROMENT == 'Maya': 

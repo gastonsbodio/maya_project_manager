@@ -69,7 +69,7 @@ class AnimSubPath( QMainWindow ):
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE , self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        dicc_ = { 'taskType': self.area , 'itemType': self.item_type }#self.PROJ_SETTINGS['KEYW']['areaAnim'] }
+        dicc_ = { 'assActType': self.area , 'itemType': self.item_type }#self.PROJ_SETTINGS['KEYW']['areaAnim'] }
         self.anim_root = hlp_manager.solve_path( 'depot' , 'Anim_Root' , '' ,  self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc_ )
         self.ui.lineEdit_anim_root.setText( self.anim_root )
         self.ui.listWid_lavel1.addItem('')
@@ -132,7 +132,7 @@ class AnimSubPath( QMainWindow ):
     def get_final_path (self, subpaths , anim_na):
         #itemType = self.PROJ_SETTINGS['KEYW']['item_types']['anim']
         dicc = { 'subpath': subpaths ,'anim_na': anim_na ,
-                'taskType':  self.area ,
+                'assActType':  self.area ,
                 'itemType' : self.item_type }
         anim_full_path_fileroot = hlp_manager.solve_path( 'depot' , 'Anim_Path' , '' ,  self.DEPOT_ROOT, '' ,
                                                 self.PROJ_SETTINGS , dicc_ = dicc)
@@ -190,7 +190,7 @@ class AnimSubPath( QMainWindow ):
         areaRig = str( self.PROJ_SETTINGS ['KEYW']['areaAssets']['rig'] )
         genericChar_na = str( self.PROJ_SETTINGS ['KEYW']['genericChar_na'] )
         dicc = {  'ass_na' : self.anim_asset  ,  'itemType': item_type , 'genericChar_na': genericChar_na,
-                 'areaAssRig': areaRig , 'taskType' :  char_type , 'areaAss': areaRig , 'taskType' : self.area}
+                 'areaAssRig': areaRig , 'assActType' :  char_type , 'areaAss': areaRig , 'assActType' : self.area}
         anim_asset_fullpath = hlp_manager.solve_path( 'local', 'Rig_Ass_Path' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)
         dicc ['itemType'] = str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] )
         template_full_path = hlp_manager.solve_path( 'local', 'Anim_Template' , self.LOCAL_ROOT ,  '', '' ,  self.PROJ_SETTINGS , dicc_ = dicc)

@@ -7,6 +7,15 @@ import stat
 import subprocess
 si = subprocess.STARTUPINFO()
 
+import ctypes
+from ctypes.wintypes import MAX_PATH
+dll = ctypes.windll.shell32
+buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+    USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append(SCRIPT_FOL)
+
 from importlib import reload
 import importing_modules as  im
 reload( im )
@@ -83,12 +92,13 @@ def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHEET_DOC_NA
     file_content = file_content + 'import importing_modules as im\n'
     file_content = file_content + 'de = im.importing_modules( "definitions" )\n'
     file_content = file_content + hlp.ADDITIONAL_LINE_PY3
-    file_content = file_content + 'sys.path.append( de.PY_PACK_MOD )\n'
+    #file_content = file_content + 'sys.path.append( de.PY_PACK_MOD )\n' # PY3_PACKAGES
+    file_content = file_content + 'sys.path.append( de.PY3_PACKAGES )\n'
     if '\n' == hlp.ADDITIONAL_LINE_PY3:
         file_content = file_content + 'import py2.oauth2client.service_account as ServiceAcc\n'
     else:
         file_content = file_content + 'import py3.oauth2client.service_account as ServiceAcc\n'
-    file_content = file_content + 'import gspread\n'
+    file_content = file_content + 'import py3.gspread\n'
     file_content = file_content + 'scope = [ "https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets" ,\n'
     #file_content = file_content + '    "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"  ]\n'
     file_content = file_content + '    "https://www.googleapis.com/auth/drive.file"  ]\n'
@@ -96,7 +106,7 @@ def write_goo_sheet_request( line, if_result, result_fi_na , GOOGLE_SHEET_DOC_NA
     file_content = file_content + 'error_ls = []\n'
     file_content = file_content + '%s = []\n' %de.ls_result
     file_content = file_content + 'try:\n'
-    file_content = file_content + '    client = gspread.authorize (creds)\n'
+    file_content = file_content + '    client = py3.gspread.authorize (creds)\n'
     file_content = file_content + '    sheetLs = client.openall( "%s" )\n' %( GOOGLE_SHEET_DOC_NA )
     file_content = file_content + '    for she in sheetLs:\n'
     file_content = file_content + '        worksheets = she.worksheets()\n'

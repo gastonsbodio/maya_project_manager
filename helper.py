@@ -27,6 +27,7 @@ def metadata_dicc2json( path, dicc ):
         path ([str]): [json file path ]
         dicc ([dicc obj]): [description]
     """
+
     json_object = json.dumps( dicc, indent = 2 ) 
     with open( path, 'w') as fileFa:
         fileFa.write( str(json_object) )
@@ -102,13 +103,38 @@ def run_py_stand_alone( python_file_na , with_console = False ,  extraLine= '' ,
         fileFa.close()
     si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     if with_console == False:
-        subprocess.call( [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\') , python_file_na ) ] , startupinfo = si )
+        if ev.ENVIROMENT == 'Windows':
+            process = subprocess.Popen( [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na ) ] )
+
+
+            #command = [ r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\') , python_file_na ) ]
+            #creation_flags = subprocess.CREATE_NO_WINDOW
+
+            #result = subprocess.run(
+            #        command,
+            #        check=True,  # Raise CalledProcessError if the command returns a non-zero exit code
+            #        capture_output=True, # Capture stdout and stderr
+            #        text=True, # Decode stdout and stderr as text
+            #        creationflags=creation_flags,
+            #        startupinfo = si)
+            process.communicate('\n')
+        
+        else:
+            command = [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\') , python_file_na ) ]
+            creation_flags = subprocess.CREATE_NO_WINDOW
+
+            result = subprocess.run(
+                    command,
+                    check=True,  # Raise CalledProcessError if the command returns a non-zero exit code
+                    capture_output=True, # Capture stdout and stderr
+                    text=True, # Decode stdout and stderr as text
+                    creationflags=creation_flags)
+
     elif with_console == True:
         subprocess.Popen( [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na ) ] )
     elif with_console == 'Special':
         #subprocess.call( [r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na ) ] )
         subprocess.call(["start", r'%sExecute_%s.bat'%( de.PY_PATH.replace('/','\\\\')  , python_file_na )], shell=False)
-
 
 def create_python_file( python_file_na, python_file_content ):
     """Jus create python file with a given content

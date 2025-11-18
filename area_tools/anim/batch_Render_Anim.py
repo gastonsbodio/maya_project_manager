@@ -110,9 +110,6 @@ class batchRenderAnim( QMainWindow):#QDialog ):
         self.ui.comboB_resolution.currentIndexChanged.connect( self.combo_change_ac )
         self.ui.comboB_format.currentIndexChanged.connect( self.combo_change_ac )
         self.set_settings( )
-        print ('              que ondis           5555555555555')
-        #self.show()
-        print ('              que ondis                44444444 ')
 
 
     def combo_change_ac( self ):
@@ -403,7 +400,6 @@ class render_queue_anims():
                     pass
                 
 if True: #ev.ENVIROMENT == 'Windows':
-    print ('                        que ondis           3333' )
     ###   manager launch  ####
     #import manager_tools.jira_project_manager as jiraM
     loader = QUiLoader()
@@ -413,11 +409,8 @@ if True: #ev.ENVIROMENT == 'Windows':
         app = QApplication(sys.argv)
     else:
         app = QApplication.instance()
-    
-    
     #app = QApplication(sys.argv)
     #app = QApplication.instance()
-    print ('                          que ondis    2222' )
     widget = batchRenderAnim( )#loader = loader)
     widget.ui.show()
     sys.exit(app.exec())

@@ -75,25 +75,24 @@ class JiraQueries():
                     main_args_issue_dicc[ de.area ] = self.dicc_label_value( labels_ls, de.area )
                     item_path = self.dicc_label_value( labels_ls, de.item_path )
                     main_args_issue_dicc[ de.item_path ] = item_path
-                    if main_args_issue_dicc[ de.area ] in list ( PROJ_SETTINGS ['KEYW']['assets_types'].values() ):
+                    main_args_issue_dicc[ de.assActType ] = hlp_manager.area_asset_extraction( item_path , PROJ_SETTINGS )
+                    main_args_issue_dicc[ de.itemType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
+                    main_args_issue_dicc[ de.assActType ] = hlp_manager.asset_type_extraction( item_path , PROJ_SETTINGS )
+                    if main_args_issue_dicc[ de.assActType ] in list ( PROJ_SETTINGS ['KEYW']['assets_types'].values() ):
                         main_args_issue_dicc[ de.asset_na ] = self.dicc_label_value( labels_ls, de.asset_na )
-                        main_args_issue_dicc[ de.taskType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
-                        main_args_issue_dicc[ de.itemType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
-                        main_args_issue_dicc[ de.areaAss ] = hlp_manager.area_asset_extraction( item_path , PROJ_SETTINGS )
+                        main_args_issue_dicc[ de.area ] = hlp_manager.area_asset_extraction( item_path , PROJ_SETTINGS )
                     elif main_args_issue_dicc[ de.area ] in list ( PROJ_SETTINGS ['KEYW']['areaAnim'].values() ):
                         main_args_issue_dicc[ de.ani_na ] = self.dicc_label_value( labels_ls, de.ani_na )
-                        main_args_issue_dicc[ de.taskType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
-                        main_args_issue_dicc[ de.itemType ] = hlp_manager.item_type_extraction( item_path , PROJ_SETTINGS )
-                        main_args_issue_dicc[ de.areaAss ] =  ''
+                        main_args_issue_dicc[ de.area ] =  ''
                 else:
                     main_args_issue_dicc[de.area] = ''
                     main_args_issue_dicc[de.asset_na] = '' 
                     main_args_issue_dicc[de.ani_na] = ''
                     main_args_issue_dicc[ de.item_path ] = ''
-                    main_args_issue_dicc[ de.taskType ] = ''
-                    main_args_issue_dicc[ de.taskType ] = ''
+                    main_args_issue_dicc[ de.assActType ] = ''
+                    main_args_issue_dicc[ de.assActType ] = ''
                     main_args_issue_dicc[ de.itemType ] = ''
-                    main_args_issue_dicc[ de.areaAss ] = ''
+                    main_args_issue_dicc[ de.area ] = ''
                 assignee = issue.fields.assignee
                 if assignee != None:
                     main_args_issue_dicc[de.assignee] = assignee.displayName#.encode('utf-8')
@@ -195,16 +194,16 @@ class JiraQueries():
             return hlp.json2dicc_load( de.PY_PATH  + 'jira_request.json')#[de.ls_ji_result]
 
 
-    def change_issue_status_request(self, issue_key, user, server, apikey, new_status, pyStAl= True):
-        
-        id_status = "3"
-        headers = {"Content-type": "application/json",'Accept' : 'application/json'}
-        body = {"update": {"comment": [{"add": {"body": "The ticket is resolved"}}]},"transition": {"id":id_status }}
-        url = f"https://gastonsbodio.atlassian.net:8080/rest/api/2/issue/SUP-40/transitions"
-        passw = """ATATT3xFfGF0wU0TE0YHPP8sbKtyGc2a8sBQvR3fKaX6oqTsyY85X716H1Glpi35LmB2z-
-                QFJ8OPT3WvaUVGyDr8bAxIeYVK1hkh4rRRBiyeZLU2Q5e5cs0lukH1jSkV5Gnwa
-                YoVqryVfm_g6hcJnwckxrhonayGBBQg8C2RoZQ9wy50pfhCYw8=36F1EFEB"""
-        r = requests.post( url, json=body,auth = HTTPBasicAuth( 'gastonsbodio@gmail.com', passw ), headers = headers )
+    #def change_issue_status_request(self, issue_key, user, server, apikey, new_status, pyStAl= True):
+    #    
+    #    id_status = "3"
+    #    headers = {"Content-type": "application/json",'Accept' : 'application/json'}
+    #    body = {"update": {"comment": [{"add": {"body": "The ticket is resolved"}}]},"transition": {"id":id_status }}
+    #    url = f"https://gastonsbodio.atlassian.net:8080/rest/api/3/issue/SUP-40/transitions"
+    #    passw = """ATATT3xFfGF0wU0TE0YHPP8sbKtyGc2a8sBQvR3fKaX6oqTsyY85X716H1Glpi35LmB2z-
+    #            QFJ8OPT3WvaUVGyDr8bAxIeYVK1hkh4rRRBiyeZLU2Q5e5cs0lukH1jSkV5Gnwa
+    #            YoVqryVfm_g6hcJnwckxrhonayGBBQg8C2RoZQ9wy50pfhCYw8=36F1EFEB"""
+    #    r = requests.post( url, json=body,auth = HTTPBasicAuth( 'gastonsbodio@gmail.com', passw ), headers = headers )
 
 
     def get_request_jira_templ( self, server, proj_key , user, api_key,
@@ -241,7 +240,7 @@ class JiraQueries():
             return dicc
         
     def get_assignable_users( self, server, proj_key , MASTER_USER, MASTER_API_KEY ):
-        url_line = "/rest/api/2/user/assignable/search?project=%s" %( hlp.byte_string2string( str(proj_key) ) )
+        url_line = "/rest/api/3/user/assignable/search?project=%s" %( hlp.byte_string2string( str(proj_key) ) )
         result = self.get_request_jira_templ( server, proj_key , MASTER_USER, MASTER_API_KEY, 
                                             url_line, 'get_assig_users' , pyStAl = True ) [de.ls_ji_result]
         return result
@@ -300,13 +299,15 @@ class JiraQueries():
             line = line + '    {result} = [ str(p) for p in {result} ]\n'.format( result = de.ls_ji_result )
             file_content = hlp_ji.write_jira_command_file ( line , True, 'jira_request.json', MASTER_USER, server, MASTER_API_KEY )
             hlp.create_python_file ('get_projects', file_content)
-            hlp.run_py_stand_alone( 'get_projects' )
+            hlp.run_py_stand_alone( 'get_projects')
             dicc = hlp.json2dicc_load( de.PY_PATH  + 'jira_request.json')#[de.ls_ji_result]
             try:
+                print( de.PY_PATH )
+                print( " de.PY_PATH " )
                 os.remove ( de.PY_PATH  + 'jira_request.json' )
                 os.remove ( de.PY_PATH  + 'get_projects.py' )
-            except Exception:
-                pass
+            except Exception as err:
+                print( "  try warning      " + str( err ) )
             return dicc
 
 

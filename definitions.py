@@ -63,7 +63,7 @@ TEMP_FOL = tempfile.gettempdir().replace("\\","/") + "/"
 JI_SERVER = DEFIN_DICC['KEYW']['WEB_LINKS']['JI_SERVER']
 # witch python standalone we will use
 PY_PATH = 'C:/Users/%s/AppData/Local/Programs/Python/Python312/'%USER_NA #'C:/Python27/'  
-TRACK_SHEET_ITEMS = DEFIN_DICC['KEYW']['WEB_LINKS']['TRACK_SHEET_ITEMS']
+GOOGLE_SH_TASK_TRACKER = DEFIN_DICC['KEYW']['WEB_LINKS']['GOOGLE_SH_TASK_TRACKER']
 
 INSTRUCTION_CHECK_ANIM_TOOL = 'https://docs.google.com/document/d/1gAxtH1fhukNAWPnWSfflYai9NQe0qsh6OVcnn7FzlKU/edit?usp=sharing'
 #### lo voy a descontinuar con el nuevo help yaml
@@ -114,7 +114,6 @@ GOOG_CONTENT_TOOLS_FOL = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOG_CONTENT_TOOLS_F
 GOOG_CONT_MAYA_MENU_FOL = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOG_CONT_MAYA_MENU_FOL']
 GOOG_CONT_ANI_TOO_FOL = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOG_CONT_ANI_TOO_FOL']
 GOOG_CONT_RIG_TOO_FOL = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOG_CONT_RIG_TOO_FOL']
-GOOGLE_SH_TASK_TRACKER = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOGLE_SH_TASK_TRACKER']
 GOOGLE_SHEET_DOC_NA = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOGLE_SHEET_DOC_NA']
 GOOGLE_SHEET_ANIM_CHECK = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOGLE_SHEET_ANIM_CHECK']
 GOOGLE_SH_ASS_NA_COL = DEFIN_DICC['KEYW']['GOO_SH_INFO']['GOOGLE_SH_ASS_NA_COL']
@@ -136,18 +135,19 @@ status = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['status']
 comments = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['comments']
 spec = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['spec']
 title = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['title']
-area = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['area']
 asset_na = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['asset_na']
 ani_na = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['ani_na']
 anim_char = 'CharIn'
 item_path = 'Path'
 thumbnail = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['thumbnail']
-taskType = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['taskType']
-taskType = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['taskType']
-itemType = 'Item Type'
-areaAss = 'areaAsset'
-HEADER_ASS_LS = [ thumbnail , asset_na , taskType,  area , title , spec, comments , status ]
-HEADER_ANI_LS = [ thumbnail , ani_na , taskType , area , title , spec, comments , status ]
+
+area = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['area']
+assActType = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['assActType']
+itemType = DEFIN_DICC['KEYW']['ANIM_ASSET_TABLES_LABELS']['itemType']
+
+
+HEADER_ASS_LS = [ thumbnail , asset_na , assActType,  area , title , spec, comments , status ]
+HEADER_ANI_LS = [ thumbnail , ani_na , assActType , area , title , spec, comments , status ]
 
 ##### jira comments 
 comment_body = 'comm_body'

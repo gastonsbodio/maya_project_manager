@@ -3,6 +3,18 @@ import os
 import time
 import ast
 import webbrowser
+
+import sys
+import ctypes
+from ctypes.wintypes import MAX_PATH
+dll = ctypes.windll.shell32
+buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
+    USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append(SCRIPT_FOL)
+#sys.path.append(USER_DOC + "\\company_tools\\packages\\py3")
+
 try:
     from PySide2.QtUiTools import QUiLoader
     from PySide2 import QtCore
@@ -13,15 +25,6 @@ except Exception as err:
     from PySide6 import QtCore
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
-    import sys
-    import ctypes
-    from ctypes.wintypes import MAX_PATH
-    dll = ctypes.windll.shell32
-    buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-    if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-        USER_DOC = buf.value
-    SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
-    sys.path.append(SCRIPT_FOL)
     
 import shutil
 
@@ -39,7 +42,6 @@ pr = im.importing_modules( 'perforce_conn.perforce_requests' )
 ev = im.importing_modules( 'enviroment' )
 asp = im.importing_modules( 'manager_tools.anim_subpath' )
 hlp_goo = im.importing_modules( 'google_conn.hlp_goo' )
-
 
 
 LAUNCHED_BY = None
@@ -63,28 +65,32 @@ class TaskCreationPanel(QMainWindow):
         self.PERF_USER ,self.PERF_SERVER , self.PERF_WORKSPACE ,self.PERF_PASS = hlp_perf.load_perf_vars()
         self.LOCAL_ROOT, self.DEPOT_ROOT = hlp_manager.load_root_vars()
         self.PROJ_SETTINGS = hlp.get_yaml_fil_data( de.SCRIPT_MANAG_FOL +'\\projects_settings\\' + self.PROJECT_KEY + de.SETTINGS_SUFIX )
-        self.load_assign_user_combo()
-        self.load_issues_types_combo()
-        self.load_area_combo()
-        self.load_asset_type_combo()
-        self.get_google_asset_and_anims()
-        characters_ls = self.get_chars_from_track ( )
-        self.load_combo_item_na( characters_ls, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim )
-        self.load_combo_item_na( self.asset_tracked_ls_diccs, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_item_names )
-        self.load_combo_item_na( characters_ls, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim_tag )
-        self.ui.radioBut_choose.clicked.connect(lambda:  self.radio_but_clic_action() )
-        self.ui.radioBut_create.clicked.connect(lambda: self.radio_but_clic_action() )
-        self.default_radio_states()
-        self.ui.radioBut_choose.nextCheckState()
-        hlp_manager.set_logged_data_on_combo( self.ui.comboB_issue_type, de.issue_type_task )
-        self.set_defualt_state_combo_anim_asset()
-        self.set_deault_state_combo_anim_asset_tag( )
-        self.ui.pushBut_create_one_issue.clicked.connect( lambda: self.create_full_task() )
-        self.ui.pushBut_tag_issue.clicked.connect( lambda: self.tag_issue() )
-        self.ui.pushBut_create_file_template.clicked.connect( lambda: self.create_template_but_action() )
-        self.ui.comboB_item_area.currentIndexChanged.connect(lambda: self.item_type_combo_change_action() )
-        self.ui.comboB_item_area_tag.currentIndexChanged.connect(lambda: self.item_area_tag_combo_change_action() )
-        self.ui.actionTrack_Sheet_View.triggered.connect( lambda:  self.get_track_sheet( )  )
+        if self.PROJ_SETTINGS  != None:
+            self.load_assign_user_combo()
+            self.load_issues_types_combo()
+            self.load_area_combo()
+            self.load_asset_type_combo()
+            self.get_google_asset_and_anims()
+            characters_ls = self.get_chars_from_track ( )
+            self.load_combo_item_na( characters_ls, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim )
+            self.load_combo_item_na( self.asset_tracked_ls_diccs, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_item_names )
+            self.load_combo_item_na( characters_ls, de.GOOGLE_SH_ASS_NA_COL, self.ui.comboB_asset_on_anim_tag )
+            self.ui.radioBut_choose.clicked.connect(lambda:  self.radio_but_clic_action() )
+            self.ui.radioBut_create.clicked.connect(lambda: self.radio_but_clic_action() )
+            self.default_radio_states()
+            self.ui.radioBut_choose.nextCheckState()
+            hlp_manager.set_logged_data_on_combo( self.ui.comboB_issue_type, de.issue_type_task )
+            self.set_defualt_state_combo_anim_asset()
+            self.set_deault_state_combo_anim_asset_tag( )
+            self.ui.pushBut_create_one_issue.clicked.connect( lambda: self.create_full_task() )
+            self.ui.pushBut_tag_issue.clicked.connect( lambda: self.tag_issue() )
+            self.ui.pushBut_create_file_template.clicked.connect( lambda: self.create_template_but_action() )
+            self.ui.comboB_item_area.currentIndexChanged.connect(lambda: self.item_type_combo_change_action() )
+            self.ui.comboB_item_area_tag.currentIndexChanged.connect(lambda: self.item_area_tag_combo_change_action() )
+            self.ui.actionTrack_Sheet_View.triggered.connect( lambda:  self.get_track_sheet( )  )
+        else:
+            QMessageBox.information(self, u'NO PROJECT', "No project Logged"  )
+            
 
     def get_chars_from_track ( self ):
         char_ls = []
@@ -96,7 +102,7 @@ class TaskCreationPanel(QMainWindow):
     def get_track_sheet(self):
         """Browse help for get jira api token
         """
-        link = de.TRACK_SHEET_ITEMS
+        link = de.GOOGLE_SH_TASK_TRACKER
         webbrowser.open(link, new=2) 
 
     def item_area_tag_combo_change_action(self):
@@ -195,28 +201,27 @@ class TaskCreationPanel(QMainWindow):
         """Creates a issue/task on jira  associated with the given arguments on the tool and creates local templates
         on this task.
         """
-        area = str(self.ui.comboB_asset_type.currentText())
+        itemType = str(self.ui.comboB_asset_type.currentText())
+        area = str(self.ui.comboB_item_area.currentText())
         item_na = str(self.ui.lineEd_asset_na.text() )
         key_permission , area_done_dicc , row_idx , path_ls ,row_idx_crea_templa = hlp_manager.check_created_task( self, QMessageBox, 
-                                                                                                        gs ,area, item_na )
+                                                                                                        gs ,itemType, item_na )
         if key_permission:
             assign_name = str(self.ui.comboBuser_4_assign.currentText())
             anim_asset = str(self.ui.comboB_asset_on_anim.currentText())
-            assetType = str(self.ui.comboB_item_area.currentText())
             assign_user_id = self.dicc_users_id [ assign_name ]
-            if str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] ) != str( assetType ):
+            if str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] ) != str( itemType ):
                 goo_colum , value_ls = hlp_ji.jira_creation_task_issue( self, QMessageBox ,de.issue_type_task, 
                                                                     assign_user_id , item_na , area , area_done_dicc ,
-                                                                    path_ls , anim_asset, assetType )
+                                                                    path_ls , anim_asset, itemType )
                 item_area_path = self.create_template_and_submit( item_na , area , anim_asset , row_idx)
-                hlp_manager.set_new_values_on_sheet( self , gs , QMessageBox , area, goo_colum , value_ls, row_idx  )
+                hlp_manager.set_new_values_on_sheet( self , gs , QMessageBox , itemType, goo_colum , value_ls, row_idx  )
                 if item_area_path != None :
                     QMessageBox.information( self, u'Done', item_area_path + '   created!'  )
             else:
                 self.execute_anim_sub_path( item_na , area , anim_asset, 'create_full_task', row_idx , path_ls , area_done_dicc, assign_user_id = assign_user_id )
         else:
             QMessageBox.information(self, u'No Creating', item_na + ' ' + area + '  is already created.')
-
 
     def get_asset_na_and_area(self):
         if self.ui.radioBut_choose.isChecked():
@@ -264,10 +269,11 @@ class TaskCreationPanel(QMainWindow):
         self.ui.lineEd_new_asset_na.setEnabled( False )
 
     def create_template_and_submit( self, item_na , area , anim_asset , row_idx ):
-        itemType = str( self.ui.comboB_item_area.currentText() )
+        assetType = str( self.ui.comboB_asset_type.currentText() )
+        assActType = str( self.ui.comboB_item_area.currentText() )
         type, anim_ass_fullpath, template_full_path, item_area_full_path , item_depot_path = hlp_manager.item_path_builder(
-                                self, item_na , area , anim_asset , itemType )
-        if str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] ) != str( itemType ):
+                                self, item_na , area , anim_asset , assetType )
+        if str( self.PROJ_SETTINGS ['KEYW']['item_types']['anim'] ) != str( assActType ):
             perf = pr.PerforceRequests()
             hlp_manager.copy_and_submit( self, self.PROJ_SETTINGS, QMessageBox , perf ,  template_full_path , item_area_full_path , area ,
                                 item_na  , type , anim_ass_fullpath )

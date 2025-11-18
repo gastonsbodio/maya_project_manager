@@ -10,6 +10,15 @@ try:
 except Exception:
     pass
 si = subprocess.STARTUPINFO()
+import ctypes
+from ctypes.wintypes import MAX_PATH
+dll = ctypes.windll.shell32
+buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+if dll.SHGetSpecialFolderPathW( None, buf, 0x0005, False ):
+    USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append( SCRIPT_FOL )
+
 
 from importlib import reload
 import importing_modules as  im
@@ -76,7 +85,7 @@ def solve_path( root_state, key_path, local_root,
     """
     if proj_settings['Paths'][ key_path ].format( **dicc_) != '': 
         if root_state == 'local':
-            return local_root + proj_settings['Paths'][key_path].format(**dicc_)
+            return local_root + proj_settings['KEYW']['Proj_na_on_path'] + proj_settings['Paths'][key_path].format(**dicc_)
         elif root_state == 'depot':
             depot_path = depot_root + proj_settings['Paths'][key_path].format(**dicc_)
             depot_path = fix_perf_mapped_root_path( depot_path , proj_settings )
@@ -173,7 +182,7 @@ def change_reference( PROJ_SETTINGS, template_2_edit , full_file_path_rig_asset,
     itemTypeAss = PROJ_SETTINGS['KEYW']['item_types']['asset']
     char_type = PROJ_SETTINGS ['KEYW']['assets_types']['characters']
     dicc = {  'itemType': itemTypeAss , 'genericChar_na': generic_asset_na,
-             'areaAssRig': areaRig , 'taskType' :  char_type , 'areaAss': areaRig }
+             'areaAssRig': areaRig , 'assActType' :  char_type , 'areaAss': areaRig }
     generic_rig_full_path = solve_path( 'local', 'RigTemplatePath' , app.LOCAL_ROOT ,  
                                        '', '' , PROJ_SETTINGS , dicc_ = dicc )
 
@@ -259,36 +268,36 @@ def item_path_builder( app, item_na , area , anim_asset  , assetType , *arg ):
     localr = app.LOCAL_ROOT
     itemTypeAss = projsett['KEYW']['item_types']['asset']
     genericChar_na = projsett['KEYW']['genericChar_na']
-    dicc = { 'ass_na' : item_na , 'taskType' : area ,'itemType': itemTypeAss ,
+    dicc = { 'ass_na' : item_na , 'assActType' : assetType ,'itemType': itemTypeAss ,
             'genericChar_na': genericChar_na }
     animed_char_fullpath = ''
-    if str( projsett ['KEYW']['areaAssets']['rig'] ) == str( assetType ):
+    if str( projsett ['KEYW']['areaAssets']['rig'] ) == str( area ):#ok
         type = de.issue_type_asset
-        if area == projsett ['KEYW']['assets_types']['characters']:
+        if assetType == projsett ['KEYW']['assets_types']['characters']: #ok
             dicc['areaAssRig'] = projsett ['KEYW']['areaAssets']['rig']
-            dicc['areaAss'] = assetType
+            dicc['areaAss'] = area
             template_full_path = solve_path( 'local', 'RigTemplatePath' , localr,  '', '' ,  projsett, dicc_ = dicc )
         item_area_full_path = solve_path( 'local' , 'Rig_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc)
         item_depot_path = solve_path( 'depot' , 'Rig_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc)
 
-    elif str( projsett ['KEYW']['areaAssets']['mod'] ) == str( assetType ):
+    elif str( projsett ['KEYW']['areaAssets']['mod'] ) == str( area ):#ok
         type = de.issue_type_asset
         dicc['areaAssMod'] = projsett ['KEYW']['areaAssets']['mod']
         template_full_path = solve_path( 'local', 'ModTemplatePath' , localr,  '', '' ,  projsett , dicc_ = dicc )
         item_area_full_path = solve_path( 'local' , 'Mod_Ass_Path' , localr ,  '', '' ,  projsett, dicc_ = dicc )
         item_depot_path = solve_path( 'depot' , 'Mod_Ass_Path' , localr ,  app.DEPOT_ROOT, '' ,  projsett, dicc_ = dicc )
-
-    elif str( projsett ['KEYW']['areaAnim']['anim'] ) == str( assetType ):
+        print("")
+    elif str( projsett ['KEYW']['areaAnim']['anim'] ) == str( area ):#ok
         type = de.issue_type_anim
         character = projsett ['KEYW']['assets_types']['characters']
         itemTypeAni = projsett['KEYW']['item_types']['anim']
         areaAni = projsett['KEYW']['areaAnim']['anim']
         rig = projsett ['KEYW']['areaAssets']['rig']
-        dicc = { 'ass_na' : anim_asset , 'taskType' : character ,
-                 'itemType': itemTypeAni , 'areaAssRig' : rig , 'taskType': area}
+        dicc = { 'ass_na' : anim_asset , 'assActType' : character ,
+                 'itemType': itemTypeAni , 'areaAssRig' : rig , 'assActType': assetType}
         animed_char_fullpath = solve_path( 'local', 'Rig_Ass_Path' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         template_full_path = solve_path( 'local', 'Anim_Template' , localr ,  '', '' ,  projsett , dicc_ = dicc )
-        dicc = { 'taskType' : area, 'itemType': itemTypeAni}
+        dicc = { 'assActType' : assetType, 'itemType': itemTypeAni}
         item_area_full_path = solve_path( 'local' , 'Anim_Root' , localr ,  '', '' ,  projsett , dicc_ = dicc)
         item_depot_path = solve_path( 'depot' , 'Anim_Root' , localr ,  app.DEPOT_ROOT, '' ,  projsett , dicc_ = dicc)
     return type, animed_char_fullpath, template_full_path, item_area_full_path, item_depot_path
@@ -317,6 +326,7 @@ def define_main_item_vars( app, area , anim_asset, item_na , area_done_dicc  , p
         goo_colum = [ de.GOOGLE_SH_ANI_NA_COL , de.GOOGLE_SH_CREAT_AREA_COL , de.GOOGLE_SH_CREAT_PATH  , de.GOOGLE_SH_ANIM_ASSET_COL ]
         value_ls =   [         item_na        ,           str(area_done_dicc)     ,          str(path_ls)        ,        anim_asset           ]
     else:
+
         if item_depot_path not in path_ls:
             path_ls.append( item_depot_path )
         item_na_prefix = de.asset_na
@@ -349,10 +359,10 @@ def get_path_from_task_ls(name, as_ani_type, task_ls_dicc):
     for task in task_ls_dicc:
         try:
             task_na = task[de.asset_na]
-            task_type = task[de.taskType] 
+            task_type = task[de.assActType] 
         except Exception:
             task_na = task[de.ani_na]
-            task_type = task[de.taskType] 
+            task_type = task[de.assActType] 
         if task_na == name :
             if task_type == as_ani_type :
                 return task[de.item_path]

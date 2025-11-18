@@ -5,8 +5,10 @@ try:
     #import pymel.core as pm
     import maya.OpenMaya as OpenMaya
     import maya.OpenMayaUI as mui
-    from shiboken2 import wrapInstance
-
+    try:
+        from shiboken2 import wrapInstance
+    except Exception:
+        from shiboken6 import wrapInstance
     def getWindow(QWidget):
         pointer = mui.MQtUtil.mainWindow()
         if pointer is not None:

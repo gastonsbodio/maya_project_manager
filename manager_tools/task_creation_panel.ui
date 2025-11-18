@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>550</height>
+    <width>404</width>
+    <height>558</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -450,8 +450,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
-     <height>21</height>
+     <width>404</width>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuUpdates">

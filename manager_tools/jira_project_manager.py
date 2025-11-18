@@ -9,6 +9,16 @@ import time
 from threading import Thread
 import subprocess
 si = subprocess.STARTUPINFO()
+import ctypes
+from ctypes.wintypes import MAX_PATH
+dll = ctypes.windll.shell32
+buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
+if dll.SHGetSpecialFolderPathW( None, buf, 0x0005, False ):
+    USER_DOC = buf.value
+SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
+sys.path.append( SCRIPT_FOL )
+PACKAGEs = USER_DOC + "\\company_tools\\packages\py3"
+sys.path.append( PACKAGEs )
 try:
     from PySide2.QtUiTools import QUiLoader
     from PySide2 import QtCore
@@ -19,15 +29,7 @@ except Exception:
     from PySide6 import QtCore
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
-    import sys
-    import ctypes
-    from ctypes.wintypes import MAX_PATH
-    dll = ctypes.windll.shell32
-    buf = ctypes.create_unicode_buffer(MAX_PATH + 1)
-    if dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False):
-        USER_DOC = buf.value
-    SCRIPT_FOL = USER_DOC + "\\company_tools\\jira_manager"
-    sys.path.append(SCRIPT_FOL)
+
 from importlib import reload
 import importing_modules as  im
 reload(im )
@@ -77,7 +79,7 @@ class table_features( ):#QWidget ):
         if HEADER_LS [de.ITEM_NA_IDX ] == de.asset_na:
             asset_type = hlp_manager.asset_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
             item_type = hlp_manager.item_type_extraction ( task [ de.item_path ] , self.PROJ_SETTINGS )
-            dicc = { 'ass_na' : task[ de.asset_na ], 'taskType': asset_type  , 'itemType': item_type }
+            dicc = { 'ass_na' : task[ de.asset_na ], 'assActType': asset_type  , 'itemType': item_type }
             item_thumb_path = hlp_manager.solve_path( 'local', 'Ass_Thumb_Path' , self.LOCAL_ROOT , 
                                         self.DEPOT_ROOT, '' ,  self.PROJ_SETTINGS , dicc_ = dicc )
         elif HEADER_LS [de.ITEM_NA_IDX ] == de.ani_na:
@@ -139,7 +141,7 @@ class table_features( ):#QWidget ):
                     per_row_ls.append( task[column] )
                 elif idx ==  de.AREA_IDX:
                     if task[ de.itemType ] == self.PROJ_SETTINGS['KEYW']['item_types']['asset']:
-                        item = self.create_table_item( table , str( task[column] ) + '_'+ task[de.areaAss] , idx, i ) 
+                        item = self.create_table_item( table , str( task[column] ) + '_'+ task[de.area] , idx, i ) 
                     
                     
                 id_rows[ str(i) ]   =   per_row_ls
@@ -253,7 +255,7 @@ class table_features( ):#QWidget ):
         area = self.get_text_item_colum(table, de.AREA_IDX)
         exploreAction = menu_item_na.addAction(de.open_fi_fol)
         getFiAction = menu_item_na.addAction( de.dowload_fi_perf )
-        actionMenu = menu_item_na.exec_(table.mapToGlobal(position))
+        actionMenu = menu_item_na.exec(table.mapToGlobal(position))
         if actionMenu != None:
             if str(actionMenu.text()) == de.open_fi_fol:
                 self.explore_char_fol( item_na, area, type)
@@ -325,7 +327,7 @@ class table_features( ):#QWidget ):
             item_path = hlp_manager.get_path_from_task_ls ( item_na, assAni_type, self.tasks_ls_ass_diccs )
             itemt_type = hlp_manager.item_type_extraction ( item_path , self.PROJ_SETTINGS )
             assetType = hlp_manager.asset_type_extraction ( item_path , self.PROJ_SETTINGS )
-            dicc = {'ass_na': item_na, 'taskType': assetType, 'itemType' : itemt_type}
+            dicc = {'ass_na': item_na, 'assActType': assetType, 'itemType' : itemt_type}
             thumbLocalPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'local', 'Ass_Thumb_Path', self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS , dicc_ = dicc ))
             thumbDepotPath, thumb_fi_na = hlp.separate_path_and_na(    hlp_manager.solve_path( 'depot', 'Ass_Thumb_Path' , self.LOCAL_ROOT, self.DEPOT_ROOT, ''  , self.PROJ_SETTINGS, dicc_ = dicc ))
         elif 'anim' in table.objectName():
@@ -338,7 +340,7 @@ class table_features( ):#QWidget ):
         doThumbnailAc1 = menu_thumb.addAction( de.do_thumb, lambda: self.do_row_thumb( thumbLocalPath, thumb_fi_na, table , de.THUMB_IDX ) )
         doThumbnailAc2 = menu_thumb.addAction( de.snip_thumb, lambda: self.do_snip_thumb( thumbLocalPath, thumb_fi_na, table , de.THUMB_IDX ) )
         doThumbnailAc3 = menu_thumb.addAction( de.get_thumb , lambda: self.get_thumb_from_depot( thumbDepotPath , thumb_fi_na , table , de.THUMB_IDX) )
-        actionThumb = menu_thumb.exec_(table.mapToGlobal(position))
+        actionThumb = menu_thumb.exec(table.mapToGlobal(position))
 
     def get_thumb_from_depot( self, thumbDepotPath, thumb_fi_na , table , colum_idx ):
         """trigging action to dowload depot thumbnail on local and load it on task
@@ -459,7 +461,7 @@ class table_features( ):#QWidget ):
         # {    "id" : "int_str"   ,   "name" : "str"    }
         for status in self.dicc_status_trans_ls:
             statusAction = menu_status.addAction( str ( status["name"] ) )
-        actionStatus = menu_status.exec_(table.mapToGlobal(position))
+        actionStatus = menu_status.exec(table.mapToGlobal(position))
         if actionStatus != None:
             status_na = actionStatus.text()
             for dicc in self.dicc_status_trans_ls:
@@ -482,7 +484,7 @@ class table_features( ):#QWidget ):
         link = table.currentItem().text()
         menu_link = QMenu()
         linkAction = menu_link.addAction('open issue link')
-        actionLink = menu_link.exec_(table.mapToGlobal(position))
+        actionLink = menu_link.exec(table.mapToGlobal(position))
         if actionLink != None:
             if actionLink.text() == "open issue link":
                 webbrowser.open(link, new=2) 
@@ -606,10 +608,13 @@ class MyMainWindow(QMainWindow):
         """
         self.ui.comboB_projects.clear()
         dicc = self.jira_m.get_projects( de.JI_SERVER , self.USER , self.APIKEY )
-        if dicc[ de.key_errors ] != '[]':
-            QMessageBox.information(self, u'Loading projects error.', str( dicc[de.key_errors] )  )
-        for proj in ['None'] + dicc[ de.ls_ji_result ]:
-            self.ui.comboB_projects.addItem(str(proj))
+        try:
+            if dicc[ de.key_errors ] != '[]':
+                QMessageBox.information(self, u'Loading projects error.', str( dicc[de.key_errors] )  )
+            for proj in ['None'] + dicc[ de.ls_ji_result ]:
+                self.ui.comboB_projects.addItem(str(proj))
+        except Exception:
+            pass
 
     def set_roots(self):
         """instancing local root and depot root related with the choosen workspace.
@@ -705,12 +710,11 @@ class MyMainWindow(QMainWindow):
 
             dicc['perf_pass'] = str(self.ui.lineEd_perforce_pass.text() )
             self.PERF_PASS = dicc['perf_pass']
-            
-            QMessageBox.information(self, u'', "Perforce login \n     settings done"  )
 
             dicc['perf_workspace'] = str(self.ui.lineEd_perf_worksp.text())
             self.PERF_WORKSPACE = str( dicc['perf_workspace'] )
             self.set_roots()
+            QMessageBox.information(self, u'', "Perforce login \n     settings done"  )
         hlp.metadata_dicc2json( de.TEMP_FOL+de.PERF_LOG_METADATA_FI_NA , dicc)
 
 if str(sys.version).startswith('2'): #ThreadReturnPy2
@@ -748,8 +752,8 @@ elif str(sys.version).startswith('3'):
 if ev.ENVIROMENT == 'Windows':
     ###   manager launch  ####
     #import manager_tools.jira_project_manager as jiraM
-    loader = QUiLoader()
+    #loader = QUiLoader()
     app = QApplication(sys.argv)
-    widget = MyMainWindow( loader = loader)
+    widget = MyMainWindow( )
     widget.ui.show()
     sys.exit(app.exec())

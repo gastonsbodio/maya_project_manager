@@ -125,7 +125,7 @@ def set_issue_label( app, QMessageBox , label_ls, issue_key, jira_m):
 def jira_creation_task_issue( app ,QMessageBox ,issue_type ,assign_user_id , item_na , area ,
                              area_done_dicc , path_ls , anim_asset , itemType):
     description = 'Jira Manager Tool'
-    summary = area + '  task  for: '+ item_na
+    summary = str(area) + '  task  for: '+ item_na
     dicc = app.jira_m.create_issue( app.USER, de.JI_SERVER, app.APIKEY, app.PROJECT_KEY , summary ,
                                         description, issue_type, app.USER )
     if dicc[ de.key_errors ] != '[]':
@@ -155,9 +155,12 @@ def get_self_tasks( app , QMessageBox , area_ls ):
             if dicc[ de.key_errors ] != '[]':
                 QMessageBox.information(app.main_widg, u'getting user task errors', str( dicc[de.key_errors] )  )
         filtered_tasks_ls = []
-        for task_dicc in dicc[de.ls_ji_result]:
-            if task_dicc[ de.area ] in area_ls or task_dicc[ de.areaAss ] in area_ls:
-                filtered_tasks_ls.append( task_dicc )
+        try:
+            for task_dicc in dicc[ de.ls_ji_result ]:
+                if task_dicc[ de.area ] in area_ls or task_dicc[ de.area ] in area_ls:
+                    filtered_tasks_ls.append( task_dicc )
+        except Exception:
+            pass
         return  filtered_tasks_ls
     else:
         return []

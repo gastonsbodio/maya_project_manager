@@ -22,16 +22,16 @@ KEYW:
     local_fol_root: ''
 Paths:
     ### itemType could be : Asset or Action
-    ### taskType  could be : prop, char, set, anim, fx
-    Rig_Ass_Path:        /{itemType}/{taskType}/{ass_na}/Maya/{areaAssRig}/{ass_na}_{areaAssRig}.ma
-    Mod_Ass_Path:        /{itemType}/{taskType}/{ass_na}/Maya/{areaAssMod}/{ass_na}_{areaAssMod}.ma
-    Ass_Thumb_Path:      /{itemType}/{taskType}/{ass_na}/{ass_na}_thumbnail.jpg
+    ### assActType  could be : prop, char, set, anim, fx
+    Rig_Ass_Path:        /{itemType}/{assActType}/{ass_na}/Maya/{areaAssRig}/{ass_na}_{areaAssRig}.ma
+    Mod_Ass_Path:        /{itemType}/{assActType}/{ass_na}/Maya/{areaAssMod}/{ass_na}_{areaAssMod}.ma
+    Ass_Thumb_Path:      /{itemType}/{assActType}/{ass_na}/{ass_na}_thumbnail.jpg
     
-    RigTemplatePath:   /{itemType}/{taskType}/{genericChar_na}/Maya/{areaAssRig}/{genericChar_na}_{areaAssRig}.ma
-    ModTemplatePath:   /{itemType}/{taskType}/{genericChar_na}/Maya/{areaAssMod}/{genericChar_na}_{areaAssMod}.ma
+    RigTemplatePath:   /{itemType}/{assActType}/{genericChar_na}/Maya/{areaAssRig}/{genericChar_na}_{areaAssRig}.ma
+    ModTemplatePath:   /{itemType}/{assActType}/{genericChar_na}/Maya/{areaAssMod}/{genericChar_na}_{areaAssMod}.ma
 
-    Anim_Template:         /{itemType}/{taskType}/animTemplate/animTemplate.ma
-    Anim_Path:            /{itemType}/{taskType}/{subpath}{anim_na}/{anim_na}_v000.ma
-    Anim_Root:            /{itemType}/{taskType}/
+    Anim_Template:         /{itemType}/{assActType}/animTemplate/animTemplate.ma
+    Anim_Path:            /{itemType}/{assActType}/{subpath}{anim_na}/{anim_na}_v000.ma
+    Anim_Root:            /{itemType}/{assActType}/
     #Unreal_Anim_Root:     /{itemType}/Content/Sim/Characters/Generic/Art/Anim/
 
