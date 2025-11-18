@@ -3,7 +3,6 @@
 import sys
 import os
 import json
-
 import ctypes
 from ctypes.wintypes import MAX_PATH
 dll = ctypes.windll.shell32
